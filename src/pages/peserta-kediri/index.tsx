@@ -63,7 +63,6 @@ export const PesertaKediriIndex = () => {
       behavior: "smooth",
     });
 
-    console.log(query);
     setLoading(true);
     setError(null);
     try {
