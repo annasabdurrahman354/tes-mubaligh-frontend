@@ -78,7 +78,7 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
             <CardHeader className="py-2.5 px-4 flex-col items-start">
               <div className="flex items-start justify-start gap-2">
                 <h3 className="text-large font-semibold">
-                  {peserta.nama_lengkap}
+                  {ucwordsCustom(peserta.nama_lengkap)}
                 </h3>
                 {peserta.jumlah_penyimakan > 0 && (
                   <Chip
