@@ -75,11 +75,12 @@ export type PesertaKertosono = {
   foto_smartcard: string;
   akhlak: AkhlakKertosono[];
   akademik: AkademikKertosono[];
-}
+};
 
 export function getFirstValidWord(text: string) {
   const words = text.trim().split(/\s+/); // Split by spaces while handling multiple spaces
-  if (words.length === 0) return ''; // Return empty if no words exist
+
+  if (words.length === 0) return ""; // Return empty if no words exist
 
   if (words[0].length > 2 || words.length === 1) {
     return words[0]; // Return first word if it's longer than 2 chars or if it's the only word
@@ -128,8 +129,8 @@ export const mockPesertaKertosono = [
         guru_nama: "Ust. Ridwan",
         guru_foto: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
         catatan: "Santri sopan dan disiplin dalam mengaji.",
-        created_at: "2025-02-10T08:00:00Z"
-      }
+        created_at: "2025-02-10T08:00:00Z",
+      },
     ],
     akademik: [
       {
@@ -145,9 +146,9 @@ export const mockPesertaKertosono = [
         catatan: "Perlu lebih berhati-hati dalam tajwid.",
         rekomendasi_penarikan: false,
         durasi_penilaian: 15,
-        created_at: "2025-02-10T08:30:00Z"
-      }
-    ]
+        created_at: "2025-02-10T08:30:00Z",
+      },
+    ],
   },
   {
     id: "2",
@@ -188,8 +189,8 @@ export const mockPesertaKertosono = [
         guru_nama: "Ust. Rahmat",
         guru_foto: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
         catatan: "Perlu lebih disiplin dalam waktu shalat.",
-        created_at: "2025-02-11T09:00:00Z"
-      }
+        created_at: "2025-02-11T09:00:00Z",
+      },
     ],
     akademik: [
       {
@@ -205,8 +206,8 @@ export const mockPesertaKertosono = [
         catatan: "Harus lebih banyak latihan pernapasan.",
         rekomendasi_penarikan: false,
         durasi_penilaian: 20,
-        created_at: "2025-02-11T09:30:00Z"
-      }
-    ]
-  }
+        created_at: "2025-02-11T09:30:00Z",
+      },
+    ],
+  },
 ];

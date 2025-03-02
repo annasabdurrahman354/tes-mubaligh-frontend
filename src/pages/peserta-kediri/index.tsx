@@ -1,13 +1,14 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import DaftarPesertaTopbar from "@/components/daftar-peserta-topbar";
 import { Button } from "@heroui/react";
 import { ListCollapse, PencilIcon, PlusCircle } from "lucide-react";
-import PesertaRFIDScanner from "@/components/peserta-rfid-scanner";
-import AnimatedPesertaCard from '@/components/animated-peserta-card';
 import { AnimatePresence, motion } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import DaftarPesertaTopbar from "@/components/daftar-peserta-topbar";
+import PesertaRFIDScanner from "@/components/peserta-rfid-scanner";
+import AnimatedPesertaCard from "@/components/animated-peserta-card";
 import { usePeserta } from "@/hooks/use-peserta";
 import EmptyState from "@/components/empty-state";
-import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingState from "@/components/loading-state";
 import ErrorState from "@/components/error-state";
 import { useKediri } from "@/hooks/use-kediri";
@@ -15,11 +16,17 @@ import { useKediri } from "@/hooks/use-kediri";
 export const PesertaKediriIndex = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const action = searchParams.get("action") ? searchParams.get("action") : "detail";
-  const IconComponent = action === "penilaian-akademik" || action === "penilaian-akhlak" ? PencilIcon : ListCollapse;
+  const action = searchParams.get("action")
+    ? searchParams.get("action")
+    : "detail";
+  const IconComponent =
+    action === "penilaian-akademik" || action === "penilaian-akhlak"
+      ? PencilIcon
+      : ListCollapse;
   const filter = searchParams.get("filter");
 
-  const { peserta, selectedPeserta, isSelectedPeserta, toggleSelectedPeserta } = usePeserta();
+  const { peserta, selectedPeserta, isSelectedPeserta, toggleSelectedPeserta } =
+    usePeserta();
   const { getPesertaKediri } = useKediri();
 
   const [query, setQuery] = useState<Record<string, string>>({});
@@ -27,29 +34,35 @@ export const PesertaKediriIndex = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  
+
   // Observer for infinite scrolling
   const observer = useRef<IntersectionObserver | null>(null);
-  const lastItemRef = useCallback((node: HTMLDivElement) => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && visibleCount < peserta.length) {
-        loadMore();
-      }
-    }, { threshold: 0.5 });
-    
-    if (node) observer.current.observe(node);
-  }, [loading, visibleCount, peserta]);
+  const lastItemRef = useCallback(
+    (node: HTMLDivElement) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && visibleCount < peserta.length) {
+            loadMore();
+          }
+        },
+        { threshold: 0.5 },
+      );
+
+      if (node) observer.current.observe(node);
+    },
+    [loading, visibleCount, peserta],
+  );
 
   const fetchPeserta = async () => {
     // Use smooth scroll behavior
-    window.scrollTo({ 
-      top: 0, 
-      behavior: 'smooth'
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
     });
-    
+
     console.log(query);
     setLoading(true);
     setError(null);
@@ -59,9 +72,9 @@ export const PesertaKediriIndex = () => {
           ...query,
           filter: filter,
         };
+
         await getPesertaKediri(updatedQuery);
-      }
-      else{
+      } else {
         await getPesertaKediri(query);
       }
     } catch (error) {
@@ -90,28 +103,34 @@ export const PesertaKediriIndex = () => {
   const visibleItems = peserta.slice(0, visibleCount);
 
   return (
-    <div 
-      className="min-h-screen bg-default-100 dark:bg-default-50/25 flex flex-col font-inter relative"
+    <div
       ref={scrollRef}
+      className="min-h-screen bg-default-100 dark:bg-default-50/25 flex flex-col font-inter relative"
     >
-      <DaftarPesertaTopbar selectedPeserta={selectedPeserta} toggleSelectedPeserta={toggleSelectedPeserta} setQuery={setQuery} />
+      <DaftarPesertaTopbar
+        selectedPeserta={selectedPeserta}
+        setQuery={setQuery}
+        toggleSelectedPeserta={toggleSelectedPeserta}
+      />
       <AnimatePresence mode="sync">
         {IconComponent && selectedPeserta.length !== 0 && (
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.8, opacity: 0 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
             className="fixed bottom-6 right-6 z-10"
+            exit={{ scale: 0.8, opacity: 0 }}
+            initial={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
           >
             <Button
               isIconOnly
-              aria-label={action === "penilaian" ? "Mulai Penilaian" : "Lihat Detail"}
-              size="lg"
-              color="success"
-              variant="shadow"
+              aria-label={
+                action === "penilaian" ? "Mulai Penilaian" : "Lihat Detail"
+              }
               className="rounded-medium border p-3 bg-success border-success-100"
+              color="success"
               isDisabled={loading}
+              size="lg"
+              variant="shadow"
               onPress={() => navigate(`/peserta-kediri/${action}`)}
             >
               <IconComponent className="text-success-50" />
@@ -121,9 +140,7 @@ export const PesertaKediriIndex = () => {
       </AnimatePresence>
 
       <main className="flex-grow container mx-auto max-w-7xl py-4 px-4 md:py-6 md:px-6 flex flex-col gap-4 overflow-hidden">
-        {
-          loading && <LoadingState/>
-        }
+        {loading && <LoadingState />}
         {error ? (
           <ErrorState message={error} onPress={fetchPeserta} />
         ) : peserta !== undefined && peserta !== null ? (
@@ -132,13 +149,15 @@ export const PesertaKediriIndex = () => {
               <div className="will-change-transform flex flex-col gap-4">
                 <AnimatePresence mode="popLayout">
                   {visibleItems.map((peserta, index) => (
-                    <div 
-                      ref={index === visibleItems.length - 5 ? lastItemRef : null}
+                    <div
                       key={peserta.id}
+                      ref={
+                        index === visibleItems.length - 5 ? lastItemRef : null
+                      }
                     >
                       <AnimatedPesertaCard
-                        peserta={peserta}
                         isSelected={isSelectedPeserta(peserta)}
+                        peserta={peserta}
                         onPress={() => toggleSelectedPeserta(peserta)}
                       />
                     </div>
@@ -147,12 +166,12 @@ export const PesertaKediriIndex = () => {
               </div>
               {visibleCount < peserta.length && (
                 <div className="flex justify-center py-4">
-                  <Button 
-                    onPress={loadMore} 
-                    color="primary" 
-                    variant="shadow" 
-                    size="md" 
+                  <Button
+                    color="primary"
+                    size="md"
                     startContent={<PlusCircle size={18} />}
+                    variant="shadow"
+                    onPress={loadMore}
                   >
                     Muat Lebih Banyak
                   </Button>
@@ -162,7 +181,9 @@ export const PesertaKediriIndex = () => {
           ) : (
             !loading && <EmptyState />
           )
-        ) : <></>}
+        ) : (
+          <></>
+        )}
       </main>
       <PesertaRFIDScanner />
     </div>

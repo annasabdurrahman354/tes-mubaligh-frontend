@@ -6,7 +6,7 @@ export type AkhlakKediri = {
   catatan: string;
   poin: number | null;
   created_at: string;
-}
+};
 
 export type AkademikKediri = {
   id: string;
@@ -19,13 +19,13 @@ export type AkademikKediri = {
   nilai_pemahaman: number;
   catatan: string;
   created_at: string;
-}
+};
 
 export type AkhlakKediriForm = {
   tes_santri_id: string;
   poin: number;
   catatan: string;
-}
+};
 
 export type AkademikKediriForm = {
   tes_santri_id: string;
@@ -34,7 +34,7 @@ export type AkademikKediriForm = {
   nilai_penjelasan: number;
   nilai_pemahaman: number;
   catatan: string;
-}
+};
 
 export type PesertaKediri = {
   id: string;
@@ -70,7 +70,7 @@ export type PesertaKediri = {
   foto_smartcard: string;
   akhlak: AkhlakKediri[];
   akademik: AkademikKediri[];
-}
+};
 
 export const mockPesertaKediri = [
   {
@@ -114,8 +114,8 @@ export const mockPesertaKediri = [
         guru_foto: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
         catatan: "Santri sopan dan disiplin dalam mengaji.",
         poin: 85,
-        created_at: "2025-02-10T08:00:00Z"
-      }
+        created_at: "2025-02-10T08:00:00Z",
+      },
     ],
     akademik: [
       {
@@ -128,9 +128,9 @@ export const mockPesertaKediri = [
         nilai_penjelasan: 84,
         nilai_pemahaman: 86,
         catatan: "Perlu lebih berhati-hati dalam tajwid.",
-        created_at: "2025-02-10T08:30:00Z"
-      }
-    ]
+        created_at: "2025-02-10T08:30:00Z",
+      },
+    ],
   },
   {
     id: "2",
@@ -173,8 +173,8 @@ export const mockPesertaKediri = [
         guru_foto: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
         catatan: "Perlu lebih disiplin dalam waktu shalat.",
         poin: 78,
-        created_at: "2025-02-11T09:00:00Z"
-      }
+        created_at: "2025-02-11T09:00:00Z",
+      },
     ],
     akademik: [
       {
@@ -187,8 +187,8 @@ export const mockPesertaKediri = [
         nilai_penjelasan: 76,
         nilai_pemahaman: 79,
         catatan: "Harus lebih banyak latihan pernapasan.",
-        created_at: "2025-02-11T09:30:00Z"
-      }
-    ]
-  }
+        created_at: "2025-02-11T09:30:00Z",
+      },
+    ],
+  },
 ];

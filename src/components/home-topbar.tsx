@@ -7,11 +7,12 @@ import {
   NavbarBrand,
   Image,
 } from "@heroui/react";
+
 import { useAuth } from "@/hooks/use-auth";
 
 export default function HomeTopbar() {
   const [mounted, setMounted] = useState(false);
-  const {user} = useAuth()
+  const { user } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -22,7 +23,7 @@ export default function HomeTopbar() {
   return (
     <Navbar isBordered maxWidth="full">
       <NavbarBrand className="min-w-min">
-        <Image src="/images/logo.png" height={36} className="min-w-min"/>
+        <Image className="min-w-min" height={36} src="/images/logo.png" />
         <div className="ml-2 min-w-min">
           <p className="text-inherit font-notoarabic">
             ألسلام عليكم ورحمة الله وبركاته
@@ -33,7 +34,7 @@ export default function HomeTopbar() {
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem />
       </NavbarContent>
-      <NavbarContent justify="end" className="max-w-min">
+      <NavbarContent className="max-w-min" justify="end">
         <NavbarItem>
           <Avatar
             isBordered

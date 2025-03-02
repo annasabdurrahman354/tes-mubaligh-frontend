@@ -1,3 +1,21 @@
+import {
+  addToast,
+  Button,
+  Card,
+  CardBody,
+  Checkbox,
+  CheckboxGroup,
+  cn,
+  RadioGroup,
+  Tab,
+  Tabs,
+  Textarea,
+} from "@heroui/react";
+import { Formik } from "formik";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+
 import ActionPesertaTopbar from "@/components/action-peserta-topbar";
 import { CustomRadio } from "@/components/custom-radio";
 import PesertaProfileCard from "@/components/peserta-profile-card";
@@ -7,11 +25,6 @@ import Timer from "@/components/timer";
 import { useAuth } from "@/hooks/use-auth";
 import { useKertosono } from "@/hooks/use-kertosono";
 import { usePeserta } from "@/hooks/use-peserta";
-import { addToast, Button, Card, CardBody, Checkbox, CheckboxGroup, cn, RadioGroup, Tab, Tabs, Textarea } from "@heroui/react";
-import { Formik } from "formik";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import * as Yup from "yup";
 
 const validationSchema = Yup.object().shape({
   penilaian: Yup.string().required("Penilaian harus dipilih."),
@@ -40,14 +53,21 @@ const validationSchema = Yup.object().shape({
       }
 
       return true; // Validation passes
-    }
+    },
   ),
 });
 
 export default function PenilaianAkademikKertosonoPage() {
-  const {user} = useAuth();
-  const {storeAkademikKertosono} = useKertosono();
-  const {selectedPeserta, toggleSelectedPeserta, activePesertaIndex, setActivePesertaIndex, formValues, setFormValues} = usePeserta();
+  const { user } = useAuth();
+  const { storeAkademikKertosono } = useKertosono();
+  const {
+    selectedPeserta,
+    toggleSelectedPeserta,
+    activePesertaIndex,
+    setActivePesertaIndex,
+    formValues,
+    setFormValues,
+  } = usePeserta();
   const navigate = useNavigate();
   const [tab, setTab] = useState("penilaian");
   const [loading, setLoading] = useState(false);
@@ -55,27 +75,24 @@ export default function PenilaianAkademikKertosonoPage() {
   // Redirect immediately if selectedPeserta is empty or null
   useEffect(() => {
     if (!selectedPeserta || selectedPeserta.length === 0) {
-        navigate('/peserta-kertosono?action=penilaian-akademik', { replace: true });
+      navigate("/peserta-kertosono?action=penilaian-akademik", {
+        replace: true,
+      });
     }
   }, [selectedPeserta, navigate]);
-
-  // Don't render anything if redirecting
-  if (!selectedPeserta || selectedPeserta.length === 0) {
-    return null; 
-  }
 
   useEffect(() => {
     const updatedFormValues = selectedPeserta.map((peserta) => {
       const existingForm = formValues.find(
-        (form) => form.tes_santri_id === peserta.id
+        (form) => form.tes_santri_id === peserta.id,
       );
-  
+
       if (peserta.telah_disimak) {
         // Check if the peserta has a matching akademik entry for the guru_id
         const akademikEntry = peserta.akademik?.find(
-          (akademik) => akademik.guru_id == user?.id
+          (akademik) => akademik.guru_id == user?.id,
         );
-  
+
         if (akademikEntry) {
           // Pre-fill the form with data from akademikEntry
           return (
@@ -87,17 +104,18 @@ export default function PenilaianAkademikKertosonoPage() {
               kekurangan_keserasian: akademikEntry.kekurangan_keserasian || [],
               kekurangan_kelancaran: akademikEntry.kekurangan_kelancaran || [],
               catatan: akademikEntry.catatan || "",
-              rekomendasi_penarikan: akademikEntry.rekomendasi_penarikan || false,
+              rekomendasi_penarikan:
+                akademikEntry.rekomendasi_penarikan || false,
               awal_penilaian: akademikEntry.durasi_penilaian
                 ? new Date(Date.now() - akademikEntry.durasi_penilaian * 60000)
                 : new Date(),
               akhir_penilaian: null,
-              durasi_penilaian: akademikEntry.durasi_penilaian
+              durasi_penilaian: akademikEntry.durasi_penilaian,
             }
           );
         }
       }
-      
+
       // Default to existingForm or a blank form for this peserta
       return (
         existingForm || {
@@ -111,31 +129,40 @@ export default function PenilaianAkademikKertosonoPage() {
           rekomendasi_penarikan: false,
           awal_penilaian: new Date(Date.now()),
           akhir_penilaian: null,
-          durasi_penilaian: null
+          durasi_penilaian: null,
         }
       );
     });
+
     setFormValues(updatedFormValues);
   }, [selectedPeserta]);
+
+  // Don't render anything if redirecting
+  if (!selectedPeserta || selectedPeserta.length === 0) {
+    return null;
+  }
 
   const handleRemovePeserta = (indexToRemove) => {
     // Save a reference to the peserta to remove
     const pesertaToRemove = selectedPeserta[indexToRemove];
-    
+
     // Check if this is the last peserta
     if (selectedPeserta.length === 1) {
       // First toggle the selection to empty the array
       toggleSelectedPeserta(pesertaToRemove);
       // Then navigate - this ensures the array is updated before navigation
-      navigate('/peserta-kertosono?action=penilaian-akademik', { replace: true });
+      navigate("/peserta-kertosono?action=penilaian-akademik", {
+        replace: true,
+      });
+
       return; // Important: Return immediately to prevent further processing
-    } 
-    
+    }
+
     // Handle non-last item cases
     if (activePesertaIndex === selectedPeserta.length - 1) {
       setActivePesertaIndex(activePesertaIndex - 1);
     }
-    
+
     // Remove the peserta
     toggleSelectedPeserta(pesertaToRemove);
   };
@@ -149,27 +176,33 @@ export default function PenilaianAkademikKertosonoPage() {
           <Tabs
             fullWidth
             aria-label="Tabs form"
-            size="md"
             color="primary"
-            variant="bordered"
             selectedKey={tab}
+            size="md"
+            variant="bordered"
             onSelectionChange={setTab}
           >
             <Tab key="penilaian" title="Form Penilaian">
               <Formik
-                initialValues={ formValues[activePesertaIndex] || {}}
-                validationSchema={validationSchema}
                 enableReinitialize // Allows reinitialization when `initialValues` change
+                initialValues={formValues[activePesertaIndex] || {}}
+                validationSchema={validationSchema}
                 onSubmit={async (values) => {
                   try {
                     // Call the API to store the form data
                     setLoading(true);
-                    
+
                     const akhirPenilaian = Date.now(); // Current timestamp
-                    const awalPenilaian = formValues[activePesertaIndex]?.awal_penilaian || akhirPenilaian;
+                    const awalPenilaian =
+                      formValues[activePesertaIndex]?.awal_penilaian ||
+                      akhirPenilaian;
 
                     // Calculate durasi_penilaian in minutes and round
-                    const durasiPenilaianMinutes = formValues[activePesertaIndex]?.durasi_penilaian ? formValues[activePesertaIndex]?.durasi_penilaian : Math.round((akhirPenilaian - awalPenilaian) / 60000);
+                    const durasiPenilaianMinutes = formValues[
+                      activePesertaIndex
+                    ]?.durasi_penilaian
+                      ? formValues[activePesertaIndex]?.durasi_penilaian
+                      : Math.round((akhirPenilaian - awalPenilaian) / 60000);
 
                     // Update the active form values with `akhir_penilaian` and `durasi_penilaian`
                     const updatedFormValues = {
@@ -180,7 +213,9 @@ export default function PenilaianAkademikKertosonoPage() {
 
                     setFormValues((prevValues) => {
                       const newValues = [...prevValues];
+
                       newValues[activePesertaIndex] = updatedFormValues;
+
                       return newValues;
                     });
 
@@ -188,13 +223,23 @@ export default function PenilaianAkademikKertosonoPage() {
                     const storedForm = await storeAkademikKertosono(
                       updatedFormValues.tes_santri_id,
                       updatedFormValues.penilaian,
-                      updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_tajwid,
-                      updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_khusus,
-                      updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_keserasian,
-                      updatedFormValues.penilaian == "Lulus" ? null : updatedFormValues.kekurangan_kelancaran,
+                      updatedFormValues.penilaian == "Lulus"
+                        ? null
+                        : updatedFormValues.kekurangan_tajwid,
+                      updatedFormValues.penilaian == "Lulus"
+                        ? null
+                        : updatedFormValues.kekurangan_khusus,
+                      updatedFormValues.penilaian == "Lulus"
+                        ? null
+                        : updatedFormValues.kekurangan_keserasian,
+                      updatedFormValues.penilaian == "Lulus"
+                        ? null
+                        : updatedFormValues.kekurangan_kelancaran,
                       updatedFormValues.catatan,
-                      updatedFormValues.rekomendasi_penarikan == "Tidak Lulus" ? null : updatedFormValues.rekomendasi_penarikan,
-                      updatedFormValues.durasi_penilaian
+                      updatedFormValues.rekomendasi_penarikan == "Tidak Lulus"
+                        ? null
+                        : updatedFormValues.rekomendasi_penarikan,
+                      updatedFormValues.durasi_penilaian,
                     );
 
                     addToast({
@@ -208,7 +253,7 @@ export default function PenilaianAkademikKertosonoPage() {
 
                     console.log("Form stored successfully:", storedForm);
                     handleRemovePeserta(activePesertaIndex);
-                    window.scrollTo(0, 0)
+                    window.scrollTo(0, 0);
                   } catch (error) {
                     if (error instanceof Error) {
                       addToast({
@@ -224,36 +269,41 @@ export default function PenilaianAkademikKertosonoPage() {
                   setLoading(false);
                 }}
               >
-                {({
-                  values,
-                  handleSubmit,
-                  setFieldValue,
-                  errors,
-                  touched,
-                }) => (
-                  <Card  
+                {({ values, handleSubmit, setFieldValue, errors, touched }) => (
+                  <Card
                     fullWidth
-                    className={cn(`border-small dark:border-small border-default-100`)}
+                    className={cn(
+                      `border-small dark:border-small border-default-100`,
+                    )}
                   >
                     <CardBody className="overflow-hidden">
                       <div className="flex flex-col gap-6 p-2">
-                        {values.awal_penilaian ? <Timer datetimeOrMinutes={values.awal_penilaian} className="absolute top-2 right-2" /> : null}
-                        <RadioGroup 
+                        {values.awal_penilaian ? (
+                          <Timer
+                            className="absolute top-2 right-2"
+                            datetimeOrMinutes={values.awal_penilaian}
+                          />
+                        ) : null}
+                        <RadioGroup
                           isRequired
+                          classNames={{
+                            wrapper: "w-full flex flex-row gap-6 mt-2 mb-3",
+                          }}
+                          errorMessage={errors.penilaian}
                           isDisabled={loading}
                           isInvalid={!!errors.penilaian}
-                          errorMessage={errors.penilaian}
-                          classNames={{wrapper:"w-full flex flex-row gap-6 mt-2 mb-3"}} 
-                          label="Nilai Bacaan" 
+                          label="Nilai Bacaan"
                           value={values.penilaian}
                           onValueChange={(value) => {
                             setFieldValue("penilaian", value);
                             setFormValues((prevValues) => {
                               const updatedValues = [...prevValues];
+
                               updatedValues[activePesertaIndex] = {
                                 ...updatedValues[activePesertaIndex],
                                 penilaian: value,
                               };
+
                               return updatedValues;
                             });
                           }}
@@ -265,22 +315,23 @@ export default function PenilaianAkademikKertosonoPage() {
                             Tidak Lulus
                           </CustomRadio>
                         </RadioGroup>
-                        {
-                          values.penilaian === "Tidak Lulus" &&
+                        {values.penilaian === "Tidak Lulus" && (
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <CheckboxGroup
-                              isDisabled={loading}
-                              label="Kekurangan Tajwid" 
                               color="danger"
+                              isDisabled={loading}
+                              label="Kekurangan Tajwid"
                               value={values.kekurangan_tajwid}
                               onValueChange={(value) => {
                                 setFieldValue("kekurangan_tajwid", value);
                                 setFormValues((prevValues) => {
                                   const updatedValues = [...prevValues];
+
                                   updatedValues[activePesertaIndex] = {
                                     ...updatedValues[activePesertaIndex],
                                     kekurangan_tajwid: value,
                                   };
+
                                   return updatedValues;
                                 });
                               }}
@@ -288,63 +339,79 @@ export default function PenilaianAkademikKertosonoPage() {
                               <Checkbox value="Dengung">Dengung</Checkbox>
                               <Checkbox value="Mad">Mad</Checkbox>
                               <Checkbox value="Makhraj">Makhraj</Checkbox>
-                              <Checkbox value="Tafkhim-Tarqiq">Tafkhim-Tarqiq</Checkbox>
+                              <Checkbox value="Tafkhim-Tarqiq">
+                                Tafkhim-Tarqiq
+                              </Checkbox>
                             </CheckboxGroup>
-                            <CheckboxGroup 
-                              isDisabled={loading}
-                              label="Kekurangan Khusus" 
+                            <CheckboxGroup
                               color="danger"
+                              isDisabled={loading}
+                              label="Kekurangan Khusus"
                               value={values.kekurangan_khusus}
                               onValueChange={(value) => {
                                 setFieldValue("kekurangan_khusus", value);
                                 setFormValues((prevValues) => {
                                   const updatedValues = [...prevValues];
+
                                   updatedValues[activePesertaIndex] = {
                                     ...updatedValues[activePesertaIndex],
                                     kekurangan_khusus: value,
                                   };
+
                                   return updatedValues;
                                 });
                               }}
                             >
                               <Checkbox value="Harakat">Harakat</Checkbox>
                               <Checkbox value="Lafadz">Lafadz</Checkbox>
-                              <Checkbox value="Lam Jalalah">Lam Jalalah</Checkbox>
+                              <Checkbox value="Lam Jalalah">
+                                Lam Jalalah
+                              </Checkbox>
                             </CheckboxGroup>
-                            <CheckboxGroup 
-                              isDisabled={loading}
-                              label="Kekurangan Keserasian" 
+                            <CheckboxGroup
                               color="danger"
+                              isDisabled={loading}
+                              label="Kekurangan Keserasian"
                               value={values.kekurangan_keserasian}
                               onValueChange={(value) => {
                                 setFieldValue("kekurangan_keserasian", value);
                                 setFormValues((prevValues) => {
                                   const updatedValues = [...prevValues];
+
                                   updatedValues[activePesertaIndex] = {
                                     ...updatedValues[activePesertaIndex],
                                     kekurangan_keserasian: value,
                                   };
+
                                   return updatedValues;
                                 });
                               }}
                             >
-                              <Checkbox value="Panjang Pendek">Panjang Pendek</Checkbox>
-                              <Checkbox value="Ikhtilash Huruf Sukun">Ikhtilash Huruf Sukun</Checkbox>
-                              <Checkbox value="Ikhtilash Huruf Syiddah">Ikhtilash Huruf Syiddah</Checkbox>
+                              <Checkbox value="Panjang Pendek">
+                                Panjang Pendek
+                              </Checkbox>
+                              <Checkbox value="Ikhtilash Huruf Sukun">
+                                Ikhtilash Huruf Sukun
+                              </Checkbox>
+                              <Checkbox value="Ikhtilash Huruf Syiddah">
+                                Ikhtilash Huruf Syiddah
+                              </Checkbox>
                             </CheckboxGroup>
-                            <CheckboxGroup 
-                              isDisabled={loading}
-                              label="Kekurangan Kelancaran" 
+                            <CheckboxGroup
                               color="danger"
+                              isDisabled={loading}
+                              label="Kekurangan Kelancaran"
                               value={values.kekurangan_kelancaran}
                               onValueChange={(value) => {
                                 setFieldValue("kekurangan_kelancaran", value);
                                 setFormValues((prevValues) => {
                                   const updatedValues = [...prevValues];
+
                                   updatedValues[activePesertaIndex] = {
                                     ...updatedValues[activePesertaIndex],
                                     kekurangan_kelancaran: value,
                                   };
+
                                   return updatedValues;
                                 });
                               }}
@@ -353,36 +420,39 @@ export default function PenilaianAkademikKertosonoPage() {
                               <Checkbox value="Ketartilan">Ketartilan</Checkbox>
                             </CheckboxGroup>
                           </div>
-                        }
+                        )}
                         {errors.kekurangan && (
-                          <p className="text-danger-500 text-medium items-start">{errors.kekurangan}</p>
+                          <p className="text-danger-500 text-medium items-start">
+                            {errors.kekurangan}
+                          </p>
                         )}
                       </div>
-                      {
-                        values.penilaian === "Lulus" && 
-                        <Checkbox 
-                          isDisabled={loading}
+                      {values.penilaian === "Lulus" && (
+                        <Checkbox
                           className="mt-2 mx-0.5"
+                          isDisabled={loading}
                           isSelected={values.rekomendasi_penarikan}
                           onValueChange={(value) => {
                             setFieldValue("catatan", value);
                             setFormValues((prevValues) => {
                               const updatedValues = [...prevValues];
+
                               updatedValues[activePesertaIndex] = {
                                 ...updatedValues[activePesertaIndex],
                                 rekomendasi_penarikan: value,
                               };
+
                               return updatedValues;
                             });
                           }}
                         >
                           Rekomendasi Penarikan
                         </Checkbox>
-                      }
+                      )}
                       <Textarea
-                        isDisabled={loading}
                         isMultiline
                         className="w-full mt-4 px-2"
+                        isDisabled={loading}
                         label="Catatan"
                         placeholder="Tuliskan catatan penilaian"
                         value={values.catatan}
@@ -390,19 +460,34 @@ export default function PenilaianAkademikKertosonoPage() {
                           setFieldValue("catatan", text);
                           setFormValues((prevValues) => {
                             const updatedValues = [...prevValues];
+
                             updatedValues[activePesertaIndex] = {
                               ...updatedValues[activePesertaIndex],
                               catatan: text,
                             };
+
                             return updatedValues;
                           });
                         }}
                       />
                       <div className="flex flex-row justify-end mt-6 gap-4 p-2">
-                        <Button disabled={loading} color="danger" variant="flat" onPress={() => handleRemovePeserta(activePesertaIndex)}>
+                        <Button
+                          color="danger"
+                          disabled={loading}
+                          variant="flat"
+                          onPress={() =>
+                            handleRemovePeserta(activePesertaIndex)
+                          }
+                        >
                           Batal
                         </Button>
-                        <Button isLoading={loading} disabled={loading} color="primary" variant="shadow" onPress={() => handleSubmit()}>
+                        <Button
+                          color="primary"
+                          disabled={loading}
+                          isLoading={loading}
+                          variant="shadow"
+                          onPress={() => handleSubmit()}
+                        >
                           Simpan
                         </Button>
                       </div>
@@ -410,18 +495,24 @@ export default function PenilaianAkademikKertosonoPage() {
                   </Card>
                 )}
               </Formik>
-
             </Tab>
             <Tab key="riwayat" title="Riwayat">
-              <Card  
+              <Card
                 fullWidth
-                className={cn(`border-small dark:border-small border-default-100`)}
+                className={cn(
+                  `border-small dark:border-small border-default-100`,
+                )}
               >
                 <CardBody className="overflow-hidden">
                   <div className="flex flex-col gap-4">
-                    {
-                      selectedPeserta[activePesertaIndex].akademik.map((akademik) => <RiwayatAkademikKertosonoCard key={akademik.id} akademik={akademik}/>)
-                    }
+                    {selectedPeserta[activePesertaIndex].akademik.map(
+                      (akademik) => (
+                        <RiwayatAkademikKertosonoCard
+                          key={akademik.id}
+                          akademik={akademik}
+                        />
+                      ),
+                    )}
                   </div>
                 </CardBody>
               </Card>

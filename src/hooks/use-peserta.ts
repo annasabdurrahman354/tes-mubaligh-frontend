@@ -1,13 +1,21 @@
 import { useAtom } from "jotai";
-import { PesertaKertosono } from "@/types/kertosono";
-import { activePesertaIndexAtom, formValuesAtom, pesertaAtom, selectedPesertaAtom } from "@/atoms/pesertaAtom";
-import { PesertaKediri } from "@/types/kediri";
 import { useEffect } from "react";
+
+import { PesertaKertosono } from "@/types/kertosono";
+import {
+  activePesertaIndexAtom,
+  formValuesAtom,
+  pesertaAtom,
+  selectedPesertaAtom,
+} from "@/atoms/pesertaAtom";
+import { PesertaKediri } from "@/types/kediri";
 
 export const usePeserta = () => {
   const [peserta, setPeserta] = useAtom(pesertaAtom);
   const [selectedPeserta, setSelectedPeserta] = useAtom(selectedPesertaAtom);
-  const [activePesertaIndex, setActivePesertaIndex] = useAtom(activePesertaIndexAtom);
+  const [activePesertaIndex, setActivePesertaIndex] = useAtom(
+    activePesertaIndexAtom,
+  );
   const [formValues, setFormValues] = useAtom(formValuesAtom);
 
   const toggleSelectedPeserta = (peserta: PesertaKediri | PesertaKertosono) => {
@@ -15,6 +23,7 @@ export const usePeserta = () => {
       if (!prevSelected) return [peserta];
 
       const exists = prevSelected.some((item: any) => item.id === peserta.id);
+
       return exists
         ? prevSelected.filter((item: any) => item.id !== peserta.id)
         : [...prevSelected, peserta];
@@ -27,19 +36,20 @@ export const usePeserta = () => {
 
   const addSelectedPeserta = (peserta: PesertaKediri | PesertaKertosono) => {
     setSelectedPeserta((prevSelected: any) => {
-        // If the array is null, initialize it as an empty array
-        if (!prevSelected) {
-            return [peserta];
-        }
+      // If the array is null, initialize it as an empty array
+      if (!prevSelected) {
+        return [peserta];
+      }
 
-        // Check if the peserta is already in the list (you can define your own condition)
-        const exists = prevSelected.some((item: any) => item.id === peserta.id);
-        if (exists) {
-            return prevSelected;
-        }
+      // Check if the peserta is already in the list (you can define your own condition)
+      const exists = prevSelected.some((item: any) => item.id === peserta.id);
 
-        // Add the new peserta to the list if not already present
-        return [...prevSelected, peserta];
+      if (exists) {
+        return prevSelected;
+      }
+
+      // Add the new peserta to the list if not already present
+      return [...prevSelected, peserta];
     });
   };
 
@@ -61,6 +71,20 @@ export const usePeserta = () => {
     }
   }, [selectedPeserta, activePesertaIndex, setActivePesertaIndex]);
 
-
-  return {peserta, setPeserta, selectedPeserta, setSelectedPeserta, activePesertaIndex, setActivePesertaIndex, formValues, setFormValues, toggleSelectedPeserta, addSelectedPeserta, isSelectedPeserta, clearSelectedPeserta, clearPeserta, clearForm};
+  return {
+    peserta,
+    setPeserta,
+    selectedPeserta,
+    setSelectedPeserta,
+    activePesertaIndex,
+    setActivePesertaIndex,
+    formValues,
+    setFormValues,
+    toggleSelectedPeserta,
+    addSelectedPeserta,
+    isSelectedPeserta,
+    clearSelectedPeserta,
+    clearPeserta,
+    clearForm,
+  };
 };

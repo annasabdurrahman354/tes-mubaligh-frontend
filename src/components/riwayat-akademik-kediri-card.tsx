@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Card, CardBody, Divider, cn, Avatar, Chip } from "@heroui/react";
-import {  } from "@/types/kertosono";
+
+import {} from "@/types/kertosono";
 import { AkademikKediri } from "@/types/kediri";
 
 type RiwayatAkademikKediriCardProps = {
@@ -12,9 +13,9 @@ const RiwayatAkademikKediriCard: React.FC<RiwayatAkademikKediriCardProps> = ({
 }) => {
   return (
     <motion.div
-      initial={{ scale: 0.7, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.7, opacity: 0 }}
+      initial={{ scale: 0.7, opacity: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }} // Custom cubic bezier for smooth motion
     >
       <Card
@@ -24,10 +25,17 @@ const RiwayatAkademikKediriCard: React.FC<RiwayatAkademikKediriCardProps> = ({
         <CardBody className="flex flex-row items-center justify-center gap-2">
           <div className="flex flex-col flex-1 rounded-lg p-2 gap-2">
             <div className="flex flex-row items-center">
-              <Avatar className="mr-4" size="sm" color="primary" src={akademik.guru_foto} />
+              <Avatar
+                className="mr-4"
+                color="primary"
+                size="sm"
+                src={akademik.guru_foto}
+              />
               <div>
                 <div className="flex flex-col items-start gap-1">
-                  <h3 className="text-small font-semibold">{akademik.guru_nama}</h3>
+                  <h3 className="text-small font-semibold">
+                    {akademik.guru_nama}
+                  </h3>
                   <p className="mb-2 text-xs text-default-500">
                     {akademik.created_at}
                   </p>

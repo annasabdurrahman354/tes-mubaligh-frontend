@@ -44,11 +44,11 @@ const SimpleStat = React.forwardRef<HTMLDivElement, ActionCardProps>(
             icon: "text-secondary",
           };
         case "success":
-            return {
-              card: isPressable ? "border-success-100" : "border-transparent",
-              iconWrapper: "bg-success-50 border-success-100",
-              icon: "text-success",
-            };
+          return {
+            card: isPressable ? "border-success-100" : "border-transparent",
+            iconWrapper: "bg-success-50 border-success-100",
+            icon: "text-success",
+          };
         case "warning":
           return {
             card: isPressable ? "border-warning-100" : "border-transparent",

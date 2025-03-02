@@ -3,7 +3,7 @@ export type StatistikTes = {
   overall: StatistikPeserta | null;
   by_gender: Record<string, StatistikPeserta>;
 };
-  
+
 export type StatistikPeserta = {
   total_active_peserta: number | null;
   min_akademik_per_peserta: number | null;
@@ -18,4 +18,3 @@ export type StatistikPeserta = {
     belum_pengetesan: number | null;
   };
 };
-  

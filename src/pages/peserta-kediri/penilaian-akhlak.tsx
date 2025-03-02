@@ -1,3 +1,19 @@
+import {
+  addToast,
+  Button,
+  Card,
+  CardBody,
+  cn,
+  Input,
+  Tab,
+  Tabs,
+  Textarea,
+} from "@heroui/react";
+import { Formik } from "formik";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+
 import ActionPesertaTopbar from "@/components/action-peserta-topbar";
 import EmptyState from "@/components/empty-state";
 import PesertaProfileCard from "@/components/peserta-profile-card";
@@ -5,42 +21,42 @@ import PesertaRFIDScanner from "@/components/peserta-rfid-scanner";
 import RiwayatAkhlakKediriCard from "@/components/riwayat-akhlak-kediri-card";
 import { useKediri } from "@/hooks/use-kediri";
 import { usePeserta } from "@/hooks/use-peserta";
-import { addToast, Button, Card, CardBody, cn, Input, Tab, Tabs, Textarea } from "@heroui/react";
-import { Formik } from "formik";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import * as Yup from "yup";
 
 const validationSchema = Yup.object().shape({
-  poin: Yup.string().required("Poin akhlak harus diisi.").max(100, "Poin tidak boleh lebih dari 100.").min(0, "Poin tidak boleh kurang dari 0."),
+  poin: Yup.string()
+    .required("Poin akhlak harus diisi.")
+    .max(100, "Poin tidak boleh lebih dari 100.")
+    .min(0, "Poin tidak boleh kurang dari 0."),
   catatan: Yup.string().required("Catatan akhlak harus diisi."),
-})
+});
 
 export default function PenilaianAkhlakKediriPage() {
-  const {storeAkhlakKediri} = useKediri();
-  const {selectedPeserta, toggleSelectedPeserta, activePesertaIndex, setActivePesertaIndex, formValues, setFormValues} = usePeserta();
-  const navigate = useNavigate()
+  const { storeAkhlakKediri } = useKediri();
+  const {
+    selectedPeserta,
+    toggleSelectedPeserta,
+    activePesertaIndex,
+    setActivePesertaIndex,
+    formValues,
+    setFormValues,
+  } = usePeserta();
+  const navigate = useNavigate();
   const [tab, setTab] = useState("penilaian");
   const [loading, setLoading] = useState(false);
 
   // Redirect immediately if selectedPeserta is empty or null
   useEffect(() => {
     if (!selectedPeserta || selectedPeserta.length === 0) {
-        navigate('/peserta-kediri?action=penilaian-akhlak', { replace: true });
+      navigate("/peserta-kediri?action=penilaian-akhlak", { replace: true });
     }
   }, [selectedPeserta, navigate]);
-
-  // Don't render anything if redirecting
-  if (!selectedPeserta || selectedPeserta.length === 0) {
-    return null; 
-  }
 
   useEffect(() => {
     const updatedFormValues = selectedPeserta.map((peserta) => {
       const existingForm = formValues.find(
-          (form) => form.tes_santri_id === peserta.id
+        (form) => form.tes_santri_id === peserta.id,
       );
-      
+
       return (
         existingForm || {
           tes_santri_id: peserta.id,
@@ -53,24 +69,30 @@ export default function PenilaianAkhlakKediriPage() {
     setFormValues(updatedFormValues);
   }, [selectedPeserta]);
 
+  // Don't render anything if redirecting
+  if (!selectedPeserta || selectedPeserta.length === 0) {
+    return null;
+  }
+
   const handleRemovePeserta = (indexToRemove) => {
     // Save a reference to the peserta to remove
     const pesertaToRemove = selectedPeserta[indexToRemove];
-    
+
     // Check if this is the last peserta
     if (selectedPeserta.length === 1) {
       // First toggle the selection to empty the array
       toggleSelectedPeserta(pesertaToRemove);
       // Then navigate - this ensures the array is updated before navigation
-      navigate('/peserta-kediri?action=penilaian-akhlak', { replace: true });
+      navigate("/peserta-kediri?action=penilaian-akhlak", { replace: true });
+
       return; // Important: Return immediately to prevent further processing
-    } 
-    
+    }
+
     // Handle non-last item cases
     if (activePesertaIndex === selectedPeserta.length - 1) {
       setActivePesertaIndex(activePesertaIndex - 1);
     }
-    
+
     // Remove the peserta
     toggleSelectedPeserta(pesertaToRemove);
   };
@@ -84,17 +106,17 @@ export default function PenilaianAkhlakKediriPage() {
           <Tabs
             fullWidth
             aria-label="Tabs form"
-            size="md"
             color="primary"
-            variant="bordered"
             selectedKey={tab}
+            size="md"
+            variant="bordered"
             onSelectionChange={setTab}
           >
             <Tab key="penilaian" title="Form Penilaian">
               <Formik
-                initialValues={ formValues[activePesertaIndex] || {}}
-                validationSchema={validationSchema}
                 enableReinitialize // Allows reinitialization when `initialValues` change
+                initialValues={formValues[activePesertaIndex] || {}}
+                validationSchema={validationSchema}
                 onSubmit={async (values) => {
                   try {
                     // Call the API to store the form data
@@ -104,7 +126,7 @@ export default function PenilaianAkhlakKediriPage() {
                     const storedForm = await storeAkhlakKediri(
                       formValueToStore.tes_santri_id,
                       formValueToStore.poin,
-                      formValueToStore.catatan
+                      formValueToStore.catatan,
                     );
 
                     addToast({
@@ -117,8 +139,8 @@ export default function PenilaianAkhlakKediriPage() {
                     });
 
                     console.log("Form stored successfully:", storedForm);
-                    handleRemovePeserta(activePesertaIndex)
-                    window.scrollTo(0, 0)
+                    handleRemovePeserta(activePesertaIndex);
+                    window.scrollTo(0, 0);
                   } catch (error) {
                     if (error instanceof Error) {
                       addToast({
@@ -134,64 +156,83 @@ export default function PenilaianAkhlakKediriPage() {
                   setLoading(false);
                 }}
               >
-                {({ handleSubmit,setFieldValue, touched, values, errors }) => (
-                  <Card  
+                {({ handleSubmit, setFieldValue, touched, values, errors }) => (
+                  <Card
                     fullWidth
-                    className={cn(`border-small dark:border-small border-default-100`)}
+                    className={cn(
+                      `border-small dark:border-small border-default-100`,
+                    )}
                   >
                     <CardBody className="overflow-hidden">
                       <div className="flex flex-col gap-6 p-2">
                         <Input
                           isRequired
                           className="w-full"
-                          label="Poin"
-                          type="number"
+                          errorMessage={errors.poin}
                           isDisabled={loading}
                           isInvalid={!!errors.poin}
-                          errorMessage={errors.poin}
+                          label="Poin"
+                          type="number"
                           value={values.poin}
                           onValueChange={(text) => {
                             setFieldValue("poin", text);
                             setFormValues((prevValues) => {
                               const updatedValues = [...prevValues];
+
                               updatedValues[activePesertaIndex] = {
                                 ...updatedValues[activePesertaIndex],
                                 poin: text,
                               };
+
                               return updatedValues;
                             });
                           }}
                         />
                         <Textarea
                           isClearable
-                          isRequired
                           isMultiline
+                          isRequired
                           className="w-full"
-                          label="Catatan Akhlak"
-                          placeholder="Tuliskan catatan akhlak"
+                          errorMessage={errors.catatan}
                           isDisabled={loading}
                           isInvalid={!!errors.catatan}
-                          errorMessage={errors.catatan}
+                          label="Catatan Akhlak"
+                          placeholder="Tuliskan catatan akhlak"
                           value={values.catatan}
                           onValueChange={(text) => {
                             setFieldValue("catatan", text);
                             setFormValues((prevValues) => {
                               const updatedValues = [...prevValues];
+
                               updatedValues[activePesertaIndex] = {
                                 ...updatedValues[activePesertaIndex],
                                 catatan: text,
                               };
+
                               return updatedValues;
                             });
                           }}
                         />
                       </div>
                       <div className="flex flex-row justify-end mt-6 gap-4 p-2">
-                        <Button disabled={loading} color="danger" variant="flat" onPress={() => handleRemovePeserta(activePesertaIndex)}>
-                            Batal
+                        <Button
+                          color="danger"
+                          disabled={loading}
+                          variant="flat"
+                          onPress={() =>
+                            handleRemovePeserta(activePesertaIndex)
+                          }
+                        >
+                          Batal
                         </Button>
-                        <Button isLoading={loading} disabled={loading} color="primary" variant="shadow" onPress={() => handleSubmit()}>
-                            Tambahkan
+                        <Button
+                          color="primary"
+                          disabled={loading}
+                          isLoading={loading}
+                          variant="shadow"
+                          onPress={() => handleSubmit()}
+                        >
+                          Tambahkan
                         </Button>
                       </div>
                     </CardBody>
@@ -200,23 +241,30 @@ export default function PenilaianAkhlakKediriPage() {
               </Formik>
             </Tab>
             <Tab key="riwayat" title="Riwayat">
-              <Card  
+              <Card
                 fullWidth
-                className={cn(`border-small dark:border-small border-default-100`)}
+                className={cn(
+                  `border-small dark:border-small border-default-100`,
+                )}
               >
                 <CardBody className="overflow-hidden">
                   <div className="flex flex-col gap-4">
-                    {
-                      selectedPeserta[activePesertaIndex].akhlak.map((akhlak) => <RiwayatAkhlakKediriCard key={akhlak.id} akhlak={akhlak}/>)
-                    }
-                    {
-                      selectedPeserta[activePesertaIndex].akhlak.length == 0 && <EmptyState/>
-                    }
+                    {selectedPeserta[activePesertaIndex].akhlak.map(
+                      (akhlak) => (
+                        <RiwayatAkhlakKediriCard
+                          key={akhlak.id}
+                          akhlak={akhlak}
+                        />
+                      ),
+                    )}
+                    {selectedPeserta[activePesertaIndex].akhlak.length == 0 && (
+                      <EmptyState />
+                    )}
                   </div>
                 </CardBody>
               </Card>
             </Tab>
-          </Tabs>    
+          </Tabs>
         </div>
       </main>
       <PesertaRFIDScanner />

@@ -12,7 +12,7 @@ export type User = {
   roles: string[];
   foto: string;
 };
-  
+
 export type Session = {
   token: string | null;
   user: User | null;

@@ -13,19 +13,21 @@ import {
 import { ChevronDown, SearchIcon, X } from "lucide-react";
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import BouncingChip from "./bouncing-chip";
-import { getFirstValidWord, PesertaKertosono } from "@/types/kertosono";
 import { AnimatePresence } from "framer-motion";
+
+import BouncingChip from "./bouncing-chip";
+
+import { getFirstValidWord, PesertaKertosono } from "@/types/kertosono";
 import { PesertaKediri } from "@/types/kediri";
 
 const genderOptions = [
-  { label: "Semua Gender", value: '' },
+  { label: "Semua Gender", value: "" },
   { label: "Laki-laki", value: "L" },
   { label: "Perempuan", value: "P" },
 ];
 
 const campOptions = [
-  { label: "Semua Camp", value: '' },
+  { label: "Semua Camp", value: "" },
   { label: "Camp A", value: "A" },
   { label: "Camp B", value: "B" },
   { label: "Camp C", value: "C" },
@@ -46,18 +48,18 @@ const campOptions = [
   { label: "Camp R", value: "R" },
   { label: "Camp S", value: "S" },
   { label: "Camp T", value: "T" },
-]
+];
 
 type DaftarPesertaTopbarProps = {
   selectedPeserta: PesertaKediri[] | PesertaKertosono[];
   toggleSelectedPeserta: (peserta: PesertaKediri | PesertaKertosono) => void;
-  setQuery: (query: any) => void
+  setQuery: (query: any) => void;
 };
 
 const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
   selectedPeserta,
   toggleSelectedPeserta,
-  setQuery
+  setQuery,
 }) => {
   const [mounted, setMounted] = useState(false);
   const [queryNama, setQueryNama] = useState("");
@@ -65,55 +67,61 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
   const [queryGender, setQueryGender] = useState("");
   const [queryKelompok, setQueryKelompok] = useState("");
   const location = useLocation();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const isTahapKediri = location.pathname.includes("kediri");
 
   const selectedGenderValue = React.useMemo(
-    () => genderOptions.find((opt) => opt.value === queryGender)?.label || "Semua Gender",
-    [queryGender]
+    () =>
+      genderOptions.find((opt) => opt.value === queryGender)?.label ||
+      "Semua Gender",
+    [queryGender],
   );
 
   const selectedKelompokValue = React.useMemo(
-    () => campOptions.find((opt) => opt.value === queryKelompok)?.label || "Semua Camp",
-    [queryKelompok]
+    () =>
+      campOptions.find((opt) => opt.value === queryKelompok)?.label ||
+      "Semua Camp",
+    [queryKelompok],
   );
 
   const handleGenderSelectionChange = (keys) => {
     const selectedValue = Array.from(keys)[0];
+
     setQueryGender(selectedValue);
-  
+
     setQuery((prevQuery: any) => {
       const newQuery = { ...prevQuery };
-      
+
       // If the value is empty, remove the filter
       if (selectedValue === "") {
         delete newQuery["filter[siswa.jenis_kelamin]"];
       } else {
         newQuery["filter[siswa.jenis_kelamin]"] = selectedValue;
       }
-      
+
       return newQuery;
     });
   };
-  
+
   const handleKelompokSelectionChange = (keys) => {
     const selectedValue = Array.from(keys)[0];
+
     setQueryKelompok(selectedValue);
-  
+
     setQuery((prevQuery: any) => {
       const newQuery = { ...prevQuery };
-      
+
       // If the value is empty, remove the filter
       if (selectedValue === "") {
         delete newQuery["filter[kelompok]"];
       } else {
         newQuery["filter[kelompok]"] = selectedValue;
       }
-      
+
       return newQuery;
     });
   };
-  
+
   const handleNamaChange = (value) => {
     setQueryNama(value);
   };
@@ -122,27 +130,27 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
     const handler = setTimeout(() => {
       setDebouncedQueryNama(queryNama);
     }, 300); // 300ms debounce time
-  
+
     return () => {
       clearTimeout(handler);
     };
   }, [queryNama]);
-  
+
   useEffect(() => {
     setQuery((prevQuery) => {
       const newQuery = { ...prevQuery };
-      
+
       // If the query is empty, remove the filter
       if (debouncedQueryNama === "") {
         delete newQuery["filter[namaOrCocard]"];
       } else {
         newQuery["filter[namaOrCocard]"] = debouncedQueryNama;
       }
-      
+
       return newQuery;
     });
   }, [debouncedQueryNama, setQuery]);
-  
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -150,12 +158,23 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
   if (!mounted) return null;
 
   return (
-    <Navbar as={"div"} isBordered maxWidth="full"  classNames={{
-      wrapper: "w-full min-h-min flex flex-col py-4",
-    }}>
+    <Navbar
+      isBordered
+      as={"div"}
+      classNames={{
+        wrapper: "w-full min-h-min flex flex-col py-4",
+      }}
+      maxWidth="full"
+    >
       <NavbarItem className="gap-4 flex flex-col md:flex-row w-full ">
         <div className="flex flex-grow gap-2">
-          <Button isIconOnly aria-label="Back" variant="light" className="flex-grow-0" onPress={() => navigate('/')}>
+          <Button
+            isIconOnly
+            aria-label="Back"
+            className="flex-grow-0"
+            variant="light"
+            onPress={() => navigate("/")}
+          >
             <X />
           </Button>
           <Input
@@ -177,7 +196,12 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
         <div className="flex gap-2 w-full md:w-min justify-center">
           <Dropdown>
             <DropdownTrigger>
-              <Button className="capitalize" color="primary" variant="solid" endContent={<ChevronDown className="h-4 w-4"/>}>
+              <Button
+                className="capitalize"
+                color="primary"
+                endContent={<ChevronDown className="h-4 w-4" />}
+                variant="solid"
+              >
                 {selectedGenderValue}
               </Button>
             </DropdownTrigger>
@@ -194,53 +218,66 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
               ))}
             </DropdownMenu>
           </Dropdown>
-          { isTahapKediri && 
-          <Dropdown>
-            <DropdownTrigger>
-              <Button className="capitalize" color="primary" variant="solid" endContent={<ChevronDown className="h-4 w-4"/>}>
-              {selectedKelompokValue}
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              disallowEmptySelection
-              aria-label="Select Camp"
-              selectedKeys={new Set([queryKelompok])}
-              selectionMode="single"
-              variant="bordered"
-              onSelectionChange={handleKelompokSelectionChange}
-              shouldBlockScroll={false}
-              className="max-h-[50vh] overflow-y-auto"
-            >
-              {campOptions.map((option) => (
-                <DropdownItem key={option.value}>{option.label}</DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-          }
+          {isTahapKediri && (
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  className="capitalize"
+                  color="primary"
+                  endContent={<ChevronDown className="h-4 w-4" />}
+                  variant="solid"
+                >
+                  {selectedKelompokValue}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Select Camp"
+                className="max-h-[50vh] overflow-y-auto"
+                selectedKeys={new Set([queryKelompok])}
+                selectionMode="single"
+                shouldBlockScroll={false}
+                variant="bordered"
+                onSelectionChange={handleKelompokSelectionChange}
+              >
+                {campOptions.map((option) => (
+                  <DropdownItem key={option.value}>{option.label}</DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+          )}
         </div>
       </NavbarItem>
-      {
-        selectedPeserta.length !== 0 && 
+      {selectedPeserta.length !== 0 && (
         <>
-        <Divider/>
-        <NavbarItem as="div" className="w-full flex flex-row justify-center items-center gap-3 flex-wrap">
-          <AnimatePresence mode="sync">
-          {selectedPeserta.map((peserta) => (
-            <BouncingChip 
-              key={peserta.id}
-              src={peserta.foto_smartcard} 
-              nama={peserta.nama_panggilan ? peserta.nama_panggilan : getFirstValidWord(peserta.nama_lengkap)} 
-              kelompok={peserta.kelompok} 
-              cocard={peserta.nomor_cocard} 
-              onClose={() => {toggleSelectedPeserta(peserta)}}
-            />
-          ))}
-          </AnimatePresence>        
-        </NavbarItem>
+          <Divider />
+          <NavbarItem
+            as="div"
+            className="w-full flex flex-row justify-center items-center gap-3 flex-wrap"
+          >
+            <AnimatePresence mode="sync">
+              {selectedPeserta.map((peserta) => (
+                <BouncingChip
+                  key={peserta.id}
+                  cocard={peserta.nomor_cocard}
+                  kelompok={peserta.kelompok}
+                  nama={
+                    peserta.nama_panggilan
+                      ? peserta.nama_panggilan
+                      : getFirstValidWord(peserta.nama_lengkap)
+                  }
+                  src={peserta.foto_smartcard}
+                  onClose={() => {
+                    toggleSelectedPeserta(peserta);
+                  }}
+                />
+              ))}
+            </AnimatePresence>
+          </NavbarItem>
         </>
-      }
+      )}
     </Navbar>
   );
-}
+};
 
 export default DaftarPesertaTopbar;

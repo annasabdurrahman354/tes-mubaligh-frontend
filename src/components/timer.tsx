@@ -9,7 +9,7 @@ interface TimerProps {
 export default function Timer({ datetimeOrMinutes, className }: TimerProps) {
   const [timeElapsed, setTimeElapsed] = React.useState({
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
 
   React.useEffect(() => {
@@ -27,6 +27,7 @@ export default function Timer({ datetimeOrMinutes, className }: TimerProps) {
       const difference = new Date().getTime() - startTime.getTime();
       const minutes = Math.floor((difference / 1000 / 60) % 60);
       const seconds = Math.floor((difference / 1000) % 60);
+
       setTimeElapsed({ minutes, seconds });
     };
 

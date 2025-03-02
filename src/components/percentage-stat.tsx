@@ -36,11 +36,13 @@ const PercentageStat = React.forwardRef<HTMLDivElement, PercentageStatProps>(
         ref={ref}
         className={cn(
           "border-small",
-          onClick != undefined ||isPressable != undefined  ? `border-${color}-100` : "border-transparent",
+          onClick != undefined || isPressable != undefined
+            ? `border-${color}-100`
+            : "border-transparent",
           className,
         )}
-        shadow="sm"
         isPressable={onClick != undefined}
+        shadow="sm"
         onPress={onClick}
         {...props}
       >
@@ -58,15 +60,14 @@ const PercentageStat = React.forwardRef<HTMLDivElement, PercentageStatProps>(
               {title}
             </div>
             <div className="flex items-center">
-              {value !== undefined && (
-                value !== null ? (
+              {value !== undefined &&
+                (value !== null ? (
                   <>
-                  <div className="md:pl-4 mr-2 text-xl font-semibold text-default-800">
-                    {value}
-                  </div>
-                  
-                  {
-                    change && 
+                    <div className="md:pl-4 mr-2 text-xl font-semibold text-default-800">
+                      {value}
+                    </div>
+
+                    {change && (
                       <Chip
                         classNames={{ content: "font-semibold text-[0.65rem]" }}
                         color={color}
@@ -76,19 +77,22 @@ const PercentageStat = React.forwardRef<HTMLDivElement, PercentageStatProps>(
                       >
                         {change}
                       </Chip>
-                  }
+                    )}
                   </>
-                  
                 ) : (
                   <Skeleton className="md:ml-4 mr-2 h-6 w-full rounded-lg" />
-                )
-              )}     
+                ))}
             </div>
           </div>
         </div>
-        
+
         <div className="bg-default-100 bottom-0 w-full">
-          <div className={cn(" w-full flex justify-start text-sm p-3 dark:text-default-foreground", `text-${color}`)}>
+          <div
+            className={cn(
+              " w-full flex justify-start text-sm p-3 dark:text-default-foreground",
+              `text-${color}`,
+            )}
+          >
             {onClick ? "Lihat ➜" : "‎ "}
           </div>
         </div>

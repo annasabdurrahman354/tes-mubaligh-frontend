@@ -1,21 +1,20 @@
 import { motion } from "framer-motion";
 import { Outlet, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 import { HomeBottombar } from "@/components/home-bottombar";
 import HomeTopbar from "@/components/home-topbar";
 import { usePeserta } from "@/hooks/use-peserta";
-import { useEffect } from "react";
 
 export const HomeLayout = () => {
   const { pathname } = useLocation();
-  const {clearPeserta, clearSelectedPeserta, clearForm} = usePeserta()
-  
+  const { clearPeserta, clearSelectedPeserta, clearForm } = usePeserta();
+
   useEffect(() => {
     clearPeserta();
     clearSelectedPeserta();
     clearForm();
   }, []);
-     
 
   return (
     <div className="min-h-screen bg-default-100 dark:bg-default-50/25 flex flex-col items-center justify-center relative font-inter">

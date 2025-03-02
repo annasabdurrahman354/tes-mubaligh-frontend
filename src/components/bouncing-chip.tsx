@@ -12,13 +12,13 @@ interface ChipProps {
   isVisible?: boolean;
 }
 
-const BouncingChip: React.FC<ChipProps> = ({ 
-  src, 
-  nama, 
+const BouncingChip: React.FC<ChipProps> = ({
+  src,
+  nama,
   kelompok,
-  cocard, 
+  cocard,
   onClose,
-  isVisible = true // Default to visible
+  isVisible = true, // Default to visible
 }) => {
   // Local state to handle visibility
   const [show, setShow] = useState(isVisible);
@@ -37,25 +37,28 @@ const BouncingChip: React.FC<ChipProps> = ({
     setShow(isVisible);
   }, [isVisible]);
 
-  return show && 
-    <motion.div
-      className="flex items-center"
-      initial={{ scale: 0.5, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1, y: [0, -5, 0] }}
-      whileTap={{ scale: 0.9 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
-      exit={{ scale: 0.5, opacity: 0, y: -5 }}
-    >
-      <Chip
-        avatar={<Avatar name={nama} src={src} />}
-        size="lg"
-        color="primary"
-        variant="bordered"
-        onClose={handleClose}
+  return (
+    show && (
+      <motion.div
+        animate={{ scale: 1, opacity: 1, y: [0, -5, 0] }}
+        className="flex items-center"
+        exit={{ scale: 0.5, opacity: 0, y: -5 }}
+        initial={{ scale: 0.5, opacity: 0 }}
+        transition={{ duration: 0.5, ease: "easeInOut" }}
+        whileTap={{ scale: 0.9 }}
       >
-        {nama} {kelompok ? cocard ? `- ${kelompok+cocard}` : "" : ""}
-      </Chip>
-    </motion.div>
+        <Chip
+          avatar={<Avatar name={nama} src={src} />}
+          color="primary"
+          size="lg"
+          variant="bordered"
+          onClose={handleClose}
+        >
+          {nama} {kelompok ? (cocard ? `- ${kelompok + cocard}` : "") : ""}
+        </Chip>
+      </motion.div>
+    )
+  );
 };
 
 export default BouncingChip;

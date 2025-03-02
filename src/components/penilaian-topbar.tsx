@@ -41,8 +41,7 @@ const campOptions = [
   { label: "Camp R", value: "R" },
   { label: "Camp S", value: "S" },
   { label: "Camp T", value: "T" },
-]
-
+];
 
 export default function DaftarPesertaTopbar() {
   const [mounted, setMounted] = useState(false);
@@ -53,13 +52,17 @@ export default function DaftarPesertaTopbar() {
   const isPesertaKediri = location.pathname === "/peserta-kediri";
 
   const selectedGenderValue = React.useMemo(
-    () => genderOptions.find((opt) => opt.value === Array.from(selectedGender)[0])?.label || "-",
-    [selectedGender]
+    () =>
+      genderOptions.find((opt) => opt.value === Array.from(selectedGender)[0])
+        ?.label || "-",
+    [selectedGender],
   );
 
   const selectedCampValue = React.useMemo(
-    () => campOptions.find((opt) => opt.value === Array.from(selectedCamp)[0])?.label || "-",
-    [selectedCamp]
+    () =>
+      campOptions.find((opt) => opt.value === Array.from(selectedCamp)[0])
+        ?.label || "-",
+    [selectedCamp],
   );
 
   useEffect(() => {
@@ -69,11 +72,21 @@ export default function DaftarPesertaTopbar() {
   if (!mounted) return null;
 
   return (
-    <Navbar as={"div"} isBordered maxWidth="full"  classNames={{
-      wrapper: "w-full min-h-min flex flex-col py-4 md:flex-row md:py-0",
-    }}>
+    <Navbar
+      isBordered
+      as={"div"}
+      classNames={{
+        wrapper: "w-full min-h-min flex flex-col py-4 md:flex-row md:py-0",
+      }}
+      maxWidth="full"
+    >
       <NavbarItem className="flex-grow w-full flex gap-4">
-        <Button isIconOnly aria-label="Back" variant="light" className="flex-grow-0">
+        <Button
+          isIconOnly
+          aria-label="Back"
+          className="flex-grow-0"
+          variant="light"
+        >
           <ArrowLeft />
         </Button>
         <Input
@@ -93,7 +106,12 @@ export default function DaftarPesertaTopbar() {
       <NavbarItem as="div" className="flex gap-2 md:w-min">
         <Dropdown>
           <DropdownTrigger>
-            <Button className="capitalize" color="primary" variant="flat" endContent={<ChevronDown className="h-4 w-4"/>}>
+            <Button
+              className="capitalize"
+              color="primary"
+              endContent={<ChevronDown className="h-4 w-4" />}
+              variant="flat"
+            >
               {selectedGenderValue}
             </Button>
           </DropdownTrigger>
@@ -110,29 +128,34 @@ export default function DaftarPesertaTopbar() {
             ))}
           </DropdownMenu>
         </Dropdown>
-        { isPesertaKediri && 
-        <Dropdown>
-          <DropdownTrigger>
-            <Button className="capitalize" color="primary" variant="flat" endContent={<ChevronDown className="h-4 w-4"/>}>
-            {selectedCampValue}
-            </Button>
-          </DropdownTrigger>
-          <DropdownMenu
-            disallowEmptySelection
-            aria-label="Select Camp"
-            selectedKeys={selectedCamp}
-            selectionMode="single"
-            variant="bordered"
-            onSelectionChange={setSelectedCamp}
-            shouldBlockScroll={false}
-            className="max-h-[50vh] overflow-y-auto"
-          >
-            {campOptions.map((option) => (
-              <DropdownItem key={option.value}>{option.label}</DropdownItem>
-            ))}
-          </DropdownMenu>
-        </Dropdown>
-        }
+        {isPesertaKediri && (
+          <Dropdown>
+            <DropdownTrigger>
+              <Button
+                className="capitalize"
+                color="primary"
+                endContent={<ChevronDown className="h-4 w-4" />}
+                variant="flat"
+              >
+                {selectedCampValue}
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              disallowEmptySelection
+              aria-label="Select Camp"
+              className="max-h-[50vh] overflow-y-auto"
+              selectedKeys={selectedCamp}
+              selectionMode="single"
+              shouldBlockScroll={false}
+              variant="bordered"
+              onSelectionChange={setSelectedCamp}
+            >
+              {campOptions.map((option) => (
+                <DropdownItem key={option.value}>{option.label}</DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
+        )}
       </NavbarItem>
     </Navbar>
   );

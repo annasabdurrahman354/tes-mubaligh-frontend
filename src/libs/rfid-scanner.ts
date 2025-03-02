@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useState, useRef } from 'react';
+import { useEffect, useCallback, useState, useRef } from "react";
 
 interface RFIDConfig {
   length?: number;
@@ -13,18 +13,18 @@ interface UseRFIDScanner {
 
 export const useRFIDScanner = (
   onScan: (code: string) => void,
-  config: RFIDConfig = {}
+  config: RFIDConfig = {},
 ): UseRFIDScanner => {
   const { length = 10, timeout = 200 } = config;
-  
-  const [code, setCode] = useState<string>('');
+
+  const [code, setCode] = useState<string>("");
   const [isReading, setIsReading] = useState<boolean>(false);
-  const codeRef = useRef<string>('');
+  const codeRef = useRef<string>("");
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   const reset = useCallback(() => {
-    setCode('');
-    codeRef.current = '';
+    setCode("");
+    codeRef.current = "";
     setIsReading(false);
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -39,7 +39,7 @@ export const useRFIDScanner = (
         reset();
       }
 
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         if (codeRef.current.length === length) {
           onScan(codeRef.current);
           setIsReading(true);
@@ -52,6 +52,7 @@ export const useRFIDScanner = (
         }
       } else if (/^\d$/.test(e.key)) {
         const newCode = codeRef.current + e.key;
+
         // Only update if we haven't reached the maximum length
         if (newCode.length <= length) {
           codeRef.current = newCode;
@@ -62,10 +63,10 @@ export const useRFIDScanner = (
       }
     };
 
-    document.addEventListener('keypress', handleKeyPress);
+    document.addEventListener("keypress", handleKeyPress);
 
     return () => {
-      document.removeEventListener('keypress', handleKeyPress);
+      document.removeEventListener("keypress", handleKeyPress);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }

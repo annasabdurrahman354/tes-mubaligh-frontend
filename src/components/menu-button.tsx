@@ -67,9 +67,9 @@ const MenutButton = React.forwardRef<HTMLDivElement, ActionCardProps>(
         ref={ref}
         className={cn("border-small w-full", colors?.card, className)}
         isPressable={isPressable}
+        radius="sm"
         shadow="sm"
         onPress={onClick}
-        radius="sm"
         {...props}
       >
         <CardBody className="flex h-full flex-row items-center justify-between gap-3 p-4 w-full">
@@ -83,10 +83,17 @@ const MenutButton = React.forwardRef<HTMLDivElement, ActionCardProps>(
               <Icon className={cn(colors?.icon, "h-6 w-6")} />
             </div>
             <div className="flex flex-col">
-              <p className={cn("text-medium dark:text-default-foreground", `text-${color}`)}>{title}</p>
+              <p
+                className={cn(
+                  "text-medium dark:text-default-foreground",
+                  `text-${color}`,
+                )}
+              >
+                {title}
+              </p>
             </div>
           </div>
-          <ChevronRight className={cn("h-5 w-5", `text-${color}`)}/>
+          <ChevronRight className={cn("h-5 w-5", `text-${color}`)} />
         </CardBody>
       </Card>
     );
