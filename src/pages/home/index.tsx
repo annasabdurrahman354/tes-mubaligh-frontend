@@ -1,0 +1,260 @@
+import { Card, CardBody, Divider, Tabs, Tab, cn, Button } from "@heroui/react";
+import {
+  Users,
+  BookCheckIcon,
+  ArrowBigUpDash,
+  ArrowBigDownDash,
+  CalendarClock,
+  BookOpenText,
+  HeartHandshake,
+  LogOut,
+  Moon,
+  Sun,
+} from "lucide-react";
+import PercentageStat from "@/components/percentage-stat";
+import MenutButton from "@/components/menu-button";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "@/hooks/use-theme";
+import { useAuth } from "@/hooks/use-auth";
+import { ROLE } from "@/types/enum";
+import { useStatistik } from "@/hooks/use-statistik";
+import { useEffect, useState } from "react";
+
+export default function IndexPage() {
+  const [ tab, setTab ] = useState("kediri");
+  const { theme, setDarkTheme, setLightTheme } = useTheme();
+  const { logout, hasRole} = useAuth()
+  const { getStatistikKediri, getStatistikKertosono, statistikKediri, statistikKertosono } = useStatistik()
+  const navigate = useNavigate();
+
+  const fetchStatistik = async () => {    
+    try {
+      if (hasRole(ROLE.GURU_KERTOSONO) || hasRole(ROLE.ADMIN_KERTOSONO) || hasRole(ROLE.SUPERADMIN)) {
+        await getStatistikKertosono();
+      }
+      if (hasRole(ROLE.GURU_KEDIRI) || hasRole(ROLE.ADMIN_KEDIRI) || hasRole(ROLE.SUPERADMIN)) {
+        await getStatistikKediri();
+      }
+    } catch (error) {
+      // Handle error
+    }
+  };
+
+  useEffect(() => {
+    fetchStatistik();
+    if(!hasRole(ROLE.GURU_KEDIRI) && !hasRole(ROLE.SUPERADMIN)){
+      setTab('kertosono')
+    }
+  }, []); // Empty dependency array
+
+  return (
+    <div>
+      <section className="flex flex-col items-center justify-center">
+        <Card
+          className={cn("border-small w-full", "border-transparent")}
+          isPressable={false}
+          shadow="sm"
+        >
+          <CardBody className="flex h-full flex-row items-start gap-3 p-4 w-full">
+            <div
+              className={cn(
+                "item-center flex rounded-medium border p-2 bg-primary-50 border-primary-100",
+              )}
+            >
+              <CalendarClock className={cn("text-primary h-6 w-6")} />
+            </div>
+            <div className="flex flex-col flex-grow w-full flex-nowrap">
+              <p className="text-medium">Periode Tes</p>
+              <p className="text-small text-default-500">
+                {statistikKediri.periode_tes ?? statistikKertosono.periode_tes ?? "Loading..."}
+              </p>
+            </div>
+            <div className="flex flex-row gap-2 items-center justify-center align-middle flex-wrap sm:flex-nowrap">
+              <Button
+                color={theme === "light" ? "primary" : "default"}
+                startContent={theme === "light" ? <Sun size={16} /> : <Moon size={16} /> }
+                variant={theme === "light" ? "solid" : "bordered"}
+                onPress={() => theme === "light" ? setDarkTheme() : setLightTheme()}
+              >
+                {theme === "light" ? "Terang" : "Gelap"}
+              </Button>
+
+              <Button 
+                color="danger" 
+                variant="flat" 
+                startContent={<LogOut size={16} />} 
+                onPress={logout}
+              >
+                Keluar
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      </section>
+      <section className="flex flex-col justify-start">
+        <Tabs aria-label="Options" className="mt-4" selectedKey={tab} onSelectionChange={setTab}>
+        {(hasRole(ROLE.GURU_KEDIRI) || hasRole(ROLE.ADMIN_KEDIRI) || hasRole(ROLE.SUPERADMIN)) &&
+          <Tab key="kediri" title="Pengetesan Kediri">
+            <Card shadow="none" className="border-small border-default-200 dark:border-default-100">
+              <CardBody>
+                <div className="flex flex-col w-full justify-stretch">
+                  <dl className="grid w-full grid-cols-2 gap-5 lg:grid-cols-4 p-1">
+                    <PercentageStat
+                      color="primary"
+                      icon={Users}
+                      title="Santri Aktif"
+                      value={statistikKediri.overall?.total_active_peserta}
+                      isPressable={true}
+                      onClick={() => hasRole(ROLE.GURU_KERTOSONO) ||  hasRole(ROLE.SUPERADMIN) ? navigate('/peserta-kediri?action=penilaian-akademik') : navigate('/peserta-kediri?action=detail')}
+                    />
+                    <PercentageStat
+                      color="secondary"
+                      icon={BookCheckIcon}
+                      title="Anda Simak"
+                      value={statistikKediri.overall?.user_akademik_count}
+                      change={
+                        statistikKediri.overall?.total_active_peserta 
+                        ? Number(
+                            ((statistikKediri.overall?.user_akademik_count || 0) / 
+                            statistikKediri.overall?.total_active_peserta) * 100
+                          ).toFixed(2) + "%" 
+                        : null
+                      }
+                      onClick={() => hasRole(ROLE.GURU_KERTOSONO) || hasRole(ROLE.SUPERADMIN) ? navigate('/peserta-kediri?filter=anda-simak&action=penilaian-akademik') : navigate('/peserta-kediri?filter=anda-simak&action=detail')}
+                    />
+                    <PercentageStat
+                      color="success"
+                      icon={ArrowBigUpDash}
+                      title="Penyimakan Terbanyak"
+                      value={statistikKediri.overall?.max_akademik_per_peserta}
+                      change={statistikKediri.overall?.count_peserta_with_max_akademik + " Orang"}
+                      onClick={() => hasRole(ROLE.GURU_KERTOSONO) || hasRole(ROLE.SUPERADMIN) ? navigate('/peserta-kediri?filter=simak-terbanyak&action=penilaian-akademik') : navigate('/peserta-kediri?filter=simak-terbanyak&action=detail')}
+                    />
+                    <PercentageStat
+                      color="danger"
+                      icon={ArrowBigDownDash}
+                      title="Penyimakan Tersedikit"
+                      value={statistikKediri.overall?.min_akademik_per_peserta}
+                      change={statistikKediri.overall?.count_peserta_with_min_akademik + " Orang"}
+                      onClick={() => hasRole(ROLE.GURU_KERTOSONO) ||  hasRole(ROLE.SUPERADMIN) ? navigate('/peserta-kediri?filter=simak-tersedikit&action=penilaian-akademik') : navigate('/peserta-kediri?filter=simak-tersedikit&action=detail')}
+                    />
+                  </dl>
+                </div>
+              </CardBody>
+              <Divider />
+              <div className="flex flex-col p-4 gap-4">
+                <p className="text-medium">Menu Utama</p>
+                {(hasRole(ROLE.GURU_KEDIRI) || hasRole(ROLE.SUPERADMIN)) &&
+                  <>
+                    <MenutButton
+                      color="primary"
+                      icon={BookOpenText}
+                      isPressable={true}
+                      title="Nilai Penyampaian"
+                      onClick={() => navigate('/peserta-kediri?action=penilaian-akademik')}
+                    />
+                    <MenutButton
+                      color="primary"
+                      icon={HeartHandshake}
+                      isPressable={true}
+                      title="Nilai Akhlak"
+                      onClick={() => navigate('/peserta-kediri?action=penilaian-akhlak')}
+                    />
+                  </>
+                } 
+                <MenutButton
+                  color="primary"
+                  icon={Users}
+                  isPressable={true}
+                  title="Daftar Peserta"
+                  onClick={() => navigate('/peserta-kediri?action=detail')}
+                />
+              </div>
+            </Card>
+          </Tab>
+        }
+        {(hasRole(ROLE.GURU_KERTOSONO) || hasRole(ROLE.ADMIN_KERTOSONO) || hasRole(ROLE.SUPERADMIN)) &&
+          <Tab key="kertosono" title="Pengetesan Kertosono">
+            <Card shadow="none" className="border-small border-default-200 dark:border-default-100">
+              <CardBody>
+                <div className="flex flex-col w-full justify-stretch">
+                <dl className="grid w-full grid-cols-2 gap-5 lg:grid-cols-4 p-1">
+                  <PercentageStat
+                    color="primary"
+                    icon={Users}
+                    title="Santri Aktif"
+                    value={statistikKertosono.overall?.total_active_peserta}
+                    isPressable={true}
+                    onClick={() => hasRole(ROLE.GURU_KERTOSONO) ||  hasRole(ROLE.SUPERADMIN) ? navigate('/peserta-kertosono?action=penilaian-akademik') : navigate('/peserta-kertosono?action=detail')}
+                  />
+                  <PercentageStat
+                    color="secondary"
+                    icon={BookCheckIcon}
+                    title="Anda Simak"
+                    value={statistikKertosono.overall?.user_akademik_count}
+                    change={
+                      statistikKertosono.overall?.total_active_peserta 
+                      ? Number(
+                          ((statistikKertosono.overall?.user_akademik_count || 0) / 
+                          statistikKertosono.overall?.total_active_peserta) * 100
+                        ).toFixed(2) + "%" 
+                      : null
+                    }
+                    onClick={() => hasRole(ROLE.GURU_KERTOSONO) ||  hasRole(ROLE.SUPERADMIN) ? navigate('/peserta-kertosono?filter=anda-simak&action=penilaian-akademik') : navigate('/peserta-kertosono?filter=anda-simak&action=detail')}
+                  />
+                  <PercentageStat
+                    color="success"
+                    icon={ArrowBigUpDash}
+                    title="Penyimakan Terbanyak"
+                    value={statistikKertosono.overall?.max_akademik_per_peserta}
+                    change={statistikKertosono.overall?.count_peserta_with_max_akademik ? statistikKertosono.overall?.count_peserta_with_max_akademik + " Orang" : null}
+                    onClick={() => hasRole(ROLE.GURU_KERTOSONO) ||  hasRole(ROLE.SUPERADMIN) ? navigate('/peserta-kertosono?filter=simak-terbanyak&action=penilaian-akademik') : navigate('/peserta-kertosono?filter=simak-terbanyak&action=detail')}
+                  />
+                  <PercentageStat
+                    color="danger"
+                    icon={ArrowBigDownDash}
+                    title="Penyimakan Tersedikit"
+                    value={statistikKertosono.overall?.min_akademik_per_peserta}
+                    change={statistikKertosono.overall?.total_active_peserta ?  statistikKertosono.overall?.total_active_peserta + " Orang" : null}
+                    onClick={() => hasRole(ROLE.GURU_KERTOSONO) ||  hasRole(ROLE.SUPERADMIN) ? navigate('/peserta-kertosono?filter=simak-tersedikit&action=penilaian-akademik') : navigate('/peserta-kertosono?filter=simak-tersedikit&action=detail')}
+                  />
+                </dl>
+                </div>
+              </CardBody>
+              <Divider />
+              <div className="flex flex-col p-4 gap-4">
+                <p className="text-medium">Menu Utama</p>
+                {(hasRole(ROLE.GURU_KERTOSONO) || hasRole(ROLE.SUPERADMIN)) &&
+                  <>
+                    <MenutButton
+                      color="primary"
+                      icon={BookOpenText}
+                      isPressable={true}
+                      title="Nilai Bacaan"
+                      onClick={() => navigate('/peserta-kertosono?action=penilaian-akademik')}
+                    />
+                    <MenutButton
+                      color="primary"
+                      icon={HeartHandshake}
+                      isPressable={true}
+                      title="Catatan Ketertiban"
+                      onClick={() => navigate('/peserta-kertosono?action=penilaian-akhlak')}
+                    />
+                  </>
+                }
+                <MenutButton
+                  color="primary"
+                  icon={Users}
+                  isPressable={true}
+                  title="Daftar Peserta"
+                  onClick={() => navigate('/peserta-kertosono?action=detail')}
+                />
+              </div>
+            </Card>
+          </Tab>
+        }
+        </Tabs>
+      </section>
+    </div>
+  );
+}
