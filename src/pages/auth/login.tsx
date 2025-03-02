@@ -11,8 +11,9 @@ import {
 } from "@heroui/react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom"
-import { useAuth } from "@/hooks/use-auth"
+import { useNavigate } from "react-router-dom";
+
+import { useAuth } from "@/hooks/use-auth";
 import { useRFIDScanner } from "@/libs/rfid-scanner";
 
 function ElegantShape({
@@ -161,6 +162,7 @@ export default function LoginPage() {
       const timer = setTimeout(() => {
         navigate("/");
       }, 1500);
+
       return () => clearTimeout(timer);
     }
   }, [isLoggedIn, navigate]);
@@ -252,9 +254,9 @@ export default function LoginPage() {
             variants={fadeUpVariants}
           >
             <Image
-              src="/images/logo.png"
               alt="Logo"
               className="h-20 w-20 md:h-32 md:w-32 mb-4 backdrop-blur-sm"
+              src="/images/logo.png"
             />
           </motion.div>
 
@@ -262,9 +264,9 @@ export default function LoginPage() {
             {!isLoggedIn && (
               <motion.div
                 key="login-content"
-                initial="hidden"
                 animate="visible"
                 exit="exit"
+                initial="hidden"
                 variants={fadeUpVariants}
               >
                 <motion.h1
@@ -286,9 +288,9 @@ export default function LoginPage() {
                 </motion.h1>
 
                 <motion.div
+                  className="w-full max-w-md mx-auto"
                   custom={2}
                   variants={fadeUpVariants}
-                  className="w-full max-w-md mx-auto"
                 >
                   <Card
                     className="border-small dark:border-0 bg-background/50 dark:bg-default-100/50 max-w-[610px] p-4"
@@ -310,37 +312,47 @@ export default function LoginPage() {
                           <Form>
                             <div className="space-y-4">
                               <Input
-                                color={errors.username && touched.username ? "danger" : "success"}
+                                color={
+                                  errors.username && !!touched.username
+                                    ? "danger"
+                                    : "success"
+                                }
                                 errorMessage={errors.username}
-                                isInvalid={errors?.username && touched?.username}
+                                isInvalid={
+                                  errors?.username && touched?.username
+                                }
                                 label="Username"
                                 name="username"
                                 placeholder="Enter your username"
-                                type="text" 
+                                type="text"
                                 value={values.username}
                                 variant="bordered"
                                 onChange={handleChange}
                               />
                               <Input
-                                color={errors.password && touched.password ? "danger" : "success"}
+                                color={
+                                  errors.password && !!touched.password
+                                    ? "danger"
+                                    : "success"
+                                }
                                 errorMessage={errors.password}
-                                isInvalid={errors.password && touched.password}
+                                isInvalid={errors.password && !!touched.password}
                                 label="Password"
                                 name="password"
                                 placeholder="Enter your password"
-                                type="password" 
+                                type="password"
                                 value={values.password}
                                 variant="bordered"
                                 onChange={handleChange}
                               />
                               <div className="w-full min-h-min pb-4">
                                 <Button
-                                  type="submit"
-                                  color="success"
-                                  variant="shadow"
-                                  isLoading={loading}
                                   className="w-full text-white text-medium"
+                                  color="success"
                                   disabled={isSubmitting || loading}
+                                  isLoading={loading}
+                                  type="submit"
+                                  variant="shadow"
                                 >
                                   {loading ? "Loading..." : "Masuk"}
                                 </Button>

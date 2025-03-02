@@ -142,7 +142,7 @@ export default function DetailPesertaKertosonoPage() {
             selectedKey={tab}
             size="md"
             variant="bordered"
-            onSelectionChange={setTab}
+            onSelectionChange={(key) => setTab(String(key))}
           >
             <Tab key="akademik" title="Akademik">
               <Card

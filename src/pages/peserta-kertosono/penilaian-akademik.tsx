@@ -180,7 +180,7 @@ export default function PenilaianAkademikKertosonoPage() {
             selectedKey={tab}
             size="md"
             variant="bordered"
-            onSelectionChange={setTab}
+            onSelectionChange={(key) => setTab(String(key))}
           >
             <Tab key="penilaian" title="Form Penilaian">
               <Formik
@@ -291,7 +291,7 @@ export default function PenilaianAkademikKertosonoPage() {
                           }}
                           errorMessage={errors.penilaian}
                           isDisabled={loading}
-                          isInvalid={!!errors.penilaian}
+                          isInvalid={!!errors.penilaian && !!touched.penilaian}
                           label="Nilai Bacaan"
                           value={values.penilaian}
                           onValueChange={(value) => {

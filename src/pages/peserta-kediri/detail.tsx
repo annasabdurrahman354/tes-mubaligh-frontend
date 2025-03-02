@@ -130,7 +130,7 @@ export default function DetailPesertaKediriPage() {
             selectedKey={tab}
             size="md"
             variant="bordered"
-            onSelectionChange={setTab}
+            onSelectionChange={(key) => setTab(String(key))}
           >
             <Tab key="akademik" title="Akademik">
               <Card

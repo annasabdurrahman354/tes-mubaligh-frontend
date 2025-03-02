@@ -116,7 +116,7 @@ export default function IndexPage() {
           aria-label="Options"
           className="mt-4"
           selectedKey={tab}
-          onSelectionChange={setTab}
+          onSelectionChange={(key) => setTab(String(key))}
         >
           {(hasRole(ROLE.GURU_KEDIRI) ||
             hasRole(ROLE.ADMIN_KEDIRI) ||

@@ -110,7 +110,7 @@ export default function PenilaianAkhlakKediriPage() {
             selectedKey={tab}
             size="md"
             variant="bordered"
-            onSelectionChange={setTab}
+            onSelectionChange={(key) => setTab(String(key))}
           >
             <Tab key="penilaian" title="Form Penilaian">
               <Formik
@@ -170,7 +170,7 @@ export default function PenilaianAkhlakKediriPage() {
                           className="w-full"
                           errorMessage={errors.poin}
                           isDisabled={loading}
-                          isInvalid={!!errors.poin}
+                          isInvalid={!!errors.poin && !!touched.poin}
                           label="Poin"
                           type="number"
                           value={values.poin}
@@ -195,7 +195,7 @@ export default function PenilaianAkhlakKediriPage() {
                           className="w-full"
                           errorMessage={errors.catatan}
                           isDisabled={loading}
-                          isInvalid={!!errors.catatan}
+                          isInvalid={!!errors.catatan && !!touched.catatan}
                           label="Catatan Akhlak"
                           placeholder="Tuliskan catatan akhlak"
                           value={values.catatan}

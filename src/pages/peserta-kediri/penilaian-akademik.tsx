@@ -139,7 +139,7 @@ export default function PenilaianAkademikKediriPage() {
             selectedKey={tab}
             size="md"
             variant="bordered"
-            onSelectionChange={setTab}
+            onSelectionChange={(key) => setTab(String(key))}
           >
             <Tab key="penilaian" title="Form Penilaian">
               <Formik
@@ -204,7 +204,9 @@ export default function PenilaianAkademikKediriPage() {
                           defaultValue={values.nilai_makna}
                           errorMessage={errors.nilai_makna}
                           isDisabled={loading}
-                          isInvalid={!!errors.nilai_makna}
+                          isInvalid={
+                            !!errors.nilai_makna && !!touched.nilai_makna
+                          }
                           label="Nilai Makna"
                           orientation="horizontal"
                           value={values.nilai_makna}
@@ -236,7 +238,10 @@ export default function PenilaianAkademikKediriPage() {
                           defaultValue={values.nilai_keterangan}
                           errorMessage={errors.nilai_keterangan}
                           isDisabled={loading}
-                          isInvalid={!!errors.nilai_keterangan}
+                          isInvalid={
+                            !!errors.nilai_keterangan &&
+                            touched.nilai_keterangan
+                          }
                           label="Nilai Keterangan"
                           orientation="horizontal"
                           value={values.nilai_keterangan}
@@ -268,7 +273,10 @@ export default function PenilaianAkademikKediriPage() {
                           defaultValue={values.nilai_penjelasan}
                           errorMessage={errors.nilai_penjelasan}
                           isDisabled={loading}
-                          isInvalid={!!errors.nilai_penjelasan}
+                          isInvalid={
+                            !!errors.nilai_penjelasan &&
+                            touched.nilai_penjelasan
+                          }
                           label="Nilai Penjelasan"
                           orientation="horizontal"
                           value={values.nilai_penjelasan}
@@ -300,7 +308,9 @@ export default function PenilaianAkademikKediriPage() {
                           defaultValue={values.nilai_pemahaman}
                           errorMessage={errors.nilai_pemahaman}
                           isDisabled={loading}
-                          isInvalid={!!errors.nilai_pemahaman}
+                          isInvalid={
+                            !!errors.nilai_pemahaman && !!touched.nilai_pemahaman
+                          }
                           label="Nilai Pemahaman"
                           orientation="horizontal"
                           value={values.nilai_pemahaman}
@@ -325,10 +335,9 @@ export default function PenilaianAkademikKediriPage() {
                         </RadioGroup>
 
                         <Textarea
-                          multiline
                           errorMessage={errors.catatan}
                           isDisabled={loading}
-                          isInvalid={errors.catatan && touched.catatan}
+                          isInvalid={!!errors.catatan && !!touched.catatan}
                           label="Catatan Penguji"
                           mode="outlined"
                           numberOfLines={4}
