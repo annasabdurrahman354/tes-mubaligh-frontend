@@ -162,7 +162,8 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
       isBordered
       as={"div"}
       classNames={{
-        wrapper: "w-full min-h-min flex flex-col py-4",
+        base: "h-fit",
+        wrapper: "w-full h-fit flex flex-col py-4",
       }}
       maxWidth="full"
     >
