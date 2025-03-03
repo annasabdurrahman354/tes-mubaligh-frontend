@@ -256,7 +256,7 @@ export default function LoginPage() {
             <Image
               alt="Logo"
               className="h-20 w-20 md:h-32 md:w-32 mb-4 backdrop-blur-sm"
-              src="/images/logo.png"
+              src="/logo.png"
             />
           </motion.div>
 

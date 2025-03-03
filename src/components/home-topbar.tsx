@@ -23,7 +23,7 @@ export default function HomeTopbar() {
   return (
     <Navbar isBordered maxWidth="full">
       <NavbarBrand className="min-w-min">
-        <Image className="min-w-min" height={36} src="/images/logo.png" />
+        <Image className="h-9 w-9" src="/logo.png" />
         <div className="ml-2 min-w-min">
           <p className="text-inherit font-notoarabic">
             ألسلام عليكم ورحمة الله وبركاته

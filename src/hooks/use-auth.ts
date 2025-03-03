@@ -71,6 +71,10 @@ export function useAuth() {
     } catch (err) {
       handleApiError(err);
     }
+    finally {
+      setSession(RESET);
+      removeAuthToken();
+    }
   };
 
   const hasRole = (role: string) => {
