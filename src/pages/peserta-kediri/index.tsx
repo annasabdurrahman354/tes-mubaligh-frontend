@@ -12,6 +12,7 @@ import EmptyState from "@/components/empty-state";
 import LoadingState from "@/components/loading-state";
 import ErrorState from "@/components/error-state";
 import { useKediri } from "@/hooks/use-kediri";
+import StartState from "@/components/start-state";
 
 export const PesertaKediriIndex = () => {
   const navigate = useNavigate();
@@ -57,12 +58,18 @@ export const PesertaKediriIndex = () => {
   );
 
   const fetchPeserta = async () => {
+    if(Object.keys(query).length === 0 && !filter){
+      setLoading(false)
+      setError(null)
+      return
+    }
+
     // Use smooth scroll behavior
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
-
+    
     setLoading(true);
     setError(null);
     try {
@@ -88,6 +95,7 @@ export const PesertaKediriIndex = () => {
   useEffect(() => {
     fetchPeserta();
     setVisibleCount(30);
+    console.log("aaaa")
   }, [query]);
 
   // Debounced load more function to improve scroll performance
@@ -139,49 +147,46 @@ export const PesertaKediriIndex = () => {
       </AnimatePresence>
 
       <main className="flex-grow container mx-auto max-w-7xl py-4 px-4 md:py-6 md:px-6 flex flex-col gap-4 overflow-hidden">
-        {loading && <LoadingState />}
-        {error ? (
+        {Object.keys(query).length === 0 && !filter ? ( // If query is empty, show StartState & exit
+          <StartState />
+        ) : loading ? ( // Fetching data? Show LoadingState
+          <LoadingState />
+        ) : error ? ( // If there's an error, show ErrorState
           <ErrorState message={error} onPress={fetchPeserta} />
-        ) : peserta !== undefined && peserta !== null ? (
-          peserta.length > 0 ? (
-            <>
-              <div className="will-change-transform flex flex-col gap-4">
-                <AnimatePresence mode="popLayout">
-                  {visibleItems.map((peserta, index) => (
-                    <div
-                      key={peserta.id}
-                      ref={
-                        index === visibleItems.length - 5 ? lastItemRef : null
-                      }
-                    >
-                      <AnimatedPesertaCard
-                        isSelected={isSelectedPeserta(peserta)}
-                        peserta={peserta}
-                        onPress={() => toggleSelectedPeserta(peserta)}
-                      />
-                    </div>
-                  ))}
-                </AnimatePresence>
-              </div>
-              {visibleCount < peserta.length && (
-                <div className="flex justify-center py-4">
-                  <Button
-                    color="primary"
-                    size="md"
-                    startContent={<PlusCircle size={18} />}
-                    variant="shadow"
-                    onPress={loadMore}
+        ) : peserta?.length > 0 ? ( // If peserta has data, render list
+          <>
+            <div className="will-change-transform flex flex-col gap-4">
+              <AnimatePresence mode="popLayout">
+                {visibleItems.map((peserta, index) => (
+                  <div
+                    key={peserta.id}
+                    ref={index === visibleItems.length - 5 ? lastItemRef : null}
                   >
-                    Muat Lebih Banyak
-                  </Button>
-                </div>
-              )}
-            </>
-          ) : (
-            !loading && <EmptyState />
-          )
+                    <AnimatedPesertaCard
+                      isSelected={isSelectedPeserta(peserta)}
+                      peserta={peserta}
+                      onPress={() => toggleSelectedPeserta(peserta)}
+                    />
+                  </div>
+                ))}
+              </AnimatePresence>
+            </div>
+            {visibleCount < peserta.length && (
+              <div className="flex justify-center py-4">
+                <Button
+                  color="primary"
+                  size="md"
+                  startContent={<PlusCircle size={18} />}
+                  variant="shadow"
+                  onPress={loadMore}
+                >
+                  Muat Lebih Banyak
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
-          <></>
+          <EmptyState /> // No peserta? Show empty state
         )}
       </main>
       <PesertaRFIDScanner />

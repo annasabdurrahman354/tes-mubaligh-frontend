@@ -87,16 +87,16 @@ export default function IndexPage() {
             </div>
             <div className="flex flex-row gap-2 items-center justify-center align-middle flex-wrap sm:flex-nowrap">
               <Button
-                color={theme === "light" ? "primary" : "default"}
+                color={theme !== "light" ? "primary" : "default"}
                 startContent={
-                  theme === "light" ? <Sun size={16} /> : <Moon size={16} />
+                  theme !== "light" ? <Sun size={16} /> : <Moon size={16} />
                 }
-                variant={theme === "light" ? "solid" : "bordered"}
+                variant={theme !== "light" ? "solid" : "solid"}
                 onPress={() =>
                   theme === "light" ? setDarkTheme() : setLightTheme()
                 }
               >
-                {theme === "light" ? "Terang" : "Gelap"}
+                {theme !== "light" ? "Terang" : "Gelap"}
               </Button>
 
               <Button

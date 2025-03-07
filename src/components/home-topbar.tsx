@@ -26,7 +26,7 @@ export default function HomeTopbar() {
         <Image className="h-9 w-9" src="/logo.png" />
         <div className="ml-2 min-w-min">
           <p className="text-inherit font-notoarabic">
-            ألسلام عليكم ورحمة الله وبركاته
+          السلام عليكم ورحمة الله وبركاته
           </p>
           <p className="font-medium text-foreground/60">{user?.nama}</p>
         </div>

@@ -376,7 +376,7 @@ export default function LoginPage() {
                 initial="hidden"
                 variants={fadeUpVariants}
               >
-                ألسلام عليكم ورحمة الله وبركاته
+              السلام عليكم ورحمة الله وبركاته
               </motion.div>
             )}
           </AnimatePresence>

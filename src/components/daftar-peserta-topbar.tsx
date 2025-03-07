@@ -64,6 +64,7 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
   const [mounted, setMounted] = useState(false);
   const [queryNama, setQueryNama] = useState("");
   const [debouncedQueryNama, setDebouncedQueryNama] = useState("");
+  const [pendingQueryNama, setPendingQueryNama] = useState("");
   const [queryGender, setQueryGender] = useState("");
   const [queryKelompok, setQueryKelompok] = useState("");
   const location = useLocation();
@@ -123,7 +124,17 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
   };
 
   const handleNamaChange = (value) => {
-    setQueryNama(value);
+    if (isTahapKediri) {
+      setPendingQueryNama(value);
+    } else {
+      setQueryNama(value);
+    }
+  };
+
+  const handleSearchClick = () => {
+    if (isTahapKediri) {
+      setQueryNama(pendingQueryNama);
+    }
   };
 
   useEffect(() => {
@@ -180,17 +191,29 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
           </Button>
           <Input
             classNames={{
-              base: "w-full h-10 flex-grow",
+              base: "w-full flex-grow",
               mainWrapper: "h-full",
               input: "text-small",
               inputWrapper:
                 "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
             }}
             placeholder="Cari nama atau cocard..."
-            size="sm"
-            startContent={<SearchIcon size={18} />}
+            size="md"
+            endContent={
+              <Button
+                isIconOnly
+                aria-label="search"
+                color="primary"
+                radius="md"
+                variant="light"
+                className="-mr-3"
+                onClick={handleSearchClick} // Click event triggers search in Kediri mode
+              >
+                <SearchIcon size={18} />
+              </Button>
+            }
             type="search"
-            value={queryNama}
+            value={isTahapKediri ? pendingQueryNama : queryNama} // Show correct value based on mode
             onChange={(e) => handleNamaChange(e.target.value)}
           />
         </div>
