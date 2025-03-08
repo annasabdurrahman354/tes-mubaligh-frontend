@@ -31,9 +31,9 @@ export default function AkunPage() {
             />
             <div className="flex flex-col items-start gap-1">
               <div className="flex flex-col items-start">
-                <h1 className="text-lg text-gray-800">{user?.nama}</h1>
+                <h1 className="text-lg text-gray-800 dark:text-white">{user?.nama}</h1>
                 {user?.nama_panggilan && (
-                  <p className="text-sm text-gray-500">({user.nama_panggilan})</p>
+                  <p className="text-sm text-default-500">({user.nama_panggilan})</p>
                 )}
               </div>
               <div className="flex flex-wrap gap-2 justify-center md:justify-start">
@@ -50,7 +50,7 @@ export default function AkunPage() {
           className="border-small border-default-200 dark:border-default-100 w-full"
           shadow="none"
         >
-          <CardHeader className="text-md text-gray-800">Informasi Akun</CardHeader>
+          <CardHeader className="text-md text-gray-800 dark:text-white">Informasi Akun</CardHeader>
           <Divider />
           <CardBody className="gap-4 p-4">
             <div className="flex items-center gap-4">
@@ -59,7 +59,7 @@ export default function AkunPage() {
               </div>
               <div>
                 <p className="text-small text-default-500">Username</p>
-                <p className="text-md text-gray-800">{user?.username}</p>
+                <p className="text-md text-gray-800 dark:text-white">{user?.username}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -68,7 +68,7 @@ export default function AkunPage() {
               </div>
               <div>
                 <p className="text-small text-default-500">RFID</p>
-                <p className="text-md text-gray-800">{user?.rfid ?? "Belum terkoneksi RFID"}</p>
+                <p className="text-md text-gray-800 dark:text-white">{user?.rfid ?? "Belum terkoneksi RFID"}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -77,7 +77,7 @@ export default function AkunPage() {
               </div>
               <div>
                 <p className="text-small text-default-500">Pondok Pesantren</p>
-                <p className="text-md text-gray-800">{user?.pondok ?? "Tidak ada data"}</p>
+                <p className="text-md text-gray-800 dark:text-white">{user?.pondok ?? "Tidak ada data"}</p>
               </div>
             </div>
           </CardBody>

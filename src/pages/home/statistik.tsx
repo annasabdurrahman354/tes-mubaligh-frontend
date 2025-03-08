@@ -14,8 +14,8 @@ export default function StatistikPage() {
     <div>
       <section className="flex flex-col gap-4 w-full">
         <header className="w-full">
-          <h1 className="text-lg text-gray-800">Statistik Tes</h1>
-          <p className="text-sm text-gray-500">Periode {statistikKediri.periode_tes ?? statistikKertosono.periode_tes}</p>
+          <h1 className="text-lg text-gray-800 dark:text-white">Statistik Tes</h1>
+          <p className="text-sm text-default-500">Periode {statistikKediri.periode_tes ?? statistikKertosono.periode_tes}</p>
         </header>
 
         <Card
