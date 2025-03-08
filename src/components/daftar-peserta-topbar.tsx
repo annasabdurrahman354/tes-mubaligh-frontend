@@ -215,6 +215,11 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
             type="search"
             value={isTahapKediri ? pendingQueryNama : queryNama} // Show correct value based on mode
             onChange={(e) => handleNamaChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearchClick();
+              }
+            }}
           />
         </div>
         <div className="flex gap-2 w-full md:w-min justify-center">

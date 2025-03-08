@@ -19,7 +19,10 @@ export default function AkunPage() {
   return (
     <div>
       <section className="flex flex-col items-center justify-center gap-4">
-        <Card className="w-full">
+        <Card
+          className="border-small border-default-200 dark:border-default-100 w-full"
+          shadow="none"
+        >
           <CardBody className="flex-row items-center gap-3 p-4">
             <Avatar
               alt={user?.nama}
@@ -28,14 +31,14 @@ export default function AkunPage() {
             />
             <div className="flex flex-col items-start gap-1">
               <div className="flex flex-col items-start">
-                <h1 className="text-lg">{user?.nama}</h1>
+                <h1 className="text-lg text-gray-800">{user?.nama}</h1>
                 {user?.nama_panggilan && (
-                  <p className="text-default-500">({user.nama_panggilan})</p>
+                  <p className="text-sm text-gray-500">({user.nama_panggilan})</p>
                 )}
               </div>
               <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                 {user?.roles.map((role) => (
-                  <Chip key={role} color="primary" variant="flat">
+                  <Chip key={role} color="primary" variant="flat" size="sm">
                     {role}
                   </Chip>
                 ))}
@@ -43,8 +46,11 @@ export default function AkunPage() {
             </div>
           </CardBody>
         </Card>
-        <Card className="w-full">
-          <CardHeader className="text-lg">Informasi Akun</CardHeader>
+        <Card
+          className="border-small border-default-200 dark:border-default-100 w-full"
+          shadow="none"
+        >
+          <CardHeader className="text-md text-gray-800">Informasi Akun</CardHeader>
           <Divider />
           <CardBody className="gap-4 p-4">
             <div className="flex items-center gap-4">
@@ -53,7 +59,7 @@ export default function AkunPage() {
               </div>
               <div>
                 <p className="text-small text-default-500">Username</p>
-                <p>{user?.username}</p>
+                <p className="text-md text-gray-800">{user?.username}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -62,7 +68,7 @@ export default function AkunPage() {
               </div>
               <div>
                 <p className="text-small text-default-500">RFID</p>
-                <p>{user?.rfid ?? "Belum terkoneksi RFID"}</p>
+                <p className="text-md text-gray-800">{user?.rfid ?? "Belum terkoneksi RFID"}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -71,7 +77,7 @@ export default function AkunPage() {
               </div>
               <div>
                 <p className="text-small text-default-500">Pondok Pesantren</p>
-                <p>{user?.pondok ?? "Tidak ada data"}</p>
+                <p className="text-md text-gray-800">{user?.pondok ?? "Tidak ada data"}</p>
               </div>
             </div>
           </CardBody>

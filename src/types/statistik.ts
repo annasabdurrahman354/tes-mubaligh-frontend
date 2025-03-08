@@ -1,20 +1,27 @@
-export type StatistikTes = {
-  periode_tes: string | null;
-  overall: StatistikPeserta | null;
-  by_gender: Record<string, StatistikPeserta>;
-};
+export interface HasilSistem {
+  lulus: number;
+  tidak_lulus: number;
+  perlu_musyawarah: number;
+  belum_pengetesan: number;
+}
 
-export type StatistikPeserta = {
-  total_active_peserta: number | null;
-  min_akademik_per_peserta: number | null;
-  max_akademik_per_peserta: number | null;
-  count_peserta_with_min_akademik: number | null;
-  count_peserta_with_max_akademik: number | null;
-  user_akademik_count: number | null;
-  hasil_sistem: {
-    lulus: number | null;
-    tidak_lulus: number | null;
-    perlu_musyawarah: number | null;
-    belum_pengetesan: number | null;
-  };
-};
+export interface GenderStatistics {
+  total_active_peserta: number;
+  min_akademik_per_peserta: number;
+  max_akademik_per_peserta: number;
+  count_peserta_with_min_akademik: number;
+  count_peserta_with_max_akademik: number;
+  user_akademik_count: number;
+  hasil_sistem: HasilSistem;
+}
+
+export interface ByGender {
+  "Laki-laki": GenderStatistics;
+  "Perempuan": GenderStatistics;
+}
+
+export interface StatistikTes {
+  periode_tes: string;
+  overall: GenderStatistics;
+  by_gender: ByGender;
+}
