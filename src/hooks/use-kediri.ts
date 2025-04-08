@@ -1,5 +1,5 @@
 import { usePeserta } from "./use-peserta";
-
+import { useCallback } from 'react';
 import api, { handleApiError } from "@/libs/axios";
 import {
   AkademikKediriForm,
@@ -7,22 +7,50 @@ import {
   PesertaKediri,
 } from "@/types/kediri";
 
+// Define the expected paginated response structure FROM YOUR ACTUAL API
+export interface PaginatedPesertaResponse {
+  data: PesertaKediri[];
+  links: {
+    first: string | null;
+    last: string | null;
+    prev: string | null;
+    next: string | null;
+    // Or potentially an array of link objects as shown in your example:
+    // { url: string | null; label: string; active: boolean }[];
+  };
+  // Meta fields are directly at the top level in your API response
+  current_page: number;
+  from: number | null;
+  last_page: number;
+  // Keep the detailed links array if needed, matches your example
+  meta_links?: { url: string | null; label: string; active: boolean }[]; // Renamed to avoid conflict
+  path: string;
+  per_page: number;
+  to: number | null;
+  total: number;
+  // Add other top-level fields if necessary (e.g., first_page_url, etc.)
+  first_page_url?: string | null;
+  last_page_url?: string | null;
+  next_page_url?: string | null;
+  prev_page_url?: string | null;
+}
+
+
 export function useKediri() {
-  const { setPeserta } = usePeserta();
 
-  const getPesertaKediri = async (
-    params: Record<string, string>,
-  ): Promise<PesertaKediri[] | null | any> => {
+  const getPesertaKediri = useCallback(async (
+    params: Record<string, string | number>,
+  ): Promise<PaginatedPesertaResponse | null > => {
     try {
-      const response = await api.get("peserta-kediri", { params });
-
-      setPeserta(response.data);
-
+      // The actual response type from axios might differ slightly, but casting helps usage
+      const response = await api.get<PaginatedPesertaResponse>("peserta-kediri", { params });
+      // Assuming response.data directly contains the structure defined above
       return response.data;
     } catch (err) {
       handleApiError(err);
+      return null;
     }
-  };
+  }, []);
 
   const getPesertaKediriByRFID = async (
     rfid: string,

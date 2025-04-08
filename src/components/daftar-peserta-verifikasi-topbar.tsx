@@ -8,17 +8,10 @@ import {
   Dropdown,
   DropdownItem,
   DropdownMenu,
-  Divider,
 } from "@heroui/react";
 import { ChevronDown, SearchIcon, X } from "lucide-react";
 import React from "react"; // React is already imported
 import { useLocation, useNavigate } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
-
-import BouncingChip from "./bouncing-chip";
-
-import { getFirstValidWord, PesertaKertosono } from "@/types/kertosono"; // Assuming these types are correctly defined
-import { PesertaKediri } from "@/types/kediri"; // Assuming these types are correctly defined
 
 const genderOptions = [
   { label: "Semua Gender", value: "" },
@@ -50,17 +43,13 @@ const campOptions = [
     { label: "Camp T", value: "T" },
 ];
 
-type DaftarPesertaTopbarProps = {
-  selectedPeserta: PesertaKediri[] | PesertaKertosono[];
-  toggleSelectedPeserta: (peserta: PesertaKediri | PesertaKertosono) => void;
+type DaftarPesertaVerifikasiTopbarProps = {
   setQuery: (
     updater: (prevQuery: any) => any // More specific type for updater function
   ) => void;
 };
 
-const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
-  selectedPeserta,
-  toggleSelectedPeserta,
+const DaftarPesertaVerifikasiTopbar: React.FC<DaftarPesertaVerifikasiTopbarProps> = ({
   setQuery,
 }) => {
   const [mounted, setMounted] = useState(false);
@@ -265,38 +254,8 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
           )}
         </div>
       </NavbarItem>
-
-      {/* Selected Peserta Chips (Unchanged) */}
-      {selectedPeserta.length !== 0 && (
-        <>
-          <Divider />
-          <NavbarItem
-            as="div"
-            className="w-full flex flex-row justify-center items-center gap-3 flex-wrap"
-          >
-            <AnimatePresence mode="sync">
-              {selectedPeserta.map((peserta) => (
-                <BouncingChip
-                  key={peserta.id}
-                  cocard={peserta.nomor_cocard}
-                  kelompok={peserta.kelompok}
-                  nama={
-                    peserta.nama_panggilan
-                      ? peserta.nama_panggilan
-                      : getFirstValidWord(peserta.nama_lengkap)
-                  }
-                  src={peserta.foto_smartcard}
-                  onClose={() => {
-                    toggleSelectedPeserta(peserta);
-                  }}
-                />
-              ))}
-            </AnimatePresence>
-          </NavbarItem>
-        </>
-      )}
     </Navbar>
   );
 };
 
-export default DaftarPesertaTopbar;
+export default DaftarPesertaVerifikasiTopbar;

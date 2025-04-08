@@ -10,6 +10,7 @@ import {
   LogOut,
   Moon,
   Sun,
+  UserRoundCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -393,6 +394,13 @@ export default function IndexPage() {
                     isPressable={true}
                     title="Daftar Peserta"
                     onClick={() => navigate("/peserta-kertosono?action=detail")}
+                  />
+                   <MenutButton
+                    color="primary"
+                    icon={UserRoundCheck}
+                    isPressable={true}
+                    title="Verifikasi Peserta"
+                    onClick={() => navigate("/peserta-kertosono/verifikasi")}
                   />
                 </div>
               </Card>

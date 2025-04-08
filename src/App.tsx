@@ -17,6 +17,8 @@ import LoginPage from "@/pages/auth/login";
 import AkunPage from "@/pages/home/akun";
 import StatistikPage from "@/pages/home/statistik";
 import IndexPage from "@/pages/home/index";
+import PesertaKertosonoVerifikasiIndex from "@/pages/peserta-kertosono/verifikasi";
+import PesertaKertosonoVerifikasiUpdate from "./pages/peserta-kertosono/verifikasi/update";
 
 const App: React.FC = () => {
   useTheme();
@@ -44,7 +46,10 @@ const App: React.FC = () => {
           {/* Peserta Kediri Routes */}
           <Route path="/peserta-kediri">
             <Route index element={<PesertaKediriIndex />} />
-            <Route element={<DetailPesertaKediriPage />} path="detail" />
+            <Route
+              element={<DetailPesertaKediriPage />}
+              path="detail"
+            />
             <Route
               element={<PenilaianAkademikKediriPage />}
               path="penilaian-akademik"
@@ -58,7 +63,10 @@ const App: React.FC = () => {
           {/* Peserta Kertosono Routes */}
           <Route path="/peserta-kertosono">
             <Route index element={<PesertaKertosonoIndex />} />
-            <Route element={<DetailPesertaKertosonoPage />} path="detail" />
+            <Route
+              element={<DetailPesertaKertosonoPage />}
+              path="detail"
+            />
             <Route
               element={<PenilaianAkademikKertosonoPage />}
               path="penilaian-akademik"
@@ -67,6 +75,19 @@ const App: React.FC = () => {
               element={<PenilaianAkhlakKertosonoPage />}
               path="penilaian-akhlak"
             />
+            {/* --- Verification Routes --- */}
+            <Route path="verifikasi"> {/* Parent path for grouping */}
+            {/* Index/List page for verification */}
+            <Route
+                index // This makes it the route for "/peserta-kertosono/verifikasi"
+                element={<PesertaKertosonoVerifikasiIndex />}
+            />
+            {/* Update page with dynamic ID */}
+            <Route
+                path=":id_tes_santri" // This makes it the route for "/peserta-kertosono/verifikasi/:id"
+                element={<PesertaKertosonoVerifikasiUpdate />}
+            />
+            </Route>
           </Route>
         </>
       ) : (

@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "@heroui/react";
+import { Button, Spinner } from "@heroui/react";
 import { ListCollapse, PencilIcon, PlusCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -13,39 +13,131 @@ import LoadingState from "@/components/loading-state";
 import ErrorState from "@/components/error-state";
 import { useKediri } from "@/hooks/use-kediri";
 import StartState from "@/components/start-state";
+import { PesertaKediri } from "@/types/kediri";
 
 export const PesertaKediriIndex = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const action = searchParams.get("action")
-    ? searchParams.get("action")
-    : "detail";
+  const action = searchParams.get("action") ? searchParams.get("action") : "detail";
+  const filter = searchParams.get("filter");
+
   const IconComponent =
     action === "penilaian-akademik" || action === "penilaian-akhlak"
       ? PencilIcon
       : ListCollapse;
-  const filter = searchParams.get("filter");
 
-  const { peserta, selectedPeserta, isSelectedPeserta, toggleSelectedPeserta } =
-    usePeserta();
-  const { getPesertaKediri } = useKediri();
+  const { selectedPeserta, isSelectedPeserta, toggleSelectedPeserta } = usePeserta();
+  const { getPesertaKediri } = useKediri(); // Stable reference from hook
+
+  const [pesertaList, setPesertaList] = useState<PesertaKediri[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   const [query, setQuery] = useState<Record<string, string>>({});
-  const [visibleCount, setVisibleCount] = useState(30);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Observer for infinite scrolling
+  // --- Fetching Logic ---
+  const fetchPeserta = useCallback(async (page = 1, append = false) => {
+    if (Object.keys(query).length === 0 && !filter) {
+       setPesertaList([]);
+       setCurrentPage(1);
+       setLastPage(1);
+       setTotalItems(0);
+       setLoading(false);
+       setError(null);
+       return;
+    }
+
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    try {
+      const params: Record<string, string | number> = { ...query, page };
+      if (filter) params.filter = filter;
+
+      const response = await getPesertaKediri(params);
+
+      // **** ADJUST CHECK AND ACCESS ****
+      // Check if response exists and has the necessary top-level properties
+      if (response && typeof response.total === 'number' && typeof response.last_page === 'number' && typeof response.current_page === 'number' && Array.isArray(response.data)) {
+        setError(null); // Clear error on success
+
+        // Access fields directly from response object
+        setTotalItems(response.total);
+        setLastPage(response.last_page);
+        setCurrentPage(response.current_page);
+
+        if (append) {
+          setPesertaList((prev) => [...prev, ...response.data]);
+        } else {
+          setPesertaList(response.data);
+        }
+      } else {
+         // Log the actual response if it's invalid but not null
+         if (response) {
+            console.error("Received invalid pagination structure:", response);
+            setError("Struktur data pagination tidak sesuai.");
+         } else {
+            console.error("Received null response from API.");
+            // Error might already be set by the hook's handleApiError
+            // setError(prev => prev ?? "Gagal memuat data.");
+         }
+
+         if (!append) {
+             setPesertaList([]);
+             setCurrentPage(1);
+             setLastPage(1);
+             setTotalItems(0);
+         }
+      }
+    } catch (error) {
+      console.error("Failed to fetch peserta in component:", error);
+      setError(error instanceof Error ? error.message : "Terjadi kesalahan.");
+      if (!append) {
+          setPesertaList([]);
+          setCurrentPage(1);
+          setLastPage(1);
+          setTotalItems(0);
+      }
+    } finally {
+      if (append) setLoadingMore(false);
+      else setLoading(false);
+    }
+  }, [query, filter, getPesertaKediri]);
+
+
+  // --- Effect for initial fetch and query/filter changes ---
+  useEffect(() => {
+    fetchPeserta(1, false);
+  }, [query, filter, fetchPeserta]);
+
+
+  // --- Load More Logic ---
+  const loadMore = useCallback(() => {
+    if (!loadingMore && currentPage < lastPage) {
+      fetchPeserta(currentPage + 1, true);
+    }
+  }, [loadingMore, currentPage, lastPage, fetchPeserta]);
+
+
+  // --- Infinite Scroll Observer ---
   const observer = useRef<IntersectionObserver | null>(null);
   const lastItemRef = useCallback(
-    (node: HTMLDivElement) => {
-      if (loading) return;
+    (node: HTMLDivElement | null) => {
+      if (loadingMore || currentPage >= lastPage) return;
       if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && visibleCount < peserta.length) {
+          if (entries[0].isIntersecting) {
             loadMore();
           }
         },
@@ -54,61 +146,10 @@ export const PesertaKediriIndex = () => {
 
       if (node) observer.current.observe(node);
     },
-    [loading, visibleCount, peserta],
+    [loadingMore, currentPage, lastPage, loadMore],
   );
 
-  const fetchPeserta = async () => {
-    if(Object.keys(query).length === 0 && !filter){
-      setLoading(false)
-      setError(null)
-      return
-    }
-
-    // Use smooth scroll behavior
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-    
-    setLoading(true);
-    setError(null);
-    try {
-      if (filter) {
-        const updatedQuery = {
-          ...query,
-          filter: filter,
-        };
-
-        await getPesertaKediri(updatedQuery);
-      } else {
-        await getPesertaKediri(query);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPeserta();
-    setVisibleCount(30);
-    console.log("aaaa")
-  }, [query]);
-
-  // Debounced load more function to improve scroll performance
-  const loadMore = useCallback(() => {
-    // Use requestAnimationFrame for smoother UI updates
-    requestAnimationFrame(() => {
-      setVisibleCount((prev) => Math.min(prev + 30, peserta.length));
-    });
-  }, [peserta.length]);
-
-  // Windowing optimization: only render visible items plus some buffer
-  const visibleItems = peserta.slice(0, visibleCount);
-
+  // --- Render Logic (Unchanged) ---
   return (
     <div
       ref={scrollRef}
@@ -130,9 +171,7 @@ export const PesertaKediriIndex = () => {
           >
             <Button
               isIconOnly
-              aria-label={
-                action === "penilaian" ? "Mulai Penilaian" : "Lihat Detail"
-              }
+              aria-label={ action === "penilaian" ? "Mulai Penilaian" : "Lihat Detail" }
               className="rounded-medium border p-3 bg-success border-success-100"
               color="success"
               isDisabled={loading}
@@ -147,46 +186,59 @@ export const PesertaKediriIndex = () => {
       </AnimatePresence>
 
       <main className="flex-grow container mx-auto max-w-7xl py-4 px-4 md:py-6 md:px-6 flex flex-col gap-4 overflow-hidden">
-        {Object.keys(query).length === 0 && !filter ? ( // If query is empty, show StartState & exit
+        {/* Condition 1: Initial state */}
+        {Object.keys(query).length === 0 && !filter && !loading && !error && pesertaList.length === 0 && (
           <StartState />
-        ) : loading ? ( // Fetching data? Show LoadingState
-          <LoadingState />
-        ) : error ? ( // If there's an error, show ErrorState
-          <ErrorState message={error} onPress={fetchPeserta} />
-        ) : peserta?.length > 0 ? ( // If peserta has data, render list
-          <>
-            <div className="will-change-transform flex flex-col gap-4">
-              <AnimatePresence mode="popLayout">
-                {visibleItems.map((peserta, index) => (
-                  <div
-                    key={peserta.id}
-                    ref={index === visibleItems.length - 5 ? lastItemRef : null}
-                  >
-                    <AnimatedPesertaCard
-                      isSelected={isSelectedPeserta(peserta)}
-                      peserta={peserta}
-                      onPress={() => toggleSelectedPeserta(peserta)}
-                    />
-                  </div>
-                ))}
-              </AnimatePresence>
-            </div>
-            {visibleCount < peserta.length && (
-              <div className="flex justify-center py-4">
-                <Button
-                  color="primary"
-                  size="md"
-                  startContent={<PlusCircle size={18} />}
-                  variant="shadow"
-                  onPress={loadMore}
-                >
-                  Muat Lebih Banyak
-                </Button>
-              </div>
-            )}
-          </>
-        ) : (
-          <EmptyState /> // No peserta? Show empty state
+        )}
+        {/* Condition 2: Loading initial page */}
+        {loading && !loadingMore && ( <LoadingState /> )}
+        {/* Condition 3: Error occurred */}
+        {error && ( <ErrorState message={error} onPress={() => fetchPeserta(1, false)} /> )}
+        {/* Condition 4: Data loaded */}
+        {!loading && !error && (Object.keys(query).length > 0 || filter || pesertaList.length > 0) && (
+             pesertaList.length > 0 ? (
+                  <>
+                    <div className="will-change-transform flex flex-col gap-4">
+                      <AnimatePresence mode="popLayout">
+                        {pesertaList.map((pesertaItem, index) => (
+                          <div
+                            ref={index === pesertaList.length - 5 ? lastItemRef : null}
+                            // Use primary key if available and guaranteed unique
+                            key={pesertaItem.id || `${pesertaItem.nispn}-${index}`}
+                          >
+                            <AnimatedPesertaCard
+                              isSelected={isSelectedPeserta(pesertaItem)}
+                              peserta={pesertaItem}
+                              onPress={() => toggleSelectedPeserta(pesertaItem)}
+                            />
+                          </div>
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                    {/* Loading more indicator or button */}
+                    {loadingMore ? (
+                        <div className="flex justify-center py-4">
+                          <Spinner/>
+                        </div>
+                    ) : currentPage < lastPage ? (
+                       <div className="flex justify-center py-4">
+                        <Button
+                          color="primary"
+                          size="md"
+                          startContent={<PlusCircle size={18} />}
+                          variant="shadow"
+                          onPress={loadMore}
+                          isDisabled={loadingMore}
+                        >
+                          Muat Lebih Banyak
+                        </Button>
+                      </div>
+                    ): null }
+                  </>
+             ) : (
+                  // Condition 4b: No results after query/filter
+                  <EmptyState />
+             )
         )}
       </main>
       <PesertaRFIDScanner />

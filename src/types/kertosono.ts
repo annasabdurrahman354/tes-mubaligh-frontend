@@ -77,6 +77,46 @@ export type PesertaKertosono = {
   akademik: AkademikKertosono[];
 };
 
+export type PesertaKertosonoVerifikasi = {
+  id_tes_santri: string; // Corresponds to id_tes_santri
+  id_periode: string; // Type depends on DB schema, PHP allows mixed
+  id_ponpes: number | null; // Type depends on DB schema, validation suggests number
+  nispn: string;
+  nama_lengkap: string | null;
+  nama_panggilan: string | null;
+  jenis_kelamin: string | null; // Assuming 'L'/'P' based on validation, but could be other string
+  kelompok: string | null;
+  nomor_cocard: number | null;
+  nis: string | null;
+  nik: string | null;
+  rfid: string | null;
+  nama_ibu: string | null; // Potentially nullable if siswa relation isn't loaded
+  tempat_lahir: string | null; // Potentially nullable if siswa relation isn't loaded
+  tanggal_lahir: string | null; // Format 'YYYY-MM-DD' or null
+  alamat: string | null; // Potentially nullable if siswa relation isn't loaded
+  rt: string | null; // Potentially nullable if siswa relation isn't loaded
+  rw: string | null; // Potentially nullable if siswa relation isn't loaded
+  provinsi_id: number | null; // Validation suggests number, potentially nullable
+  kota_kab_id: number | null; // Validation suggests number, potentially nullable
+  kecamatan_id: number | null; // Validation suggests number, potentially nullable
+  desa_kel_id: number | null; // Validation suggests number, potentially nullable
+  kode_pos: string | null; // Potentially nullable if siswa relation isn't loaded
+  kota_nama: string | null; // From related kota via siswa
+  hp: string | null; // Potentially nullable if siswa relation isn't loaded
+  id_daerah_sambung: number | null; // Validation suggests number, potentially nullable
+  kelompok_sambung: string | null; // Potentially nullable if siswa relation isn't loaded
+  asal_pondok_nama: string | null; // From Accessor asalPondokWithDaerah
+  asal_daerah_nama: string; // From Accessor asalDaerah, formatted, defaults to empty string
+  pendidikan: string | null; // Combined pendidikan/jurusan or just pendidikan
+  status_mondok: string | null; // Based on validation
+  keahlian: string | null;
+  hobi: string | null;
+  umur: number | null; // Calculated age
+  nama_ayah: string | null; // Formatted name
+  riwayat_tes: string | number | null; // Type depends on the Accessor/Attribute 'riwayat_tes', could be number, string, array, object? Using 'unknown' for safety. The example type suggests 'number'.
+  foto_smartcard: string | null; // URL from Accessor urlFotoIdentitas on Siswa
+};
+
 export function getFirstValidWord(text: string) {
   const words = text.trim().split(/\s+/); // Split by spaces while handling multiple spaces
 
