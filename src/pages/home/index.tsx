@@ -57,7 +57,7 @@ export default function IndexPage() {
 
   useEffect(() => {
     fetchStatistik();
-    if (!hasRole(ROLE.GURU_KEDIRI) && !hasRole(ROLE.SUPERADMIN)) {
+    if (!hasRole(ROLE.GURU_KEDIRI) && !hasRole(ROLE.SUPERADMIN) && !hasRole(ROLE.ADMIN_KEDIRI)) {
       setTab("kertosono");
     }
   }, []); // Empty dependency array
@@ -257,7 +257,8 @@ export default function IndexPage() {
           )}
           {(hasRole(ROLE.GURU_KERTOSONO) ||
             hasRole(ROLE.ADMIN_KERTOSONO) ||
-            hasRole(ROLE.SUPERADMIN)) && (
+            hasRole(ROLE.SUPERADMIN) ||
+            hasRole(ROLE.KOMANDAN)) && (
             <Tab key="kertosono" title="Pengetesan Kertosono">
               <Card
                 className="border-small border-default-200 dark:border-default-100"

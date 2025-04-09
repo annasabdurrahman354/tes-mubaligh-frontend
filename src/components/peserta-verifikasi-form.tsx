@@ -687,7 +687,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
           {/* Action Buttons */}
           <div className="flex justify-end space-x-3 pt-4">
             <Button
-              color="default"
+              color="danger"
               variant="flat"
               onPress={onCancel} // Use onPress for HeroUI Button if it's intended for click/tap
               isDisabled={isSubmitting || isInitialLoading} // Disable during initial load too
@@ -701,7 +701,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
               // Disable submit if submitting, during initial load, or if dependent options are actively loading
               isDisabled={isSubmitting || isInitialLoading || isKotaLoading || isKecamatanLoading || isKelurahanLoading}
             >
-              Simpan
+              Verifikasi
             </Button>
           </div>
       </CardBody>

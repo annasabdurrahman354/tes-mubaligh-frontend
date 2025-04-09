@@ -81,6 +81,7 @@ const PesertaKertosonoVerifikasiDetail: React.FC = () => {
             description: "Data santri berhasil diperbarui",
             color: 'success',
         })
+        navigate("/peserta-kertosono/verifikasi");
       }
     } catch (error) {
       console.error("Error updating santri:", error);
@@ -229,16 +230,29 @@ const PesertaKertosonoVerifikasiDetail: React.FC = () => {
             isSubmitting={isSubmitting}
           />
         ) : (
-          <PesertaVerifikasiView santri={santri} />
+          <PesertaVerifikasiView 
+            santri={santri} 
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+            isSubmitting={isSubmitting}
+          />
         )}
       </main>
     </div>
   );
 };
 
-// Component to display santri details using NextUI
-const PesertaVerifikasiView: React.FC<{ santri: PesertaKertosonoVerifikasi }> = ({ santri }) => {
+interface PesertaVerifikasiViewProps {
+  santri: PesertaKertosonoVerifikasi;
+  onSubmit: (data: Partial<PesertaKertosonoVerifikasi>) => Promise<void>;
+  isSubmitting: boolean;
+}
 
+const PesertaVerifikasiView: React.FC<PesertaVerifikasiViewProps> = ({
+  santri,
+  onSubmit,
+  isSubmitting
+}) => {
   // Helper function to format value or return placeholder
   const formatValue = (value: string | number | null | undefined): string => {
     if (value === null || value === undefined || value === '') {
@@ -436,6 +450,21 @@ const PesertaVerifikasiView: React.FC<{ santri: PesertaKertosonoVerifikasi }> = 
               variant="bordered"
             />
           </div>
+        </div>
+        {/* Action Buttons */}
+        <div className="flex justify-end space-x-3 pt-4">
+          <Button
+            color="primary"
+            type="submit"
+            onPress={() => onSubmit(santri)}
+            variant="solid"
+            startContent={<CheckCircle size={16} />}
+            isLoading={isSubmitting}
+            // Disable submit if submitting, during initial load, or if dependent options are actively loading
+            isDisabled={isSubmitting}
+          >
+            Verifikasi
+          </Button>
         </div>
       </CardBody>
     </Card>

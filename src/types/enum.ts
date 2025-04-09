@@ -3,5 +3,6 @@ export enum ROLE {
   GURU_KERTOSONO = "Guru Kertosono",
   ADMIN_KEDIRI = "Admin Kediri",
   ADMIN_KERTOSONO = "Admin Kertosono",
+  KOMANDAN = "Komandan",
   SUPERADMIN = "Super Admin",
 }
