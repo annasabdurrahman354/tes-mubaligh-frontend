@@ -46,6 +46,7 @@ export default defineConfig({
       }, 
       workbox: {
         globPatterns: ['**/*.{js, ts, tsx,css,html,ico,png, jpg,svg}'],
+        navigateFallbackAllowlist: [/^(?!\/api\/)/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

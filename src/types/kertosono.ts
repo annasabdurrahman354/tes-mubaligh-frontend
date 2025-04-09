@@ -87,7 +87,6 @@ export type PesertaKertosonoVerifikasi = {
   jenis_kelamin: string | null; // Assuming 'L'/'P' based on validation, but could be other string
   kelompok: string | null;
   nomor_cocard: number | null;
-  nis: string | null;
   nik: string | null;
   rfid: string | null;
   nama_ibu: string | null; // Potentially nullable if siswa relation isn't loaded
@@ -97,9 +96,13 @@ export type PesertaKertosonoVerifikasi = {
   rt: string | null; // Potentially nullable if siswa relation isn't loaded
   rw: string | null; // Potentially nullable if siswa relation isn't loaded
   provinsi_id: number | null; // Validation suggests number, potentially nullable
+  provinsi: string | null; // Validation suggests number, potentially nullable
   kota_kab_id: number | null; // Validation suggests number, potentially nullable
+  kota_kab: string | null; // Validation suggests number, potentially nullable
   kecamatan_id: number | null; // Validation suggests number, potentially nullable
+  kecamatan: string | null; // Validation suggests number, potentially nullable
   desa_kel_id: number | null; // Validation suggests number, potentially nullable
+  desa_kel: string | null; // Validation suggests number, potentially nullable
   kode_pos: string | null; // Potentially nullable if siswa relation isn't loaded
   kota_nama: string | null; // From related kota via siswa
   hp: string | null; // Potentially nullable if siswa relation isn't loaded
@@ -107,10 +110,9 @@ export type PesertaKertosonoVerifikasi = {
   kelompok_sambung: string | null; // Potentially nullable if siswa relation isn't loaded
   asal_pondok_nama: string | null; // From Accessor asalPondokWithDaerah
   asal_daerah_nama: string; // From Accessor asalDaerah, formatted, defaults to empty string
-  pendidikan: string | null; // Combined pendidikan/jurusan or just pendidikan
+  pendidikan: string | null;
+  jurusan: string | null;
   status_mondok: string | null; // Based on validation
-  keahlian: string | null;
-  hobi: string | null;
   umur: number | null; // Calculated age
   nama_ayah: string | null; // Formatted name
   riwayat_tes: string | number | null; // Type depends on the Accessor/Attribute 'riwayat_tes', could be number, string, array, object? Using 'unknown' for safety. The example type suggests 'number'.

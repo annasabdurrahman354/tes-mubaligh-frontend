@@ -192,7 +192,7 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
                 radius="md"
                 variant="light"
                 className="-mr-3"
-                onClick={handleSearchClick} // Click event triggers search
+                onPress={handleSearchClick} // Click event triggers search
               >
                 <SearchIcon size={18} />
               </Button>
