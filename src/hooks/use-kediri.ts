@@ -73,6 +73,7 @@ export function useKediri() {
     nilai_penjelasan: string,
     nilai_pemahaman: string,
     catatan: string,
+    durasi_penilaian: number,
   ): Promise<AkademikKediriForm | any> => {
     try {
       const response = await api.post<AkademikKediriForm>("akademik-kediri", {
@@ -82,6 +83,7 @@ export function useKediri() {
         nilai_penjelasan,
         nilai_pemahaman,
         catatan,
+        durasi_penilaian,
       });
 
       console.log(response.data);

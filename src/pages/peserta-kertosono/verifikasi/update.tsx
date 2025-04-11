@@ -132,8 +132,8 @@ const PesertaKertosonoVerifikasiDetail: React.FC = () => {
           </Button>
         </NavbarContent>
         <NavbarContent justify="center">
-          <p className="font-medium text-xl">
-            {santri.nama_lengkap || "Santri"}
+          <p className="text-md overflow-hidden text-ellipsis">
+            {isEditing ? "Edit Biodata Santri" : "Detail Biodata Santri"}
           </p>
         </NavbarContent>
         {

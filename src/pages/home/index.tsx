@@ -146,17 +146,7 @@ export default function IndexPage() {
                         }
                       />
                       <PercentageStat
-                        change={
-                          statistikKediri.overall?.total_active_peserta
-                            ? Number(
-                                ((statistikKediri.overall
-                                  ?.user_akademik_count || 0) /
-                                  statistikKediri.overall
-                                    ?.total_active_peserta) *
-                                  100,
-                              ).toFixed(2) + "%"
-                            : null
-                        }
+                        change={statistikKediri.by_gender["Laki-laki"].user_akademik_count + " L / " + statistikKediri.by_gender.Perempuan.user_akademik_count + "  P"}
                         color="secondary"
                         icon={BookCheckIcon}
                         title="Anda Simak"
@@ -283,17 +273,7 @@ export default function IndexPage() {
                         }
                       />
                       <PercentageStat
-                        change={
-                          statistikKertosono.overall?.total_active_peserta
-                            ? Number(
-                                ((statistikKertosono.overall
-                                  ?.user_akademik_count || 0) /
-                                  statistikKertosono.overall
-                                    ?.total_active_peserta) *
-                                  100,
-                              ).toFixed(2) + "%"
-                            : null
-                        }
+                        change={statistikKertosono.by_gender["Laki-laki"].user_akademik_count + " L / " + statistikKertosono.by_gender.Perempuan.user_akademik_count + "  P"}
                         color="secondary"
                         icon={BookCheckIcon}
                         title="Anda Simak"

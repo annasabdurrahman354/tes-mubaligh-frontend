@@ -1,4 +1,4 @@
-import { Card, CardBody, Chip, Divider, cn, Avatar } from "@heroui/react";
+import { Card, CardBody, Chip, Divider, cn, Avatar, Image } from "@heroui/react";
 import {
   CheckCircle,
   CircleX,
@@ -28,10 +28,10 @@ const PesertaProfileCard: React.FC<PesertaProfileCardProps> = ({ peserta }) => {
       <CardBody className="flex flex-row items-center justify-center gap-2">
         <div className="flex flex-col flex-1 rounded-lg p-2">
           <div className="flex flex-row items-center mb-4">
-            <Avatar
-              isBordered
-              className="mr-4"
-              size="lg"
+            <Image
+              removeWrapper
+              alt={peserta.nama_lengkap}
+              className="w-20 h-26 mr-4 rounded-xl border-4 border-default-200 transition-transform hover:scale-105"
               src={peserta.foto_smartcard}
             />
             <div>

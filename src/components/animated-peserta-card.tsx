@@ -101,7 +101,7 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
                 <Image
                   removeWrapper
                   alt={peserta.nama_lengkap}
-                  className="w-18 h-24 rounded-xl border-4 border-default-200 transition-transform hover:scale-105"
+                  className="w-20 h-26 rounded-xl border-4 border-default-200 transition-transform hover:scale-105"
                   src={peserta.foto_smartcard}
                 />
                 <Chip

@@ -34,6 +34,7 @@ export type AkademikKediriForm = {
   nilai_penjelasan: number;
   nilai_pemahaman: number;
   catatan: string;
+  durasi_penilaian: number;
 };
 
 export type PesertaKediri = {
