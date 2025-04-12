@@ -5,3 +5,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Opsi 1: Terapkan ke html dan body */
+html, body {
+    overscroll-behavior-y: contain; /* atau 'none' */
+}
