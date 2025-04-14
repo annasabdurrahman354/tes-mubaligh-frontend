@@ -9,6 +9,13 @@ import {
   Tab,
   Tabs,
   Textarea,
+  // --- Add Modal imports ---
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  // -----------------------
 } from "@heroui/react";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
@@ -54,7 +61,10 @@ export default function PenilaianAkademikKediriPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("penilaian");
   const [loading, setLoading] = useState(false);
-
+  // --- State for cancel confirmation modal ---
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  // ------------------------------------------
+ 
   // Redirect effect (remains the same)
   useEffect(() => {
     if (!selectedPeserta || selectedPeserta.length === 0) {
@@ -156,6 +166,12 @@ export default function PenilaianAkademikKediriPage() {
     toggleSelectedPeserta(pesertaToRemove);
   };
 
+  // --- Handler for confirming cancellation ---
+  const handleConfirmCancel = () => {
+    handleRemovePeserta(activePesertaIndex);
+    setIsCancelModalOpen(false); // Close modal after confirming
+  };
+  // ----------------------------------------
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-inter relative">
@@ -314,7 +330,7 @@ export default function PenilaianAkademikKediriPage() {
                       </div>
                       {/* Buttons */}
                       <div className="flex flex-row justify-end mt-6 gap-4 p-2">
-                         <Button color="danger" disabled={loading} variant="flat" onPress={() => handleRemovePeserta(activePesertaIndex)} > Batal </Button>
+                         <Button color="danger" disabled={loading} variant="flat" onPress={() => setIsCancelModalOpen(true)}> Batal </Button>
                          <Button color="primary" disabled={loading} isLoading={loading} variant="shadow" onPress={() => handleSubmit()} type="submit" > Simpan </Button>
                       </div>
                     </CardBody>
@@ -340,6 +356,27 @@ export default function PenilaianAkademikKediriPage() {
         </div>
       </main>
       <PesertaRFIDScanner />
+
+      {/* --- Cancel Confirmation Modal --- */}
+      <Modal isOpen={isCancelModalOpen} onOpenChange={setIsCancelModalOpen} backdrop="blur">
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">Konfirmasi Pembatalan</ModalHeader>
+          <ModalBody>
+            <p>
+              Apakah Anda yakin ingin membatalkan penilaian untuk peserta ini?
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={() => setIsCancelModalOpen(false)}>
+              Tidak
+            </Button>
+            <Button color="danger" variant="shadow" onPress={handleConfirmCancel}>
+              Ya, Batalkan
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      {/* ------------------------------- */}
     </div>
   );
 }

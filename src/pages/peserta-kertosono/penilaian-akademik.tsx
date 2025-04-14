@@ -10,6 +10,13 @@ import {
   Tab,
   Tabs,
   Textarea,
+  // --- Add Modal imports ---
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  // -----------------------
 } from "@heroui/react";
 import { Formik } from "formik";
 import { useEffect, useState } from "react";
@@ -81,6 +88,9 @@ export default function PenilaianAkademikKertosonoPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("penilaian");
   const [loading, setLoading] = useState(false);
+  // --- State for cancel confirmation modal ---
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  // ------------------------------------------
 
   // Redirect effect (remains the same)
   useEffect(() => {
@@ -102,15 +112,12 @@ export default function PenilaianAkademikKertosonoPage() {
         (form) => form.tes_santri_id === peserta.id,
       );
 
-      // If form state for this participant already exists *and* has an awal_penilaian,
-      // reuse it. This prevents recalculating the fake start time unnecessarily.
       if (existingForm && existingForm.awal_penilaian) {
           return existingForm;
       }
 
-      // --- Start Calculation Logic (Adapted from Kediri) ---
-      let calculated_awal_penilaian = new Date(Date.now()); // Default to now (for new assessments)
-      let current_total_duration = null; // Stays null for new, holds loaded duration for existing
+      let calculated_awal_penilaian = new Date(Date.now());
+      let current_total_duration = null;
 
       const akademikEntry = peserta.telah_disimak
         ? peserta.akademik?.find((akademik) => akademik.guru_id == user?.id)
@@ -118,13 +125,10 @@ export default function PenilaianAkademikKertosonoPage() {
 
       if (akademikEntry) {
         const loadedDuration = getInitialDuration(akademikEntry.durasi_penilaian);
-        current_total_duration = loadedDuration; // Store the loaded duration
-        // Calculate the fake start time in the past
+        current_total_duration = loadedDuration;
         calculated_awal_penilaian = new Date(Date.now() - loadedDuration * 60000);
       }
-      // --- End Calculation Logic ---
 
-      // --- Construct Initial Data (Adapted for Kertosono fields) ---
       const initialData = {
         tes_santri_id: peserta.id,
         penilaian: akademikEntry ? akademikEntry.penilaian || "" : "",
@@ -134,18 +138,13 @@ export default function PenilaianAkademikKertosonoPage() {
         kekurangan_kelancaran: akademikEntry ? akademikEntry.kekurangan_kelancaran || [] : [],
         catatan: akademikEntry ? akademikEntry.catatan || "" : "",
         rekomendasi_penarikan: akademikEntry ? akademikEntry.rekomendasi_penarikan || false : false,
-        awal_penilaian: calculated_awal_penilaian, // Use the calculated start time
-        durasi_penilaian: current_total_duration, // Store latest known total duration
-        // No 'akhir_penilaian' needed in initial state with this logic
+        awal_penilaian: calculated_awal_penilaian,
+        durasi_penilaian: current_total_duration,
       };
-      // --- End Construct Initial Data ---
 
-      // If existingForm exists but didn't have awal_penilaian (e.g., from previous session/different logic),
-      // merge non-timer fields, but prioritize the newly calculated timer fields.
       if (existingForm && !existingForm.awal_penilaian) {
           return {
-              ...initialData, // Use fresh timer fields (awal_penilaian, durasi_penilaian)
-              // Keep other fields from existingForm if they exist, otherwise use initialData's
+              ...initialData,
               tes_santri_id: existingForm.tes_santri_id || initialData.tes_santri_id,
               penilaian: existingForm.penilaian || initialData.penilaian,
               kekurangan_tajwid: existingForm.kekurangan_tajwid || initialData.kekurangan_tajwid,
@@ -157,12 +156,12 @@ export default function PenilaianAkademikKertosonoPage() {
           };
       }
 
-      return initialData; // Return the fully constructed initial data
+      return initialData;
     });
 
     setFormValues(updatedFormValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPeserta, user?.id]); // Dependencies: run when participants change or user changes
+  }, [selectedPeserta, user?.id]);
 
   // Don't render if redirecting (remains the same)
   if (!selectedPeserta || selectedPeserta.length === 0) {
@@ -183,6 +182,13 @@ export default function PenilaianAkademikKertosonoPage() {
     toggleSelectedPeserta(pesertaToRemove);
   };
 
+  // --- Handler for confirming cancellation ---
+  const handleConfirmCancel = () => {
+    handleRemovePeserta(activePesertaIndex);
+    setIsCancelModalOpen(false); // Close modal after confirming
+  };
+  // ----------------------------------------
+
   return (
     <div className="min-h-screen bg-background flex flex-col font-inter relative">
       <ActionPesertaTopbar />
@@ -201,301 +207,308 @@ export default function PenilaianAkademikKertosonoPage() {
             onSelectionChange={(key) => setTab(String(key))}
           >
             <Tab key="penilaian" title="Form Penilaian">
-              {/* Add conditional rendering for loading state */}
               {formValues[activePesertaIndex] ? (
-                 <Formik
-                    enableReinitialize // Allows reinitialization when `initialValues` change
-                    initialValues={formValues[activePesertaIndex]}
-                    validationSchema={validationSchema}
-                    onSubmit={async (/* values */) => { // values are implicitly from currentFormState now
-                      try {
-                        setLoading(true);
-                        const currentFormState = formValues[activePesertaIndex];
+                <Formik
+                  enableReinitialize // Allows reinitialization when `initialValues` change
+                  initialValues={formValues[activePesertaIndex]}
+                  validationSchema={validationSchema}
+                  onSubmit={async (/* values */) => {
+                    try {
+                      setLoading(true);
+                      const currentFormState = formValues[activePesertaIndex];
+                      const timerStartTime = currentFormState?.awal_penilaian?.getTime();
 
-                        // Get the calculated start time used by the timer (from Kediri)
-                        const timerStartTime = currentFormState?.awal_penilaian?.getTime();
+                      if (!timerStartTime) {
+                        throw new Error("Assessment start time is missing.");
+                      }
 
-                        if (!timerStartTime) {
-                          // Handle case where start time is somehow missing
-                          throw new Error("Assessment start time is missing.");
-                        }
+                      const totalDurasiMenit = Math.round(
+                        (Date.now() - timerStartTime) / 60000,
+                      );
 
-                        // Calculate the TOTAL duration based on the timer's start time and now (from Kediri)
-                        const totalDurasiMenit = Math.round(
-                          (Date.now() - timerStartTime) / 60000,
-                        );
+                      const updatedFormValuesPayload = {
+                        ...currentFormState,
+                        durasi_penilaian: totalDurasiMenit,
+                      };
 
-                        // Prepare the payload with the calculated total duration (Adapted for Kertosono)
-                        const updatedFormValuesPayload = {
-                          ...currentFormState,
-                          durasi_penilaian: totalDurasiMenit, // This IS the total accumulated time
-                          // No akhir_penilaian needed in payload
-                        };
-
-                        // Update the central formValues state (primarily useful if NOT removing participant immediately)
-                        setFormValues((prevValues) => {
-                          const newValues = [...prevValues];
-                           if(newValues[activePesertaIndex]) {
-                             // Update with the final calculated total duration.
+                      setFormValues((prevValues) => {
+                        const newValues = [...prevValues];
+                          if(newValues[activePesertaIndex]) {
                              newValues[activePesertaIndex] = {
                                ...newValues[activePesertaIndex],
                                durasi_penilaian: totalDurasiMenit,
                              };
                            }
-                          return newValues;
-                        });
+                         return newValues;
+                      });
 
-                        // Call the API with the final accumulated duration (Adapted for Kertosono)
-                        const storedForm = await storeAkademikKertosono(
-                          updatedFormValuesPayload.tes_santri_id,
-                          updatedFormValuesPayload.penilaian,
-                          // Conditionally send null for kekurangan if Lulus
-                          updatedFormValuesPayload.penilaian === "Lulus"
-                            ? null
-                            : updatedFormValuesPayload.kekurangan_tajwid,
-                          updatedFormValuesPayload.penilaian === "Lulus"
-                            ? null
-                            : updatedFormValuesPayload.kekurangan_khusus,
-                          updatedFormValuesPayload.penilaian === "Lulus"
-                            ? null
-                            : updatedFormValuesPayload.kekurangan_keserasian,
-                          updatedFormValuesPayload.penilaian === "Lulus"
-                            ? null
-                            : updatedFormValuesPayload.kekurangan_kelancaran,
-                          updatedFormValuesPayload.catatan,
-                          // Conditionally send null for rekomendasi if Tidak Lulus
-                          updatedFormValuesPayload.penilaian === "Tidak Lulus"
-                            ? null
-                            : updatedFormValuesPayload.rekomendasi_penarikan,
-                          updatedFormValuesPayload.durasi_penilaian, // Send the final total duration
-                        );
+                      const storedForm = await storeAkademikKertosono(
+                        updatedFormValuesPayload.tes_santri_id,
+                        updatedFormValuesPayload.penilaian,
+                        updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_tajwid,
+                        updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_khusus,
+                        updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_keserasian,
+                        updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_kelancaran,
+                        updatedFormValuesPayload.catatan,
+                        updatedFormValuesPayload.penilaian === "Tidak Lulus" ? null : updatedFormValuesPayload.rekomendasi_penarikan,
+                        updatedFormValuesPayload.durasi_penilaian,
+                      );
 
-                        addToast({
-                          title: "Yeayy!",
-                          description: storedForm.message,
-                          timeout: 3000,
-                          variant: "flat",
-                          color: "success",
-                          shouldShowTimeoutProgess: true,
-                        });
+                      addToast({
+                        title: "Yeayy!",
+                        description: storedForm.message,
+                        timeout: 3000,
+                        variant: "flat",
+                        color: "success",
+                        shouldShowTimeoutProgess: true,
+                      });
 
-                        console.log("Form stored successfully:", storedForm);
-                        handleRemovePeserta(activePesertaIndex);
-                        window.scrollTo(0, 0);
-                      } catch (error) {
-                         addToast({
-                            title: "Terjadi Kesalahan!",
-                            description: error instanceof Error ? error.message : String(error), // Ensure message is string
-                            timeout: 3000,
-                            variant: "flat",
-                            color: "danger",
-                            shouldShowTimeoutProgess: true,
-                         });
-                        console.error("Error storing form:", error);
-                      } finally {
-                           setLoading(false);
-                      }
-                    }}
-                  >
-                    {({ values, handleSubmit, setFieldValue, errors, touched }) => (
-                      <Card
-                        fullWidth
-                        className={cn( // Layout class preserved
-                          `border-small dark:border-small border-default-100 relative`, // Added relative positioning
-                        )}
-                      >
-                        <CardBody className="overflow-hidden"> {/* Layout class preserved */}
-                          {/* Timer now displays the 'continuous' total time */}
-                           {values.awal_penilaian ? (
-                             <Timer
-                               className="absolute top-2 right-2" // Layout class preserved
-                               datetimeOrMinutes={values.awal_penilaian}
-                             />
-                           ) : null}
+                      console.log("Form stored successfully:", storedForm);
+                      handleRemovePeserta(activePesertaIndex); // Remove after successful save
+                      window.scrollTo(0, 0);
+                    } catch (error) {
+                       addToast({
+                         title: "Terjadi Kesalahan!",
+                         description: error instanceof Error ? error.message : String(error),
+                         timeout: 3000,
+                         variant: "flat",
+                         color: "danger",
+                         shouldShowTimeoutProgess: true,
+                       });
+                      console.error("Error storing form:", error);
+                    } finally {
+                         setLoading(false);
+                    }
+                  }}
+                >
+                  {({ values, handleSubmit, setFieldValue, errors, touched }) => (
+                    <Card
+                      fullWidth
+                      className={cn(
+                        `border-small dark:border-small border-default-100 relative`,
+                      )}
+                    >
+                      <CardBody className="overflow-hidden">
+                          {values.awal_penilaian ? (
+                            <Timer
+                              className="absolute top-2 right-2"
+                              datetimeOrMinutes={values.awal_penilaian}
+                            />
+                          ) : null}
 
-                          {/* Add padding top to avoid overlap */}
-                           <div className="flex flex-col gap-6 p-2 pt-8"> {/* Added pt-8 */}
-                             {/* RadioGroup Nilai Bacaan */}
-                             <RadioGroup
-                               isRequired
-                               classNames={{ // Layout classes preserved
-                                  wrapper: "w-full flex flex-row gap-6 mt-2 mb-3",
-                               }}
-                               errorMessage={errors.penilaian}
-                               isDisabled={loading}
-                               isInvalid={!!errors.penilaian && !!touched.penilaian}
-                               label="Nilai Bacaan"
-                               value={values.penilaian}
-                               onValueChange={(value) => {
-                                 setFieldValue("penilaian", value);
-                                 // Update central state
-                                 setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], penilaian: value }; } return newValues; });
-                               }}
-                             >
-                               <CustomRadio buttonColor="success" value="Lulus"> Lulus </CustomRadio>
-                               <CustomRadio buttonColor="danger" value="Tidak Lulus"> Tidak Lulus </CustomRadio>
-                             </RadioGroup>
+                          <div className="flex flex-col gap-6 p-2 pt-8">
+                            <RadioGroup
+                              isRequired
+                              classNames={{
+                                wrapper: "w-full flex flex-row gap-6 my-2 px-4",
+                                label: "px-2",
+                              }}
+                              errorMessage={errors.penilaian}
+                              isDisabled={loading}
+                              isInvalid={!!errors.penilaian && !!touched.penilaian}
+                              label="Nilai Bacaan"
+                              value={values.penilaian}
+                              onValueChange={(value) => {
+                                setFieldValue("penilaian", value);
+                                setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], penilaian: value }; } return newValues; });
+                              }}
+                            >
+                              <CustomRadio buttonColor="success" value="Lulus"> Lulus </CustomRadio>
+                              <CustomRadio buttonColor="danger" value="Tidak Lulus"> Tidak Lulus </CustomRadio>
+                            </RadioGroup>
 
-                             {/* Conditional Kekurangan Checkboxes */}
-                             {values.penilaian === "Tidak Lulus" && (
-                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6"> {/* Layout class preserved */}
-                                 <CheckboxGroup /* Kekurangan Tajwid */
-                                   color="danger" isDisabled={loading} label="Kekurangan Tajwid"
-                                   value={values.kekurangan_tajwid}
-                                   onValueChange={(value) => {
+                            {values.penilaian === "Tidak Lulus" && (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-2">
+                                <CheckboxGroup
+                                  color="danger" isDisabled={loading} label="Kekurangan Tajwid"
+                                  value={values.kekurangan_tajwid}
+                                  onValueChange={(value) => {
                                      setFieldValue("kekurangan_tajwid", value);
                                      setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_tajwid: value }; } return newValues; });
+                                  }}
+                                >
+                                  <Checkbox value="Dengung">Dengung</Checkbox>
+                                  <Checkbox value="Mad">Mad</Checkbox>
+                                  <Checkbox value="Makhraj">Makhraj</Checkbox>
+                                  <Checkbox value="Tafkhim-Tarqiq"> Tafkhim-Tarqiq </Checkbox>
+                                </CheckboxGroup>
+                                <CheckboxGroup
+                                   color="danger" isDisabled={loading} label="Kekurangan Khusus"
+                                   value={values.kekurangan_khusus}
+                                   onValueChange={(value) => {
+                                       setFieldValue("kekurangan_khusus", value);
+                                       setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_khusus: value }; } return newValues; });
                                    }}
-                                 >
-                                   <Checkbox value="Dengung">Dengung</Checkbox>
-                                   <Checkbox value="Mad">Mad</Checkbox>
-                                   <Checkbox value="Makhraj">Makhraj</Checkbox>
-                                   <Checkbox value="Tafkhim-Tarqiq"> Tafkhim-Tarqiq </Checkbox>
-                                 </CheckboxGroup>
-                                 <CheckboxGroup /* Kekurangan Khusus */
-                                    color="danger" isDisabled={loading} label="Kekurangan Khusus"
-                                    value={values.kekurangan_khusus}
-                                    onValueChange={(value) => {
-                                        setFieldValue("kekurangan_khusus", value);
-                                        setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_khusus: value }; } return newValues; });
-                                    }}
-                                 >
+                                >
                                      <Checkbox value="Harakat">Harakat</Checkbox>
                                      <Checkbox value="Lafadz">Lafadz</Checkbox>
                                      <Checkbox value="Lam Jalalah"> Lam Jalalah </Checkbox>
-                                 </CheckboxGroup>
-                                 <CheckboxGroup /* Kekurangan Keserasian */
-                                     color="danger" isDisabled={loading} label="Kekurangan Keserasian"
-                                     value={values.kekurangan_keserasian}
-                                     onValueChange={(value) => {
-                                         setFieldValue("kekurangan_keserasian", value);
-                                         setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_keserasian: value }; } return newValues; });
-                                     }}
-                                 >
-                                     <Checkbox value="Panjang Pendek"> Panjang Pendek </Checkbox>
-                                     <Checkbox value="Ikhtilash Huruf Sukun"> Ikhtilash Huruf Sukun </Checkbox>
-                                     <Checkbox value="Ikhtilash Huruf Syiddah"> Ikhtilash Huruf Syiddah </Checkbox>
-                                 </CheckboxGroup>
-                                 <CheckboxGroup /* Kekurangan Kelancaran */
-                                     color="danger" isDisabled={loading} label="Kekurangan Kelancaran"
-                                     value={values.kekurangan_kelancaran}
-                                     onValueChange={(value) => {
-                                         setFieldValue("kekurangan_kelancaran", value);
-                                         setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_kelancaran: value }; } return newValues; });
-                                     }}
-                                 >
-                                     <Checkbox value="Kecepatan">Kecepatan</Checkbox>
-                                     <Checkbox value="Ketartilan">Ketartilan</Checkbox>
-                                 </CheckboxGroup>
-                               </div>
-                             )}
+                                </CheckboxGroup>
+                                <CheckboxGroup
+                                    color="danger" isDisabled={loading} label="Kekurangan Keserasian"
+                                    value={values.kekurangan_keserasian}
+                                    onValueChange={(value) => {
+                                       setFieldValue("kekurangan_keserasian", value);
+                                       setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_keserasian: value }; } return newValues; });
+                                    }}
+                                >
+                                    <Checkbox value="Panjang Pendek"> Panjang Pendek </Checkbox>
+                                    <Checkbox value="Ikhtilash Huruf Sukun"> Ikhtilash Huruf Sukun </Checkbox>
+                                    <Checkbox value="Ikhtilash Huruf Syiddah"> Ikhtilash Huruf Syiddah </Checkbox>
+                                </CheckboxGroup>
+                                <CheckboxGroup
+                                    color="danger" isDisabled={loading} label="Kekurangan Kelancaran"
+                                    value={values.kekurangan_kelancaran}
+                                    onValueChange={(value) => {
+                                        setFieldValue("kekurangan_kelancaran", value);
+                                        setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_kelancaran: value }; } return newValues; });
+                                    }}
+                                >
+                                    <Checkbox value="Kecepatan">Kecepatan</Checkbox>
+                                    <Checkbox value="Ketartilan">Ketartilan</Checkbox>
+                                </CheckboxGroup>
+                              </div>
+                            )}
 
-                             {/* Validation Error for Kekurangan */}
-                             {errors.kekurangan && touched.penilaian && values.penilaian === "Tidak Lulus" && ( // Added touched check
-                               <p className="text-danger-500 text-medium items-start"> {/* Layout class preserved */}
-                                 {errors.kekurangan}
-                               </p>
-                             )}
+                            {errors.kekurangan && touched.penilaian && values.penilaian === "Tidak Lulus" && (
+                              <p className="text-danger-500 text-medium items-start">
+                                {errors.kekurangan}
+                              </p>
+                            )}
 
-                            {/* Conditional Rekomendasi Penarikan */}
-                            {values.penilaian === "Lulus" && (
-                                <Checkbox /* Rekomendasi Penarikan */
-                                className="mt-2 mx-0.5" // Layout class preserved
-                                isDisabled={loading}
-                                isSelected={values.rekomendasi_penarikan}
-                                onValueChange={(value) => {
-                                    // Note: The original code linked this to 'catatan', which seems wrong. Corrected to 'rekomendasi_penarikan'.
+                           {values.penilaian === "Lulus" && (
+                                <Checkbox
+                                  className="mx-0.5"
+                                  isDisabled={loading}
+                                  isSelected={values.rekomendasi_penarikan}
+                                  onValueChange={(value) => {
                                     setFieldValue("rekomendasi_penarikan", value);
                                     setFormValues((prevValues) => {
-                                        const newValues = [...prevValues];
-                                        if (newValues[activePesertaIndex]) {
-                                            newValues[activePesertaIndex] = {
-                                                ...newValues[activePesertaIndex],
-                                                rekomendasi_penarikan: value,
-                                            };
-                                        }
-                                        return newValues;
+                                      const newValues = [...prevValues];
+                                      if (newValues[activePesertaIndex]) {
+                                         newValues[activePesertaIndex] = {
+                                            ...newValues[activePesertaIndex],
+                                            rekomendasi_penarikan: value,
+                                         };
+                                      }
+                                      return newValues;
                                     });
-                                }}
-                                >
-                                Rekomendasi Penarikan
+                                  }}
+                                 >
+                                 Rekomendasi Penarikan
                                 </Checkbox>
                             )}
 
-                            {/* Catatan Textarea */}
-                             <Textarea
-                               isMultiline // Layout prop preserved
-                               className="w-full mt-4 px-2" // Layout classes preserved
-                               isDisabled={loading}
-                               label="Catatan"
-                               minRows={4} // Added minRows for consistency
-                               placeholder="Tuliskan catatan penilaian"
-                               value={values.catatan}
-                               onValueChange={(text) => {
-                                 setFieldValue("catatan", text);
-                                 setFormValues((prevValues) => {
-                                   const newValues = [...prevValues];
-                                   if (newValues[activePesertaIndex]) {
-                                     newValues[activePesertaIndex] = {
-                                       ...newValues[activePesertaIndex],
-                                       catatan: text,
-                                     };
-                                   }
-                                   return newValues;
-                                 });
-                               }}
-                             />
-                           </div>
-
-                          {/* Buttons */}
-                          <div className="flex flex-row justify-end mt-6 gap-4 p-2"> {/* Layout classes preserved */}
-                            <Button color="danger" disabled={loading} variant="flat" onPress={() => handleRemovePeserta(activePesertaIndex)} > Batal </Button>
-                            <Button color="primary" disabled={loading} isLoading={loading} variant="shadow" onPress={() => handleSubmit()} type="submit" > Simpan </Button>
+                            <Textarea
+                              isMultiline
+                              className="w-full px-2"
+                              isDisabled={loading}
+                              label="Catatan"
+                              minRows={4}
+                              placeholder="Tuliskan catatan penilaian"
+                              value={values.catatan}
+                              onValueChange={(text) => {
+                                setFieldValue("catatan", text);
+                                setFormValues((prevValues) => {
+                                  const newValues = [...prevValues];
+                                  if (newValues[activePesertaIndex]) {
+                                    newValues[activePesertaIndex] = {
+                                      ...newValues[activePesertaIndex],
+                                      catatan: text,
+                                    };
+                                  }
+                                  return newValues;
+                                });
+                              }}
+                            />
                           </div>
-                        </CardBody>
-                      </Card>
-                    )}
-                  </Formik>
+
+                        {/* Buttons */}
+                        <div className="flex flex-row justify-end mt-6 gap-4 p-2">
+                          {/* --- Modified Batal Button --- */}
+                          <Button
+                            color="danger"
+                            disabled={loading}
+                            variant="flat"
+                            onPress={() => setIsCancelModalOpen(true)} // Open modal on press
+                          >
+                            Batal
+                          </Button>
+                          {/* --------------------------- */}
+                          <Button
+                            color="primary"
+                            disabled={loading}
+                            isLoading={loading}
+                            variant="shadow"
+                            onPress={() => handleSubmit()}
+                            type="submit"
+                          >
+                            Simpan
+                          </Button>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  )}
+                </Formik>
               ) : (
-                // Loading state while formValues initializes
                  <Card fullWidth className={cn(`border-small dark:border-small border-default-100`)}> <CardBody><p>Loading participant data...</p></CardBody> </Card>
               )}
             </Tab>
             <Tab key="riwayat" title="Riwayat">
-              {/* Added check for selectedPeserta[activePesertaIndex] before accessing history */}
               {selectedPeserta[activePesertaIndex] ? (
-                    <Card
-                        fullWidth
-                        className={cn( // Layout class preserved
-                        `border-small dark:border-small border-default-100`,
-                        )}
-                    >
-                        <CardBody className="overflow-hidden"> {/* Layout class preserved */}
-                        <div className="flex flex-col gap-4"> {/* Layout class preserved */}
-                            {/* Added check for non-empty history */}
-                            {selectedPeserta[activePesertaIndex].akademik && selectedPeserta[activePesertaIndex].akademik.length > 0 ? (
-                                selectedPeserta[activePesertaIndex].akademik.map(
-                                    (akademik) => (
-                                    <RiwayatAkademikKertosonoCard
-                                        key={akademik.id}
-                                        akademik={akademik}
-                                    />
-                                    ),
-                                )
-                            ) : (
-                                <EmptyState /> // Use EmptyState component if no history
-                            )}
-                        </div>
-                        </CardBody>
-                    </Card>
-                 ) : (
-                   <p>Loading history...</p> // Placeholder while participant data loads
-                 )}
+                <Card
+                  fullWidth
+                  className={cn(
+                    `border-small dark:border-small border-default-100`,
+                  )}
+                >
+                  <CardBody className="overflow-hidden">
+                    <div className="flex flex-col gap-4">
+                      {selectedPeserta[activePesertaIndex].akademik && selectedPeserta[activePesertaIndex].akademik.length > 0 ? (
+                        selectedPeserta[activePesertaIndex].akademik.map(
+                          (akademik) => (
+                            <RiwayatAkademikKertosonoCard
+                              key={akademik.id}
+                              akademik={akademik}
+                            />
+                          ),
+                        )
+                      ) : (
+                        <EmptyState />
+                      )}
+                    </div>
+                  </CardBody>
+                </Card>
+              ) : (
+                  <p>Loading history...</p>
+              )}
             </Tab>
           </Tabs>
         </div>
       </main>
       <PesertaRFIDScanner />
+
+      {/* --- Cancel Confirmation Modal --- */}
+      <Modal isOpen={isCancelModalOpen} onOpenChange={setIsCancelModalOpen} backdrop="blur">
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1">Konfirmasi Pembatalan</ModalHeader>
+          <ModalBody>
+            <p>
+              Apakah Anda yakin ingin membatalkan penilaian untuk peserta ini?
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={() => setIsCancelModalOpen(false)}>
+              Tidak
+            </Button>
+            <Button color="danger" variant="shadow" onPress={handleConfirmCancel}>
+              Ya, Batalkan
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+      {/* ------------------------------- */}
+
     </div>
   );
 }
