@@ -5,8 +5,8 @@ export const AuthLayout = () => {
   const { pathname } = useLocation();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center relative font-inter">
-      <main className="container">
+    <div className="min-h-screen w-full bg-background flex flex-col items-center justify-center relative font-inter">
+      <div className="w-full">
         <motion.div
           key={pathname}
           animate="in"
@@ -16,7 +16,7 @@ export const AuthLayout = () => {
         >
           <Outlet />
         </motion.div>
-      </main>
+      </div>
     </div>
   );
 };
