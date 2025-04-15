@@ -316,9 +316,10 @@ export default function IndexPage() {
                       />
                       <PercentageStat
                         change={
-                          statistikKertosono.overall?.total_active_peserta
-                            ? statistikKertosono.overall?.total_active_peserta +
-                              " Orang"
+                          statistikKertosono.overall
+                            ?.count_peserta_with_min_akademik
+                            ? statistikKertosono.overall
+                                ?.count_peserta_with_min_akademik + " Orang"
                             : null
                         }
                         color="danger"
