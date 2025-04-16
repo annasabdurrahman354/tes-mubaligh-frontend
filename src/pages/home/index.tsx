@@ -146,11 +146,22 @@ export default function IndexPage() {
                         }
                       />
                       <PercentageStat
-                        change={statistikKediri.by_gender["Laki-laki"].user_akademik_count + " L / " + statistikKediri.by_gender.Perempuan.user_akademik_count + "  P"}
                         color="secondary"
                         icon={BookCheckIcon}
                         title="Anda Simak"
+                        percent={
+                          statistikKediri.overall?.total_active_peserta
+                            ? Number(
+                                ((statistikKediri.overall
+                                  ?.user_akademik_count || 0) /
+                                  statistikKediri.overall
+                                    ?.total_active_peserta) *
+                                  100,
+                              ).toFixed(0) + "%"
+                            : null
+                        }
                         value={statistikKediri.overall?.user_akademik_count}
+                        desc={statistikKediri.by_gender["Laki-laki"].user_akademik_count + " L / " + statistikKediri.by_gender.Perempuan.user_akademik_count + "  P"}
                         onClick={() =>
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
@@ -163,16 +174,11 @@ export default function IndexPage() {
                         }
                       />
                       <PercentageStat
-                        change={
-                          statistikKediri.overall
-                            ?.count_peserta_with_max_akademik + " Orang"
-                        }
                         color="success"
                         icon={ArrowBigUpDash}
                         title="Penyimakan Terbanyak"
-                        value={
-                          statistikKediri.overall?.max_akademik_per_peserta
-                        }
+                        value={statistikKediri.overall?.max_akademik_per_peserta}
+                        desc={statistikKediri.by_gender["Laki-laki"].count_peserta_with_max_akademik + " L / " + statistikKediri.by_gender.Perempuan.count_peserta_with_max_akademik + "  P"}
                         onClick={() =>
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
@@ -185,16 +191,11 @@ export default function IndexPage() {
                         }
                       />
                       <PercentageStat
-                        change={
-                          statistikKediri.overall
-                            ?.count_peserta_with_min_akademik + " Orang"
-                        }
                         color="danger"
                         icon={ArrowBigDownDash}
                         title="Penyimakan Tersedikit"
-                        value={
-                          statistikKediri.overall?.min_akademik_per_peserta
-                        }
+                        value={statistikKediri.overall?.min_akademik_per_peserta}
+                        desc={statistikKediri.by_gender["Laki-laki"].count_peserta_with_min_akademik + " L / " + statistikKediri.by_gender.Perempuan.count_peserta_with_min_akademik + "  P"}
                         onClick={() =>
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
@@ -273,11 +274,22 @@ export default function IndexPage() {
                         }
                       />
                       <PercentageStat
-                        change={statistikKertosono.by_gender["Laki-laki"].user_akademik_count + " L / " + statistikKertosono.by_gender.Perempuan.user_akademik_count + "  P"}
                         color="secondary"
                         icon={BookCheckIcon}
                         title="Anda Simak"
                         value={statistikKertosono.overall?.user_akademik_count}
+                        percent={
+                          statistikKertosono.overall?.total_active_peserta
+                            ? Number(
+                                ((statistikKertosono.overall
+                                  ?.user_akademik_count || 0) /
+                                  statistikKertosono.overall
+                                    ?.total_active_peserta) *
+                                  100,
+                              ).toFixed(0) + "%"
+                            : null
+                        }
+                        desc={statistikKertosono.by_gender["Laki-laki"].user_akademik_count + " L / " + statistikKertosono.by_gender.Perempuan.user_akademik_count + "  P"}
                         onClick={() =>
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
@@ -290,19 +302,11 @@ export default function IndexPage() {
                         }
                       />
                       <PercentageStat
-                        change={
-                          statistikKertosono.overall
-                            ?.count_peserta_with_max_akademik
-                            ? statistikKertosono.overall
-                                ?.count_peserta_with_max_akademik + " Orang"
-                            : null
-                        }
                         color="success"
                         icon={ArrowBigUpDash}
                         title="Penyimakan Terbanyak"
-                        value={
-                          statistikKertosono.overall?.max_akademik_per_peserta
-                        }
+                        value={statistikKertosono.overall?.max_akademik_per_peserta}
+                        desc={statistikKertosono.by_gender["Laki-laki"].count_peserta_with_max_akademik + " L / " + statistikKertosono.by_gender.Perempuan.count_peserta_with_max_akademik + "  P"}
                         onClick={() =>
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
@@ -315,19 +319,11 @@ export default function IndexPage() {
                         }
                       />
                       <PercentageStat
-                        change={
-                          statistikKertosono.overall
-                            ?.count_peserta_with_min_akademik
-                            ? statistikKertosono.overall
-                                ?.count_peserta_with_min_akademik + " Orang"
-                            : null
-                        }
                         color="danger"
                         icon={ArrowBigDownDash}
                         title="Penyimakan Tersedikit"
-                        value={
-                          statistikKertosono.overall?.min_akademik_per_peserta
-                        }
+                        value={statistikKertosono.overall?.min_akademik_per_peserta}
+                        desc={statistikKertosono.by_gender["Laki-laki"].count_peserta_with_min_akademik + " L / " + statistikKertosono.by_gender.Perempuan.count_peserta_with_min_akademik + "  P"}
                         onClick={() =>
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)

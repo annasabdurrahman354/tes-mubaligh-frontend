@@ -10,7 +10,8 @@ export type PercentageStatProps = CardProps & {
   icon: LucideIcon;
   title: string;
   value?: number | null;
-  change?: string | null;
+  percent?: string | null;
+  desc?: string | null;
   color?: "primary" | "secondary" | "success" | "warning" | "danger";
   onClick?: () => void;
   isPressable?: boolean;
@@ -22,7 +23,8 @@ const PercentageStat = React.forwardRef<HTMLDivElement, PercentageStatProps>(
       color,
       title,
       value,
-      change,
+      percent,
+      desc,
       icon: Icon,
       onClick,
       isPressable,
@@ -67,7 +69,21 @@ const PercentageStat = React.forwardRef<HTMLDivElement, PercentageStatProps>(
                       {value}
                     </div>
 
-                    {change && (
+                    {percent && (
+                      <Chip
+                        classNames={{ 
+                          content: "font-semibold text-[0.65rem]",
+                          base: "mr-1",
+                         }}
+                        color="default"
+                        radius="sm"
+                        size="md"
+                        variant="flat"
+                      >
+                        {percent}
+                      </Chip>
+                    )}
+                    {desc && (
                       <Chip
                         classNames={{ content: "font-semibold text-[0.65rem]" }}
                         color={color}
@@ -75,7 +91,7 @@ const PercentageStat = React.forwardRef<HTMLDivElement, PercentageStatProps>(
                         size="md"
                         variant="flat"
                       >
-                        {change}
+                        {desc}
                       </Chip>
                     )}
                   </>
