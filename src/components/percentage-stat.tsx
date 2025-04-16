@@ -72,7 +72,7 @@ const PercentageStat = React.forwardRef<HTMLDivElement, PercentageStatProps>(
                     {percent && (
                       <Chip
                         classNames={{ 
-                          content: "font-semibold text-[0.65rem]",
+                          content: "font-semibold text-[0.65rem] -mx-1.5",
                           base: "mr-1",
                          }}
                         color="default"
@@ -85,7 +85,7 @@ const PercentageStat = React.forwardRef<HTMLDivElement, PercentageStatProps>(
                     )}
                     {desc && (
                       <Chip
-                        classNames={{ content: "font-semibold text-[0.65rem]" }}
+                        classNames={{ content: "font-semibold text-[0.65rem] -mx-1.5" }}
                         color={color}
                         radius="sm"
                         size="md"
