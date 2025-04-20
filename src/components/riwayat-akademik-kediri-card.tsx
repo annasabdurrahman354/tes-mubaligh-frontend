@@ -67,6 +67,9 @@ const RiwayatAkademikKediriCard: React.FC<RiwayatAkademikKediriCardProps> = ({
                   Tidak ada catatan penilaian.
                 </p>
               )}
+              <p className="text-small text-default-500">
+                {`Durasi ${akademik.durasi_penilaian} menit`}
+              </p>
             </div>
           </div>
         </CardBody>

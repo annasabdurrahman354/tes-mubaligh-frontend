@@ -19,7 +19,7 @@ export const PesertaKediriIndex = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const action = searchParams.get("action") ? searchParams.get("action") : "detail";
-  const filter = searchParams.get("filter");
+  const kategori = searchParams.get("kategori");
 
   const IconComponent =
     action === "penilaian-akademik" || action === "penilaian-akhlak"
@@ -42,7 +42,7 @@ export const PesertaKediriIndex = () => {
 
   // --- Fetching Logic ---
   const fetchPeserta = useCallback(async (page = 1, append = false) => {
-    if (Object.keys(query).length === 0 && !filter) {
+    if (Object.keys(query).length === 0 && !kategori) {
        setPesertaList([]);
        setCurrentPage(1);
        setLastPage(1);
@@ -61,7 +61,7 @@ export const PesertaKediriIndex = () => {
 
     try {
       const params: Record<string, string | number> = { ...query, page };
-      if (filter) params.filter = filter;
+      if (kategori) params.kategori = kategori;
 
       const response = await getPesertaKediri(params);
 
@@ -111,13 +111,13 @@ export const PesertaKediriIndex = () => {
       if (append) setLoadingMore(false);
       else setLoading(false);
     }
-  }, [query, filter, getPesertaKediri]);
+  }, [query, kategori, getPesertaKediri]);
 
 
   // --- Effect for initial fetch and query/filter changes ---
   useEffect(() => {
     fetchPeserta(1, false);
-  }, [query, filter, fetchPeserta]);
+  }, [query, kategori, fetchPeserta]);
 
 
   // --- Load More Logic ---
@@ -187,7 +187,7 @@ export const PesertaKediriIndex = () => {
 
       <main className="flex-grow container mx-auto max-w-7xl py-4 px-4 md:py-6 md:px-6 flex flex-col gap-4 overflow-hidden">
         {/* Condition 1: Initial state */}
-        {Object.keys(query).length === 0 && !filter && !loading && !error && pesertaList.length === 0 && (
+        {Object.keys(query).length === 0 && !kategori && !loading && !error && pesertaList.length === 0 && (
           <StartState />
         )}
         {/* Condition 2: Loading initial page */}
@@ -195,7 +195,7 @@ export const PesertaKediriIndex = () => {
         {/* Condition 3: Error occurred */}
         {error && ( <ErrorState message={error} onPress={() => fetchPeserta(1, false)} /> )}
         {/* Condition 4: Data loaded */}
-        {!loading && !error && (Object.keys(query).length > 0 || filter || pesertaList.length > 0) && (
+        {!loading && !error && (Object.keys(query).length > 0 || kategori || pesertaList.length > 0) && (
              pesertaList.length > 0 ? (
                   <>
                     <div className="will-change-transform flex flex-col gap-4">

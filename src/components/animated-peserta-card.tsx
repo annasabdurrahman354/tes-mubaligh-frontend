@@ -147,26 +147,28 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
                       variant="faded"
                     >
                       Nilai Anda:{" "}
-                      {peserta.penilaian_anda != undefined
+                      {peserta.penilaian_anda !== undefined // Prefer !== for stricter check
                         ? peserta.penilaian_anda
-                        : peserta.akademik?.find(
+                        : (() => { // Use an IIFE for cleaner logic when finding and calculating
+                            const foundAkademik = peserta.akademik?.find(
                               (akademik) => akademik.guru_id == user?.id,
-                            )
-                          ? Object.entries(
-                              peserta.akademik.find(
-                                (akademik) => akademik.guru_id == user?.id,
-                              ),
-                            )
-                              .filter(([key, _]) =>
-                                [
-                                  "nilai_makna",
-                                  "nilai_keterangan",
-                                  "nilai_penjelasan",
-                                  "nilai_pemahaman",
-                                ].includes(key),
-                              )
-                              .reduce((sum, [_, value]) => sum + value, 0) / 4
-                          : 0}
+                            );
+
+                            if (foundAkademik) {
+                              // Calculate the weighted score
+                              // Add fallback (|| 0) in case a specific nilai is missing/null/undefined
+                              const weightedScore =
+                                (foundAkademik.nilai_makna || 0) * 0.2 +
+                                (foundAkademik.nilai_keterangan || 0) * 0.2 +
+                                (foundAkademik.nilai_penjelasan || 0) * 0.3 +
+                                (foundAkademik.nilai_pemahaman || 0) * 0.3;
+                              return weightedScore;
+                            } else {
+                              // If no matching academic record is found
+                              return 0;
+                            }
+                          })() // Immediately invoke the function
+                      }
                     </Chip>
                   )}
                 </div>

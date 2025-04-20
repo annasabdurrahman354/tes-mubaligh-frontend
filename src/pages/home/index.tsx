@@ -166,10 +166,10 @@ export default function IndexPage() {
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
                             ? navigate(
-                                "/peserta-kediri?filter=anda-simak&action=penilaian-akademik",
+                                "/peserta-kediri?kategori=anda-simak&action=penilaian-akademik",
                               )
                             : navigate(
-                                "/peserta-kediri?filter=anda-simak&action=detail",
+                                "/peserta-kediri?kategori=anda-simak&action=detail",
                               )
                         }
                       />
@@ -183,10 +183,10 @@ export default function IndexPage() {
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
                             ? navigate(
-                                "/peserta-kediri?filter=simak-terbanyak&action=penilaian-akademik",
+                                "/peserta-kediri?kategori=simak-terbanyak&action=penilaian-akademik",
                               )
                             : navigate(
-                                "/peserta-kediri?filter=simak-terbanyak&action=detail",
+                                "/peserta-kediri?kategori=simak-terbanyak&action=detail",
                               )
                         }
                       />
@@ -200,10 +200,10 @@ export default function IndexPage() {
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
                             ? navigate(
-                                "/peserta-kediri?filter=simak-tersedikit&action=penilaian-akademik",
+                                "/peserta-kediri?kategori=simak-tersedikit&action=penilaian-akademik",
                               )
                             : navigate(
-                                "/peserta-kediri?filter=simak-tersedikit&action=detail",
+                                "/peserta-kediri?kategori=simak-tersedikit&action=detail",
                               )
                         }
                       />
@@ -294,10 +294,10 @@ export default function IndexPage() {
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
                             ? navigate(
-                                "/peserta-kertosono?filter=anda-simak&action=penilaian-akademik",
+                                "/peserta-kertosono?kategori=anda-simak&action=penilaian-akademik",
                               )
                             : navigate(
-                                "/peserta-kertosono?filter=anda-simak&action=detail",
+                                "/peserta-kertosono?kategori=anda-simak&action=detail",
                               )
                         }
                       />
@@ -311,10 +311,10 @@ export default function IndexPage() {
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
                             ? navigate(
-                                "/peserta-kertosono?filter=simak-terbanyak&action=penilaian-akademik",
+                                "/peserta-kertosono?kategori=simak-terbanyak&action=penilaian-akademik",
                               )
                             : navigate(
-                                "/peserta-kertosono?filter=simak-terbanyak&action=detail",
+                                "/peserta-kertosono?kategori=simak-terbanyak&action=detail",
                               )
                         }
                       />
@@ -328,10 +328,10 @@ export default function IndexPage() {
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
                             ? navigate(
-                                "/peserta-kertosono?filter=simak-tersedikit&action=penilaian-akademik",
+                                "/peserta-kertosono?kategori=simak-tersedikit&action=penilaian-akademik",
                               )
                             : navigate(
-                                "/peserta-kertosono?filter=simak-tersedikit&action=detail",
+                                "/peserta-kertosono?kategori=simak-tersedikit&action=detail",
                               )
                         }
                       />
