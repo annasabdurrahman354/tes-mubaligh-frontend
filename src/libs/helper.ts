@@ -33,3 +33,14 @@ export function ucwordsCustom(str: string): string {
     })
     .join(" ");
 }
+
+export const base64ToFile = async (base64String: string, filename: string): Promise<File | null> => {
+  try {
+    const res = await fetch(base64String);
+    const blob = await res.blob();
+    return new File([blob], filename, { type: blob.type });
+  } catch (error) {
+    console.error("Error converting base64 to File:", error);
+    return null;
+  }
+};

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PesertaKertosonoVerifikasi } from "@/types/kertosono";
 import { Spinner, Card, CardBody, Button, Divider, toast, addToast, Navbar, NavbarContent, NavbarItem, Avatar, Chip, cn, Input } from "@heroui/react";
-import { ArrowLeft, CheckCircle, CircleX, Clock, GraduationCap, Handshake, HeartHandshake, MapPinned, School, Smile } from "lucide-react";
+import { ArrowLeft, CheckCircle, CircleX, Clock, GraduationCap, Handshake, HeartHandshake, MapPinned, School, Smile, User } from "lucide-react";
 import { useKertosono } from "@/hooks/use-kertosono";
 import PesertaVerifikasiForm from "@/components/peserta-verifikasi-form";
 import ActionPesertaVerifikasiTopbar from "@/components/action-peserta-verifikasi-topbar";
@@ -167,7 +167,9 @@ const PesertaKertosonoVerifikasiDetail: React.FC = () => {
                   isBordered
                   className="mr-4"
                   size="lg"
-                  src={santri.foto_smartcard}
+                  src={santri.foto_smartcard || undefined}
+                  fallback={<User className="w-10 h-10 text-default-400"/>}
+                  imgProps={{ className:"object-cover w-full h-full"}}
                 />
                 <div>
                   <div className="flex items-center gap-2">

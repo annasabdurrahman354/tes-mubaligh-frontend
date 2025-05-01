@@ -149,34 +149,37 @@ export function useKertosono() {
       }
   };
 
-  /**
-   * Updates a Peserta Kertosono's verification data.
-   * Corresponds to: PATCH /peserta-kertosono/verifikasi/{id_tes_santri}
-   * @param id_tes_santri The ID of the participant to update.
-   * @param data The data to update. Should match the fields expected by the backend validator.
-   * Using Partial<PesertaKertosonoVerifikasi> allows sending only changed fields,
-   * but ensure all *required* fields for the *update* operation are present.
-   * Alternatively, use a more specific type for the update payload if needed.
-   */
   const updatePesertaKertosonoVerifikasi = async (
-      id_tes_santri: string | number,
-      data: Partial<PesertaKertosonoVerifikasi> | Record<string, any> // Use a specific type if preferred
+    id_tes_santri: string,
+    formData: FormData // <--- Change parameter to accept FormData
   ): Promise<PesertaKertosonoVerifikasi | null> => {
-      try {
-          const response = await api.patch<PesertaKertosonoVerifikasi>(
-              `peserta-kertosono/verifikasi/${id_tes_santri}`,
-              data // Send the update data in the request body
-          );
-           // The backend 'update' method returns the updated transformed object
-          return response.data;
-      } catch (err) {
-          handleApiError(err);
-          // You might want more specific error handling here,
-          // e.g., returning validation errors from the response if available
-          return null;
+    try {
+      // Assuming your API endpoint is /api/peserta-kertosono-verifikasi/{id}
+      const response = await api.post(`peserta-kertosono/verifikasi/${id_tes_santri}`, formData, {
+         headers: {
+           // Axios usually sets multipart/form-data automatically when FormData is detected
+           // If using fetch, omit the Content-Type header manually
+           'Content-Type': 'multipart/form-data',
+           // Add '_method': 'PUT' if your backend expects it for updates via POST
+           // Or use axios.put if your backend route uses PUT method
+         },
+         // If your backend expects PUT but you send POST due to FormData limitations
+         // Often, you send a hidden field '_method' with value 'PUT'
+         // formData.append('_method', 'PUT'); // Add this before sending if needed
+      });
+  
+      if (response.status === 200 && response.data) {
+        return response.data as PesertaKertosonoVerifikasi;
       }
+      return null;
+    } catch (error: any) {
+      handleApiError(error);
+      // You might want more specific error handling here,
+      // e.g., returning validation errors from the response if available
+      return null;
+    }
   };
-
+  
   return {
     getPesertaKertosono,
     getPesertaKertosonoByRFID,

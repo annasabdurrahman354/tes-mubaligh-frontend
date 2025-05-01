@@ -117,6 +117,7 @@ export type PesertaKertosonoVerifikasi = {
   nama_ayah: string | null; // Formatted name
   riwayat_tes: string | number | null; // Type depends on the Accessor/Attribute 'riwayat_tes', could be number, string, array, object? Using 'unknown' for safety. The example type suggests 'number'.
   foto_smartcard: string | null; // URL from Accessor urlFotoIdentitas on Siswa
+  new_person_photo?: File | null;
 };
 
 export function getFirstValidWord(text: string) {
