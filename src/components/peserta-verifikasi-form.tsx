@@ -209,6 +209,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
         pendidikan: santri.pendidikan,
         jurusan: santri.jurusan,
         status_mondok: santri.status_mondok,
+        id_daerah_kiriman: Number(santri.id_daerah_kiriman) || null,
       };
     setFormData(initialFormData);
     setPreviewUrl(santri.foto_smartcard || null); // Initialize preview
@@ -362,6 +363,16 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     if (kecamatanId) await getKelurahanOptions(kecamatanId); // Fetch new options
   }, [getKelurahanOptions]);
 
+  // Specific handler for status_mondok to manage conditional fields
+  const handleStatusMondokChange = useCallback((status: string | null) => {
+    setFormData((prev) => ({
+      ...prev,
+      status_mondok: status,
+      // If status is not 'kiriman', reset id_daerah_kiriman
+      id_daerah_kiriman: status === 'kiriman' ? prev.id_daerah_kiriman : null
+    }));
+  }, []);
+
   // Generic handler for Select changes
   const handleSelectChange = useCallback((name: keyof PesertaKertosonoVerifikasi) => (value: string | number | null) => {
     // Ensure numeric values are stored as numbers if needed by the state/backend
@@ -370,9 +381,10 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     if (name === "provinsi_id")       handleProvinsiChange(processedValue as number | null);
     else if (name === "kota_kab_id")  handleKotaChange(processedValue as number | null);
     else if (name === "kecamatan_id") handleKecamatanChange(processedValue as number | null);
+    else if (name === "status_mondok") handleStatusMondokChange(processedValue as string | null);
     else setFormData((prev) => ({ ...prev, [name]: processedValue })); // Update other selects
 
-  }, [handleProvinsiChange, handleKotaChange, handleKecamatanChange]);
+  }, [handleProvinsiChange, handleKotaChange, handleKecamatanChange, handleStatusMondokChange]);
 
    // --- Image/Camera Handlers ---
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -442,13 +454,21 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     console.log("Submitting form data:", formData);
     setIsCompressing(false); // Reset compression state
 
+    // --- START: NEW CODE (Conditional Validation) ---
     // Basic frontend validation
-    const requiredFields: (keyof PesertaKertosonoVerifikasi)[] = [
+    let requiredFields: (keyof PesertaKertosonoVerifikasi)[] = [
       "nama_lengkap", "jenis_kelamin", "tempat_lahir", "tanggal_lahir",
       "alamat", "rt", "rw", "id_ponpes", "provinsi_id", "kota_kab_id",
       "kecamatan_id", "desa_kel_id", "id_daerah_sambung", "kelompok_sambung",
       "pendidikan", "status_mondok",
     ];
+
+    // Conditionally add id_daerah_kiriman to required fields
+    if (formData.status_mondok === 'kiriman') {
+        requiredFields.push('id_daerah_kiriman');
+    }
+    // --- END: NEW CODE ---
+
     const missingFields = requiredFields.filter(field => {
         const value = formData[field];
         return value === null || value === undefined || value === '';
@@ -721,6 +741,17 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                        {(item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>}
                     </Select>
                      <Input label="Kode Pos" name="kode_pos" value={formData.kode_pos || ""} onChange={handleInputChange} />
+                     <Select
+                        label="Daerah Sambung"
+                        placeholder="Pilih Daerah"
+                        items={daerahSambungOptions}
+                        selectedKeys={formData.id_daerah_sambung ? [String(formData.id_daerah_sambung)] : []}
+                        onChange={(e) => handleSelectChange("id_daerah_sambung")(e.target.value ? Number(e.target.value) : null)}
+                        isRequired
+                    >
+                        {(item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>}
+                    </Select>
+                    <Input label="Kelompok Sambung" name="kelompok_sambung" value={formData.kelompok_sambung || ""} onChange={handleInputChange} isRequired />
                  </div>
              </div>
 
@@ -751,17 +782,23 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                           <SelectItem key="kiriman" value="kiriman">Kiriman</SelectItem>
                           <SelectItem key="pelajar" value="pelajar">Pelajar</SelectItem>
                       </Select>
-                     <Select
-                        label="Daerah Sambung"
-                        placeholder="Pilih Daerah"
-                        items={daerahSambungOptions}
-                        selectedKeys={formData.id_daerah_sambung ? [String(formData.id_daerah_sambung)] : []}
-                        onChange={(e) => handleSelectChange("id_daerah_sambung")(e.target.value ? Number(e.target.value) : null)}
-                        isRequired
-                    >
-                        {(item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>}
-                    </Select>
-                    <Input label="Kelompok Sambung" name="kelompok_sambung" value={formData.kelompok_sambung || ""} onChange={handleInputChange} isRequired />
+                     
+                      {formData.status_mondok === 'kiriman' && (
+                        <Select
+                            label="Daerah Kiriman"
+                            placeholder="Pilih Daerah Kiriman"
+                            // We reuse the options from daerah sambung as requested
+                            items={daerahSambungOptions}
+                            selectedKeys={formData.id_daerah_kiriman ? [String(formData.id_daerah_kiriman)] : []}
+                            onChange={(e) => handleSelectChange("id_daerah_kiriman")(e.target.value ? Number(e.target.value) : null)}
+                            // This field is required only if it is visible
+                            isRequired={formData.status_mondok === 'kiriman'}
+                            className="md:col-span-2" // Make it full width in this section
+                        >
+                            {(item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>}
+                        </Select>
+                      )}
+
                  </div>
             </div>
 

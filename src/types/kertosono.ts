@@ -110,9 +110,11 @@ export type PesertaKertosonoVerifikasi = {
   kelompok_sambung: string | null; // Potentially nullable if siswa relation isn't loaded
   asal_pondok_nama: string | null; // From Accessor asalPondokWithDaerah
   asal_daerah_nama: string; // From Accessor asalDaerah, formatted, defaults to empty string
+  status_mondok: string | null; // Based on validation
+  id_daerah_kiriman: number | null; // Validation suggests number, potentially nullable
+  daerah_kiriman_nama: string | null; // From Accessor asalDaerah, formatted, defaults to empty string
   pendidikan: string | null;
   jurusan: string | null;
-  status_mondok: string | null; // Based on validation
   umur: number | null; // Calculated age
   nama_ayah: string | null; // Formatted name
   riwayat_tes: string | number | null; // Type depends on the Accessor/Attribute 'riwayat_tes', could be number, string, array, object? Using 'unknown' for safety. The example type suggests 'number'.

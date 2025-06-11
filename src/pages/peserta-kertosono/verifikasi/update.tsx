@@ -419,6 +419,18 @@ const PesertaVerifikasiView: React.FC<PesertaVerifikasiViewProps> = ({
               value={formatValue(santri.kode_pos)}
               variant="bordered"
             />
+            <Input
+              isReadOnly
+              label="Daerah Sambung"
+              value={formatValue(santri.asal_daerah_nama)}
+              variant="bordered"
+            />
+            <Input
+              isReadOnly
+              label="Kelompok Sambung"
+              value={formatValue(santri.kelompok_sambung)}
+              variant="bordered"
+            />
           </div>
         </div>
 
@@ -441,14 +453,8 @@ const PesertaVerifikasiView: React.FC<PesertaVerifikasiViewProps> = ({
             />
             <Input
               isReadOnly
-              label="Daerah Sambung"
-              value={formatValue(santri.asal_daerah_nama)}
-              variant="bordered"
-            />
-            <Input
-              isReadOnly
-              label="Kelompok Sambung"
-              value={formatValue(santri.kelompok_sambung)}
+              label="Daerah Kiriman"
+              value={formatValue(santri.daerah_kiriman_nama)}
               variant="bordered"
             />
           </div>
