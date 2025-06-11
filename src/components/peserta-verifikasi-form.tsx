@@ -778,9 +778,9 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                          onChange={(e) => handleSelectChange("status_mondok")(e.target.value || null)}
                          isRequired
                       >
-                          <SelectItem key="person" value="person">Person</SelectItem>
+                          <SelectItem key="reguler" value="reguler">Reguler</SelectItem>
                           <SelectItem key="kiriman" value="kiriman">Kiriman</SelectItem>
-                          <SelectItem key="pelajar" value="pelajar">Pelajar</SelectItem>
+                          <SelectItem key="pelajar/mahasiswa" value="pelajar/mahasiswa">Pelajar/Mahasiswa</SelectItem>
                       </Select>
                      
                       {formData.status_mondok === 'kiriman' && (
