@@ -110,6 +110,48 @@ export function useOptions() {
     }
   };
 
+  const getGuruPenggantiKediriOptions = async (guru_id: string | number): Promise<SelectOption[]> => {
+    try {
+      const response = await api.get(`options/guru-pengganti-kediri/${guru_id}`);
+      // Directly map response.data
+      const formattedData: SelectOption[] = Object.entries(response.data ?? {}).map(
+        ([label, value]) => ({
+          // Ensure value is treated appropriately (might be string or number)
+          value: value as (string | number),
+          label: label,
+        })
+      );
+      // Sort alphabetically by label if needed
+      formattedData.sort((a, b) => a.label.localeCompare(b.label));
+
+      return formattedData;
+    } catch (err) {
+      handleApiError(err);
+      return []; // Return empty array on error
+    }
+  };
+
+  const getGuruPenggantiKertosonoOptions = async (guru_id: string | number): Promise<SelectOption[]> => {
+    try {
+      const response = await api.get(`options/guru-pengganti-kertosono/${guru_id}`);
+      // Directly map response.data
+      const formattedData: SelectOption[] = Object.entries(response.data ?? {}).map(
+        ([label, value]) => ({
+          // Ensure value is treated appropriately (might be string or number)
+          value: value as (string | number),
+          label: label,
+        })
+      );
+      // Sort alphabetically by label if needed
+      formattedData.sort((a, b) => a.label.localeCompare(b.label));
+      
+      return formattedData;
+    } catch (err) {
+      handleApiError(err);
+      return []; // Return empty array on error
+    }
+  };
+
   // --- Return Value ---
   // Returns only the functions to fetch the options
   return {

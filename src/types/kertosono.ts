@@ -17,6 +17,7 @@ export type AkademikKertosono = {
   kekurangan_khusus: string[];
   kekurangan_keserasian: string[];
   kekurangan_kelancaran: string[];
+  guru_pengganti: string | null;
   catatan: string;
   rekomendasi_penarikan: boolean;
   durasi_penilaian: number;
@@ -35,6 +36,7 @@ export type AkademikKertosonoForm = {
   kekurangan_khusus: string[];
   kekurangan_keserasian: string[];
   kekurangan_kelancaran: string[];
+  guru_pengganti: string | null;
   catatan: string;
   rekomendasi_penarikan: boolean;
   created_at: Date;
