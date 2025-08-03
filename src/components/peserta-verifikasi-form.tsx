@@ -23,13 +23,7 @@ import {
   User, // Fallback icon
   CheckCircle, // Icon for submit button
 } from "lucide-react";
-
-
-// Interface for the standardized return format (keep this)
-interface SelectOption {
-  value: number | string;
-  label: string;
-}
+import { SelectOption } from "@/types";
 
 interface PesertaVerifikasiFormProps {
   santri: PesertaKertosonoVerifikasi;

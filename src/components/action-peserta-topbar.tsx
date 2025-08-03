@@ -19,8 +19,7 @@ export default function ActionPesertaTopbar() {
   const [mounted, setMounted] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedPeserta, activePesertaIndex, setActivePesertaIndex } =
-    usePeserta();
+  const { selectedPeserta, activePesertaIndex, setActivePesertaIndex, formValues } = usePeserta();
 
   const tahap = location.pathname.includes("kediri") ? "Kediri" : "Kertosono";
   const action = location.pathname.includes("penilaian-akademik")
@@ -72,21 +71,25 @@ export default function ActionPesertaTopbar() {
             className="w-full flex flex-row justify-center items-center gap-3 min-h-fit flex-wrap"
           >
             <AnimatePresence mode="sync">
-              {selectedPeserta.map((peserta, index) => (
-                <BouncingAvatar
-                  key={peserta.id}
-                  active={index === activePesertaIndex}
-                  cocard={peserta.nomor_cocard}
-                  kelompok={peserta.kelompok}
-                  nama={
-                    peserta.nama_panggilan
-                      ? peserta.nama_panggilan
-                      : getFirstValidWord(peserta.nama_lengkap)
-                  }
-                  src={peserta.foto_smartcard}
-                  onClick={() => setActivePesertaIndex(index)}
-                />
-              ))}
+              {selectedPeserta.map((peserta, index) => {
+                const formValue = formValues.find(f => f.tes_santri_id === peserta.id);
+                return (
+                  <BouncingAvatar
+                    key={peserta.id}
+                    active={index === activePesertaIndex}
+                    cocard={peserta.nomor_cocard}
+                    kelompok={peserta.kelompok}
+                    nama={
+                      peserta.nama_panggilan
+                        ? peserta.nama_panggilan
+                        : getFirstValidWord(peserta.nama_lengkap)
+                    }
+                    src={peserta.foto_smartcard}
+                    onClick={() => setActivePesertaIndex(index)}
+                    awal_penilaian={formValue?.awal_penilaian}
+                  />
+                )
+              })}
               <Button
                 isIconOnly
                 aria-label="Add Peserta"

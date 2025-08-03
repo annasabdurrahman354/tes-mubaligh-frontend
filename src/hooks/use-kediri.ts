@@ -72,6 +72,7 @@ export function useKediri() {
     nilai_keterangan: string,
     nilai_penjelasan: string,
     nilai_pemahaman: string,
+    guru_pengganti: string | null,
     catatan: string,
     durasi_penilaian: number,
   ): Promise<AkademikKediriForm | any> => {
@@ -82,6 +83,7 @@ export function useKediri() {
         nilai_keterangan,
         nilai_penjelasan,
         nilai_pemahaman,
+        guru_pengganti,
         catatan,
         durasi_penilaian,
       });

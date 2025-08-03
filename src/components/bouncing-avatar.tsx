@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Avatar, Chip } from "@heroui/react";
 import { useEffect, useState } from "react";
+import SmallTimer from "./timer-small";
 
 // BouncingAvatar Component
 interface AvatarProps {
@@ -11,6 +12,7 @@ interface AvatarProps {
   active?: boolean;
   onClick?: () => void;
   isVisible?: boolean;
+  awal_penilaian?: Date; // The prop for the timer
 }
 
 const BouncingAvatar: React.FC<AvatarProps> = ({
@@ -21,6 +23,7 @@ const BouncingAvatar: React.FC<AvatarProps> = ({
   active,
   onClick,
   isVisible = true, // Default to visible
+  awal_penilaian,
 }) => {
   // Local state to handle visibility
   const [show, setShow] = useState(isVisible);
@@ -34,7 +37,7 @@ const BouncingAvatar: React.FC<AvatarProps> = ({
     show && (
       <motion.div
         animate={{ scale: 1, opacity: 1, y: [0, -10, 0] }}
-        className="flex flex-col justify-center items-center align-middle gap-3"
+        className="flex flex-col justify-center items-center align-middle gap-1.5"
         exit={{ scale: 0.5, opacity: 0, y: -10 }}
         initial={{ scale: 0.5, opacity: 0 }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
@@ -45,6 +48,9 @@ const BouncingAvatar: React.FC<AvatarProps> = ({
         <Chip color="primary" size="sm" variant={active ? "solid" : "bordered"}>
           {nama} {kelompok ? `- ${kelompok + cocard}` : `- ${cocard}`}
         </Chip>
+        {awal_penilaian && (
+            <SmallTimer datetimeOrMinutes={awal_penilaian} />
+        )}
       </motion.div>
     )
   );

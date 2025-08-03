@@ -9,6 +9,8 @@ import {
   Tab,
   Tabs,
   Textarea,
+  Select,
+  SelectItem,
   // --- Add Modal imports ---
   Modal,
   ModalContent,
@@ -18,7 +20,7 @@ import {
   // -----------------------
 } from "@heroui/react";
 import { Formik } from "formik";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
@@ -31,14 +33,17 @@ import Timer from "@/components/timer";
 import { useAuth } from "@/hooks/use-auth";
 import { useKediri } from "@/hooks/use-kediri";
 import { usePeserta } from "@/hooks/use-peserta";
+import { SelectOption } from "@/types";
+import api, { handleApiError } from "@/libs/axios";
 
-// Validation schema remains the same
+// Validation schema
 const validationSchema = Yup.object().shape({
   nilai_makna: Yup.string().required("Nilai makna harus dipilih."),
   nilai_keterangan: Yup.string().required("Nilai keterangan harus dipilih."),
   nilai_penjelasan: Yup.string().required("Nilai penjelasan harus dipilih."),
   nilai_pemahaman: Yup.string().required("Nilai pemahaman harus dipilih."),
   catatanPenguji: Yup.string(),
+  guru_pengganti: Yup.string(), // Add validation for guru_pengganti
 });
 
 // Helper function to safely get initial duration number
@@ -61,9 +66,42 @@ export default function PenilaianAkademikKediriPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("penilaian");
   const [loading, setLoading] = useState(false);
+  const [guruPenggantiOptions, setGuruPenggantiOptions] = useState<SelectOption[]>([]);
+  
   // --- State for cancel confirmation modal ---
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   // ------------------------------------------
+
+  const getGuruPenggantiKediriOptions = useCallback(async (): Promise<SelectOption[]> => {
+    console.log("Fetching guru pengganti options...");
+    try {
+        const response = await api.get(`options/guru-pengganti-kediri/${user?.id}`);
+        // Assuming the API returns an object like { "Ponpes A (Daerah X)": 1, ... }
+        const formattedData: SelectOption[] = Object.entries(response.data ?? {}).map(
+            ([label, value]) => ({
+                value: value as (string | number),
+                label: label,
+            })
+        );
+        formattedData.sort((a, b) => a.label.localeCompare(b.label));
+        return formattedData;
+    } catch (err) {
+        handleApiError(err);
+        addToast({ 
+          title: "Error", 
+          description: "Gagal memuat guru pengganti.", 
+          color: 'danger' 
+        });
+        return [];
+    }
+  }, [user?.id]);
+
+  // Effect to fetch guru pengganti options
+  useEffect(() => {
+    if (user?.id) {
+      getGuruPenggantiKediriOptions().then(setGuruPenggantiOptions);
+    }
+  }, [getGuruPenggantiKediriOptions, user?.id]);
  
   // Redirect effect (remains the same)
   useEffect(() => {
@@ -90,7 +128,6 @@ export default function PenilaianAkademikKediriPage() {
            return existingForm;
       }
 
-
       // --- Start Calculation Logic ---
       let calculated_awal_penilaian = new Date(Date.now()); // Default to now (for new assessments)
       let current_total_duration = null; // Stays null for new, holds loaded duration for existing
@@ -107,7 +144,6 @@ export default function PenilaianAkademikKediriPage() {
       }
       // --- End Calculation Logic ---
 
-
       // --- Construct Initial Data ---
       const initialData = {
         tes_santri_id: peserta.id,
@@ -115,13 +151,13 @@ export default function PenilaianAkademikKediriPage() {
         nilai_keterangan: akademikEntry ? String(akademikEntry.nilai_keterangan || "") : "",
         nilai_penjelasan: akademikEntry ? String(akademikEntry.nilai_penjelasan || "") : "",
         nilai_pemahaman: akademikEntry ? String(akademikEntry.nilai_pemahaman || "") : "",
+        guru_pengganti: akademikEntry ? akademikEntry.guru_pengganti || null : null,
         catatan: akademikEntry ? akademikEntry.catatan || "" : "",
         awal_penilaian: calculated_awal_penilaian, // Use the calculated start time
         durasi_penilaian: current_total_duration, // Store latest known total duration
          // No 'original_durasi_penilaian' needed in this approach
       };
       // --- End Construct Initial Data ---
-
 
       // If existingForm exists but didn't have awal_penilaian (e.g., from previous session/different logic),
       // merge non-timer fields, but prioritize the newly calculated timer fields.
@@ -134,14 +170,13 @@ export default function PenilaianAkademikKediriPage() {
                nilai_keterangan: existingForm.nilai_keterangan || initialData.nilai_keterangan,
                nilai_penjelasan: existingForm.nilai_penjelasan || initialData.nilai_penjelasan,
                nilai_pemahaman: existingForm.nilai_pemahaman || initialData.nilai_pemahaman,
+               guru_pengganti: existingForm.guru_pengganti || initialData.guru_pengganti,
                catatan: existingForm.catatan || initialData.catatan,
            };
       }
 
-
       return initialData; // Return the fully constructed initial data
     });
-
 
     setFormValues(updatedFormValues);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -230,13 +265,14 @@ export default function PenilaianAkademikKediriPage() {
                       return newValues;
                     });
 
-                    // Call the API with the final accumulated duration
+                    // Call the API with the final accumulated duration - updated to include guru_pengganti
                     const storedForm = await storeAkademikKediri(
                       updatedFormValuesPayload.tes_santri_id,
                       updatedFormValuesPayload.nilai_makna,
                       updatedFormValuesPayload.nilai_keterangan,
                       updatedFormValuesPayload.nilai_penjelasan,
                       updatedFormValuesPayload.nilai_pemahaman,
+                      updatedFormValuesPayload.guru_pengganti,
                       updatedFormValuesPayload.catatan,
                       updatedFormValuesPayload.durasi_penilaian, // Send the final total
                     );
@@ -251,7 +287,9 @@ export default function PenilaianAkademikKediriPage() {
 
                   } catch (error) {
                     addToast({
-                        title: "Terjadi Kesalahan!", description: error.message, timeout: 3000,
+                        title: "Terjadi Kesalahan!", 
+                        description: error instanceof Error ? error.message : String(error), 
+                        timeout: 3000,
                         variant: "flat", color: "danger", shouldShowTimeoutProgess: true,
                     });
                     console.error("Error storing form:", error);
@@ -319,6 +357,37 @@ export default function PenilaianAkademikKediriPage() {
                                 }} >
                              <Radio value="60">60</Radio><Radio value="70">70</Radio><Radio value="80">80</Radio><Radio value="90">90</Radio>
                          </RadioGroup>
+
+                         {/* --- Guru Pengganti Select Field --- */}
+                         <Select
+                           className="w-full px-2"
+                           isDisabled={loading}
+                           label="Guru Pengganti"
+                           placeholder="Pilih guru pengganti (opsional)"
+                           selectedKeys={values.guru_pengganti ? [String(values.guru_pengganti)] : []}
+                           onSelectionChange={(keys) => {
+                             const selectedValue = Array.from(keys)[0] || "";
+                             setFieldValue("guru_pengganti", selectedValue);
+                             setFormValues((prevValues) => {
+                               const newValues = [...prevValues];
+                               if (newValues[activePesertaIndex]) {
+                                 newValues[activePesertaIndex] = {
+                                   ...newValues[activePesertaIndex],
+                                   guru_pengganti: selectedValue,
+                                 };
+                               }
+                               return newValues;
+                             });
+                           }}
+                         >
+                           {guruPenggantiOptions.map((option) => (
+                             <SelectItem key={String(option.value)} value={String(option.value)}>
+                               {option.label}
+                             </SelectItem>
+                           ))}
+                         </Select>
+                         {/* ----------------------------------- */}
+
                          <Textarea /* Catatan */
                                 isDisabled={loading} label="Catatan Penguji" minRows={4}
                                 placeholder="Tuliskan catatan penilaian" value={values.catatan}
@@ -337,7 +406,12 @@ export default function PenilaianAkademikKediriPage() {
                   </Card>
                 )}
               </Formik>
-               ) : ( <Card fullWidth className={cn(`border-small dark:border-small border-default-100`)}> <CardBody><p>Loading participant data...</p></CardBody> </Card> )}
+               ) : ( 
+              <Card fullWidth className={cn(`border-small dark:border-small border-default-100`)}> 
+                <CardBody>
+                  <p>Memuat data peserta...</p>
+                </CardBody> 
+              </Card> )}
             </Tab>
              <Tab key="riwayat" title="Riwayat">
               {selectedPeserta[activePesertaIndex] ? (
@@ -350,7 +424,7 @@ export default function PenilaianAkademikKediriPage() {
                   </div>
                 </CardBody>
               </Card>
-               ) : ( <p>Loading history...</p> )}
+               ) : ( <p>Memuat riwayat pengetesan...</p> )}
             </Tab>
           </Tabs>
         </div>

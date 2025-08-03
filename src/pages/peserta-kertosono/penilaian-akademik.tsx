@@ -10,6 +10,8 @@ import {
   Tab,
   Tabs,
   Textarea,
+  Select,
+  SelectItem,
   // --- Add Modal imports ---
   Modal,
   ModalContent,
@@ -19,13 +21,13 @@ import {
   // -----------------------
 } from "@heroui/react";
 import { Formik } from "formik";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
 import ActionPesertaTopbar from "@/components/action-peserta-topbar";
 import { CustomRadio } from "@/components/custom-radio";
-import EmptyState from "@/components/empty-state"; // Added for consistency in Riwayat tab
+import EmptyState from "@/components/empty-state";
 import PesertaProfileCard from "@/components/peserta-profile-card";
 import PesertaRFIDScanner from "@/components/peserta-rfid-scanner";
 import RiwayatAkademikKertosonoCard from "@/components/riwayat-akademik-kertosono-card";
@@ -33,6 +35,8 @@ import Timer from "@/components/timer";
 import { useAuth } from "@/hooks/use-auth";
 import { useKertosono } from "@/hooks/use-kertosono";
 import { usePeserta } from "@/hooks/use-peserta";
+import { SelectOption } from "@/types";
+import api, { handleApiError } from "@/libs/axios";
 
 // Validation schema remains the same
 const validationSchema = Yup.object().shape({
@@ -57,18 +61,19 @@ const validationSchema = Yup.object().shape({
           (!kekurangan_kelancaran || kekurangan_kelancaran.length === 0);
 
         if (allKekuranganEmpty) {
-          return false; // Trigger validation error
+          return false;
         }
       }
 
-      return true; // Validation passes
+      return true;
     },
   ),
-  catatan: Yup.string(), // Added optional catatan validation
-  rekomendasi_penarikan: Yup.boolean(), // Added boolean validation
+  guru_pengganti: Yup.string(),
+  catatan: Yup.string(),
+  rekomendasi_penarikan: Yup.boolean(),
 });
 
-// Helper function to safely get initial duration number (copied from Kediri)
+// Helper function to safely get initial duration number
 const getInitialDuration = (duration) => {
   const num = Number(duration);
   return isNaN(num) ? 0 : num;
@@ -88,11 +93,44 @@ export default function PenilaianAkademikKertosonoPage() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("penilaian");
   const [loading, setLoading] = useState(false);
+  const [guruPenggantiOptions, setGuruPenggantiOptions] = useState<SelectOption[]>([]);
+
   // --- State for cancel confirmation modal ---
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   // ------------------------------------------
 
-  // Redirect effect (remains the same)
+  const getGuruPenggantiKertosonoOptions = useCallback(async (): Promise<SelectOption[]> => {
+    console.log("Fetching guru pengganti options...");
+    try {
+        const response = await api.get(`options/guru-pengganti-kertosono/${user?.id}`);
+        // Assuming the API returns an object like { "Ponpes A (Daerah X)": 1, ... }
+        const formattedData: SelectOption[] = Object.entries(response.data ?? {}).map(
+            ([label, value]) => ({
+                value: value as (string | number),
+                label: label,
+            })
+        );
+        formattedData.sort((a, b) => a.label.localeCompare(b.label));
+        return formattedData;
+    } catch (err) {
+        handleApiError(err);
+        addToast({ 
+          title: "Error", 
+          description: "Gagal memuat guru pengganti.", 
+          color: 'danger' 
+        });
+        return [];
+    }
+  }, [user?.id]);
+
+  // Effect to fetch guru pengganti options
+  useEffect(() => {
+    if (user?.id) {
+      getGuruPenggantiKertosonoOptions().then(setGuruPenggantiOptions);
+    }
+  }, [getGuruPenggantiKertosonoOptions, user?.id]);
+
+  // Redirect effect
   useEffect(() => {
     if (!selectedPeserta || selectedPeserta.length === 0) {
       navigate("/peserta-kertosono?action=penilaian-akademik", {
@@ -101,7 +139,7 @@ export default function PenilaianAkademikKertosonoPage() {
     }
   }, [selectedPeserta, navigate]);
 
-  // Effect to initialize form values, calculating 'awal_penilaian' for continuous timer effect (adapted from Kediri)
+  // Effect to initialize form values
   useEffect(() => {
     if (!selectedPeserta || selectedPeserta.length === 0) {
       return;
@@ -136,6 +174,7 @@ export default function PenilaianAkademikKertosonoPage() {
         kekurangan_khusus: akademikEntry ? akademikEntry.kekurangan_khusus || [] : [],
         kekurangan_keserasian: akademikEntry ? akademikEntry.kekurangan_keserasian || [] : [],
         kekurangan_kelancaran: akademikEntry ? akademikEntry.kekurangan_kelancaran || [] : [],
+        guru_pengganti: akademikEntry ? akademikEntry.guru_pengganti || null : null,
         catatan: akademikEntry ? akademikEntry.catatan || "" : "",
         rekomendasi_penarikan: akademikEntry ? akademikEntry.rekomendasi_penarikan || false : false,
         awal_penilaian: calculated_awal_penilaian,
@@ -151,6 +190,7 @@ export default function PenilaianAkademikKertosonoPage() {
               kekurangan_khusus: existingForm.kekurangan_khusus || initialData.kekurangan_khusus,
               kekurangan_keserasian: existingForm.kekurangan_keserasian || initialData.kekurangan_keserasian,
               kekurangan_kelancaran: existingForm.kekurangan_kelancaran || initialData.kekurangan_kelancaran,
+              guru_pengganti: existingForm.guru_pengganti || initialData.guru_pengganti,
               catatan: existingForm.catatan || initialData.catatan,
               rekomendasi_penarikan: existingForm.rekomendasi_penarikan || initialData.rekomendasi_penarikan,
           };
@@ -160,15 +200,14 @@ export default function PenilaianAkademikKertosonoPage() {
     });
 
     setFormValues(updatedFormValues);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPeserta, user?.id]);
+  }, [selectedPeserta, user?.id, setFormValues]);
 
-  // Don't render if redirecting (remains the same)
+  // Don't render if redirecting
   if (!selectedPeserta || selectedPeserta.length === 0) {
     return null;
   }
 
-  // handleRemovePeserta (remains the same)
+  // handleRemovePeserta
   const handleRemovePeserta = (indexToRemove) => {
     const pesertaToRemove = selectedPeserta[indexToRemove];
     if (selectedPeserta.length === 1) {
@@ -182,12 +221,11 @@ export default function PenilaianAkademikKertosonoPage() {
     toggleSelectedPeserta(pesertaToRemove);
   };
 
-  // --- Handler for confirming cancellation ---
+  // Handler for confirming cancellation
   const handleConfirmCancel = () => {
     handleRemovePeserta(activePesertaIndex);
-    setIsCancelModalOpen(false); // Close modal after confirming
+    setIsCancelModalOpen(false);
   };
-  // ----------------------------------------
 
   return (
     <div className="min-h-screen bg-background flex flex-col font-inter relative">
@@ -209,10 +247,10 @@ export default function PenilaianAkademikKertosonoPage() {
             <Tab key="penilaian" title="Form Penilaian">
               {formValues[activePesertaIndex] ? (
                 <Formik
-                  enableReinitialize // Allows reinitialization when `initialValues` change
+                  enableReinitialize
                   initialValues={formValues[activePesertaIndex]}
                   validationSchema={validationSchema}
-                  onSubmit={async (/* values */) => {
+                  onSubmit={async () => {
                     try {
                       setLoading(true);
                       const currentFormState = formValues[activePesertaIndex];
@@ -249,6 +287,7 @@ export default function PenilaianAkademikKertosonoPage() {
                         updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_khusus,
                         updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_keserasian,
                         updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_kelancaran,
+                        updatedFormValuesPayload.guru_pengganti,
                         updatedFormValuesPayload.catatan,
                         updatedFormValuesPayload.penilaian === "Tidak Lulus" ? null : updatedFormValuesPayload.rekomendasi_penarikan,
                         updatedFormValuesPayload.durasi_penilaian,
@@ -264,7 +303,7 @@ export default function PenilaianAkademikKertosonoPage() {
                       });
 
                       console.log("Form stored successfully:", storedForm);
-                      handleRemovePeserta(activePesertaIndex); // Remove after successful save
+                      handleRemovePeserta(activePesertaIndex);
                       window.scrollTo(0, 0);
                     } catch (error) {
                        addToast({
@@ -376,6 +415,36 @@ export default function PenilaianAkademikKertosonoPage() {
                               </p>
                             )}
 
+                            {/* --- Guru Pengganti Select Field --- */}
+                            <Select
+                              className="w-full px-2"
+                              isDisabled={loading}
+                              label="Guru Pengganti"
+                              placeholder="Pilih guru pengganti (opsional)"
+                              selectedKeys={values.guru_pengganti ? [String(values.guru_pengganti)] : []}
+                              onSelectionChange={(keys) => {
+                                const selectedValue = Array.from(keys)[0] || "";
+                                setFieldValue("guru_pengganti", selectedValue);
+                                setFormValues((prevValues) => {
+                                  const newValues = [...prevValues];
+                                  if (newValues[activePesertaIndex]) {
+                                    newValues[activePesertaIndex] = {
+                                      ...newValues[activePesertaIndex],
+                                      guru_pengganti: selectedValue,
+                                    };
+                                  }
+                                  return newValues;
+                                });
+                              }}
+                            >
+                              {guruPenggantiOptions.map((option) => (
+                                <SelectItem key={String(option.value)} value={String(option.value)}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </Select>
+                            {/* ----------------------------------- */}
+
                            {values.penilaian === "Lulus" && (
                                 <Checkbox
                                   className="mx-0.5"
@@ -425,16 +494,14 @@ export default function PenilaianAkademikKertosonoPage() {
 
                         {/* Buttons */}
                         <div className="flex flex-row justify-end mt-6 gap-4 p-2">
-                          {/* --- Modified Batal Button --- */}
                           <Button
                             color="danger"
                             disabled={loading}
                             variant="flat"
-                            onPress={() => setIsCancelModalOpen(true)} // Open modal on press
+                            onPress={() => setIsCancelModalOpen(true)}
                           >
                             Batal
                           </Button>
-                          {/* --------------------------- */}
                           <Button
                             color="primary"
                             disabled={loading}
@@ -451,7 +518,9 @@ export default function PenilaianAkademikKertosonoPage() {
                   )}
                 </Formik>
               ) : (
-                 <Card fullWidth className={cn(`border-small dark:border-small border-default-100`)}> <CardBody><p>Loading participant data...</p></CardBody> </Card>
+                 <Card fullWidth className={cn(`border-small dark:border-small border-default-100`)}> 
+                   <CardBody><p>Memuat data peserta tes...</p></CardBody> 
+                 </Card>
               )}
             </Tab>
             <Tab key="riwayat" title="Riwayat">
@@ -480,7 +549,7 @@ export default function PenilaianAkademikKertosonoPage() {
                   </CardBody>
                 </Card>
               ) : (
-                  <p>Loading history...</p>
+                  <p>Memuat riwayat pengetesan...</p>
               )}
             </Tab>
           </Tabs>
@@ -488,7 +557,7 @@ export default function PenilaianAkademikKertosonoPage() {
       </main>
       <PesertaRFIDScanner />
 
-      {/* --- Cancel Confirmation Modal --- */}
+      {/* Cancel Confirmation Modal */}
       <Modal isOpen={isCancelModalOpen} onOpenChange={setIsCancelModalOpen} backdrop="blur">
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">Konfirmasi Pembatalan</ModalHeader>
@@ -507,7 +576,6 @@ export default function PenilaianAkademikKertosonoPage() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      {/* ------------------------------- */}
 
     </div>
   );
