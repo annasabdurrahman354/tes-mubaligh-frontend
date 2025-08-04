@@ -68,7 +68,6 @@ const validationSchema = Yup.object().shape({
       return true;
     },
   ),
-  guru_pengganti: Yup.string(),
   catatan: Yup.string(),
   rekomendasi_penarikan: Yup.boolean(),
 });

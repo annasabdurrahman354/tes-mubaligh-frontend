@@ -42,8 +42,7 @@ const validationSchema = Yup.object().shape({
   nilai_keterangan: Yup.string().required("Nilai keterangan harus dipilih."),
   nilai_penjelasan: Yup.string().required("Nilai penjelasan harus dipilih."),
   nilai_pemahaman: Yup.string().required("Nilai pemahaman harus dipilih."),
-  catatanPenguji: Yup.string(),
-  guru_pengganti: Yup.string(), // Add validation for guru_pengganti
+  catatan: Yup.string(),
 });
 
 // Helper function to safely get initial duration number
