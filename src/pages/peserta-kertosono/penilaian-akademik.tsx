@@ -414,36 +414,6 @@ export default function PenilaianAkademikKertosonoPage() {
                               </p>
                             )}
 
-                            {/* --- Guru Pengganti Select Field --- */}
-                            <Select
-                              className="w-full px-2"
-                              isDisabled={loading}
-                              label="Guru Pengganti"
-                              placeholder="Pilih guru pengganti (opsional)"
-                              selectedKeys={values.guru_pengganti ? [String(values.guru_pengganti)] : []}
-                              onSelectionChange={(keys) => {
-                                const selectedValue = Array.from(keys)[0] || "";
-                                setFieldValue("guru_pengganti", selectedValue);
-                                setFormValues((prevValues) => {
-                                  const newValues = [...prevValues];
-                                  if (newValues[activePesertaIndex]) {
-                                    newValues[activePesertaIndex] = {
-                                      ...newValues[activePesertaIndex],
-                                      guru_pengganti: selectedValue,
-                                    };
-                                  }
-                                  return newValues;
-                                });
-                              }}
-                            >
-                              {guruPenggantiOptions.map((option) => (
-                                <SelectItem key={String(option.value)} value={String(option.value)}>
-                                  {option.label}
-                                </SelectItem>
-                              ))}
-                            </Select>
-                            {/* ----------------------------------- */}
-
                            {values.penilaian === "Lulus" && (
                                 <Checkbox
                                   className="mx-0.5"
@@ -489,6 +459,36 @@ export default function PenilaianAkademikKertosonoPage() {
                                 });
                               }}
                             />
+                            
+                            {/* --- Guru Pengganti Select Field --- */}
+                            <Select
+                              className="w-full"
+                              isDisabled={loading}
+                              label="Guru Pengganti"
+                              placeholder="Pilih guru pengganti (opsional)"
+                              selectedKeys={values.guru_pengganti ? [String(values.guru_pengganti)] : []}
+                              onSelectionChange={(keys) => {
+                                const selectedValue = Array.from(keys)[0] || "";
+                                setFieldValue("guru_pengganti", selectedValue);
+                                setFormValues((prevValues) => {
+                                  const newValues = [...prevValues];
+                                  if (newValues[activePesertaIndex]) {
+                                    newValues[activePesertaIndex] = {
+                                      ...newValues[activePesertaIndex],
+                                      guru_pengganti: selectedValue,
+                                    };
+                                  }
+                                  return newValues;
+                                });
+                              }}
+                            >
+                              {guruPenggantiOptions.map((option) => (
+                                <SelectItem key={String(option.value)} value={String(option.value)}>
+                                  {option.label}
+                                </SelectItem>
+                              ))}
+                            </Select>
+                            {/* ----------------------------------- */}
                           </div>
 
                         {/* Buttons */}

@@ -357,44 +357,45 @@ export default function PenilaianAkademikKediriPage() {
                              <Radio value="60">60</Radio><Radio value="70">70</Radio><Radio value="80">80</Radio><Radio value="90">90</Radio>
                          </RadioGroup>
 
-                         {/* --- Guru Pengganti Select Field --- */}
-                         <Select
-                           className="w-full px-2"
-                           isDisabled={loading}
-                           label="Guru Pengganti"
-                           placeholder="Pilih guru pengganti (opsional)"
-                           selectedKeys={values.guru_pengganti ? [String(values.guru_pengganti)] : []}
-                           onSelectionChange={(keys) => {
-                             const selectedValue = Array.from(keys)[0] || "";
-                             setFieldValue("guru_pengganti", selectedValue);
-                             setFormValues((prevValues) => {
-                               const newValues = [...prevValues];
-                               if (newValues[activePesertaIndex]) {
-                                 newValues[activePesertaIndex] = {
-                                   ...newValues[activePesertaIndex],
-                                   guru_pengganti: selectedValue,
-                                 };
-                               }
-                               return newValues;
-                             });
-                           }}
-                         >
-                           {guruPenggantiOptions.map((option) => (
-                             <SelectItem key={String(option.value)} value={String(option.value)}>
-                               {option.label}
-                             </SelectItem>
-                           ))}
-                         </Select>
-                         {/* ----------------------------------- */}
-
+                         
                          <Textarea /* Catatan */
-                                isDisabled={loading} label="Catatan Penguji" minRows={4}
-                                placeholder="Tuliskan catatan penilaian" value={values.catatan}
-                                onValueChange={(text) => {
-                                    setFieldValue("catatan", text);
-                                    setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan: text, }; } return newValues; });
-                                }}
-                            />
+                            isDisabled={loading} label="Catatan Penguji" minRows={4}
+                            placeholder="Tuliskan catatan penilaian" value={values.catatan}
+                            onValueChange={(text) => {
+                                setFieldValue("catatan", text);
+                                setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan: text, }; } return newValues; });
+                            }}
+                        />
+
+                        {/* --- Guru Pengganti Select Field --- */}
+                         <Select
+                          className="w-full"
+                          isDisabled={loading}
+                          label="Guru Pengganti"
+                          placeholder="Pilih guru pengganti (opsional)"
+                          selectedKeys={values.guru_pengganti ? [String(values.guru_pengganti)] : []}
+                          onSelectionChange={(keys) => {
+                            const selectedValue = Array.from(keys)[0] || "";
+                            setFieldValue("guru_pengganti", selectedValue);
+                            setFormValues((prevValues) => {
+                              const newValues = [...prevValues];
+                              if (newValues[activePesertaIndex]) {
+                                newValues[activePesertaIndex] = {
+                                  ...newValues[activePesertaIndex],
+                                  guru_pengganti: selectedValue,
+                                };
+                              }
+                              return newValues;
+                            });
+                          }}
+                        >
+                          {guruPenggantiOptions.map((option) => (
+                            <SelectItem key={String(option.value)} value={String(option.value)}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                        {/* ----------------------------------- */}
                       </div>
                       {/* Buttons */}
                       <div className="flex flex-row justify-end mt-6 gap-4 p-2">
