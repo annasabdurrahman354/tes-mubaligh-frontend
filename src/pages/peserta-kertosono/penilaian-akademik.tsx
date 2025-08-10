@@ -466,6 +466,7 @@ export default function PenilaianAkademikKertosonoPage() {
                               isDisabled={loading}
                               label="Guru Pengganti"
                               placeholder="Pilih guru pengganti (opsional)"
+                              isClearable={true}
                               selectedKeys={values.guru_pengganti ? [String(values.guru_pengganti)] : []}
                               onSelectionChange={(keys) => {
                                 const selectedValue = Array.from(keys)[0] || "";
@@ -482,6 +483,10 @@ export default function PenilaianAkademikKertosonoPage() {
                                 });
                               }}
                             >
+                              {/* Blank option */}
+                              <SelectItem key="">
+                                Pilih salah satu guru pengganti (opsional)
+                              </SelectItem>
                               {guruPenggantiOptions.map((option) => (
                                 <SelectItem key={String(option.value)} value={String(option.value)}>
                                   {option.label}
