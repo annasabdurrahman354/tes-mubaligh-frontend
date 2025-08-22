@@ -37,7 +37,7 @@ const PesertaProfileCard: React.FC<PesertaProfileCardProps> = ({ peserta }) => {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-large font-semibold">
-                  {peserta.nama_lengkap}
+                  {peserta.nama_lengkap}{peserta.riwayat_tes ? "*".repeat(peserta.riwayat_tes) : ""}
                 </h3>
               </div>
               <p className="mb-2 text-small font-medium text-default-600">

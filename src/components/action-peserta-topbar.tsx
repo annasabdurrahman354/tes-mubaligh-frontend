@@ -139,10 +139,11 @@ export default function ActionPesertaTopbar() {
                     cocard={peserta.nomor_cocard}
                     kelompok={peserta.kelompok}
                     nama={
-                      peserta.nama_panggilan
-                        ? peserta.nama_panggilan
-                        : getFirstValidWord(peserta.nama_lengkap)
-                    }
+                        (peserta.nama_panggilan
+                          ? peserta.nama_panggilan
+                          : getFirstValidWord(peserta.nama_lengkap)) +
+                        (peserta.riwayat_tes > 0 ? "*".repeat(peserta.riwayat_tes) : "")
+                      }
                     src={peserta.foto_smartcard}
                     onClick={() => setActivePesertaIndex(index)}
                     awal_penilaian={formValue?.awal_penilaian}
@@ -214,9 +215,10 @@ export default function ActionPesertaTopbar() {
                     cocard={peserta.nomor_cocard}
                     kelompok={peserta.kelompok}
                     nama={
-                      peserta.nama_panggilan
+                      (peserta.nama_panggilan
                         ? peserta.nama_panggilan
-                        : getFirstValidWord(peserta.nama_lengkap)
+                        : getFirstValidWord(peserta.nama_lengkap)) +
+                      (peserta.riwayat_tes > 0 ? "*".repeat(peserta.riwayat_tes) : "")
                     }
                     src={peserta.foto_smartcard}
                     onClick={() => setActivePesertaIndex(index)}

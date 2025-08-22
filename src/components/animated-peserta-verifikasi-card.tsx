@@ -64,7 +64,7 @@ const AnimatedPesertaVerifikasiCard = forwardRef<HTMLDivElement, ParticipantCard
             <CardHeader className="py-2.5 px-4 flex-col items-start">
               <div className="flex items-start justify-start gap-2">
                 <h3 className="text-large font-semibold">
-                  {ucwordsCustom(peserta.nama_lengkap)}
+                  {ucwordsCustom(peserta.nama_lengkap)} {peserta.riwayat_tes ? "*".repeat(peserta.riwayat_tes) : ""}
                 </h3>
               </div>
               <p className="text-small font-medium text-default-600">
