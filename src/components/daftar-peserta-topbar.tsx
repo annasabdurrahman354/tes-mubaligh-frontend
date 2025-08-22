@@ -19,15 +19,16 @@ import BouncingChip from "./bouncing-chip";
 
 import { getFirstValidWord, PesertaKertosono } from "@/types/kertosono"; // Assuming these types are correctly defined
 import { PesertaKediri } from "@/types/kediri"; // Assuming these types are correctly defined
+import { useOptions } from "@/hooks/use-options";
 
 const genderOptions = [
-  { label: "Semua Gender", value: "" },
+  { label: "Gender", value: "" },
   { label: "Laki-laki", value: "L" },
   { label: "Perempuan", value: "P" },
 ];
 
 const campOptions = [
-    { label: "Semua Camp", value: "" },
+    { label: "Camp", value: "" },
     { label: "Camp A", value: "A" },
     { label: "Camp B", value: "B" },
     { label: "Camp C", value: "C" },
@@ -70,19 +71,27 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const isTahapKediri = location.pathname.includes("kediri");
+  const searchParams = new URLSearchParams(location.search);
+  const kategori = searchParams.get("kategori");
+
+  // Akademik count options
+  const { getAkademikKediriCountOptions, getAkademikKertosonoCountOptions } = useOptions();
+  const [akademikOptions, setAkademikOptions] = useState<{ label: string; value: string | number }[]>([]);
+  const [loadingAkademik, setLoadingAkademik] = useState(false);
+  const [queryAkademikCount, setQueryAkademikCount] = useState<string | number>("");
 
   // --- Memoized values for dropdown labels ---
   const selectedGenderValue = useMemo( // Changed from React.useMemo
     () =>
       genderOptions.find((opt) => opt.value === queryGender)?.label ||
-      "Semua Gender",
+      "Gender",
     [queryGender],
   );
 
   const selectedKelompokValue = useMemo( // Changed from React.useMemo
     () =>
       campOptions.find((opt) => opt.value === queryKelompok)?.label ||
-      "Semua Camp",
+      "Camp",
     [queryKelompok],
   );
 
@@ -121,6 +130,55 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
       return newQuery;
     });
   };
+
+  // Akademik count handlers
+  const selectedAkademikLabel = useMemo(() => {
+    if (loadingAkademik) return "Loading...";
+    const found = akademikOptions.find((o) => String(o.value) === String(queryAkademikCount));
+    return found ? found.label : "Simakan";
+  }, [akademikOptions, queryAkademikCount, loadingAkademik]);
+
+  const handleAkademikSelectionChange = (keys: Set<React.Key> | any) => {
+    const selectedValue = Array.from(keys)[0] as string; // could be number as string
+    setQueryAkademikCount(selectedValue);
+
+    setQuery((prevQuery: any) => {
+      const newQuery = { ...prevQuery };
+      if (selectedValue === "" || selectedValue === undefined) {
+        delete newQuery["filter[akademik_count]"];
+      } else {
+        newQuery["filter[akademik_count]"] = selectedValue;
+      }
+      return newQuery;
+    });
+  };
+
+  // Fetch akademik options when component mounts or when path changes
+  // NOTE: getAkademik... functions returned from `useOptions()` are recreated
+  // on every render, so don't include them in deps to avoid continuous re-runs.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    let isSubscribed = true; // avoid shadowing the `mounted` state variable
+    const load = async () => {
+      setLoadingAkademik(true);
+      try {
+        const opts = isTahapKediri
+          ? await getAkademikKediriCountOptions()
+          : await getAkademikKertosonoCountOptions();
+
+        if (!isSubscribed) return;
+        setAkademikOptions([{ label: "Simakan", value: "" }, ...opts]);
+      } catch (err) {
+        // ignore
+      } finally {
+        if (isSubscribed) setLoadingAkademik(false);
+      }
+    };
+    load();
+    return () => {
+      isSubscribed = false;
+    };
+  }, [isTahapKediri]);
 
   // --- Handler for Name Input Change ---
   const handleNamaChange = (value: string) => {
@@ -263,6 +321,44 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
               </DropdownMenu>
             </Dropdown>
           )}
+
+          {/* Akademik Count Dropdown - only show when kategori is null/empty and when options are available */}
+          {!kategori && (
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  className="capitalize"
+                  color="primary"
+                  endContent={<ChevronDown className="h-4 w-4" />}
+                  variant="solid"
+                  disabled={loadingAkademik}
+                >
+                  {loadingAkademik ? (
+                    <>
+                      <span className="inline-block w-4 h-4 mr-2 rounded-full border-2 border-t-transparent animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    selectedAkademikLabel
+                  )}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Select Akademik Count"
+                className="max-h-[50vh] overflow-y-auto"
+                selectedKeys={new Set([String(queryAkademikCount)])}
+                selectionMode="single"
+                shouldBlockScroll={false}
+                variant="bordered"
+                onSelectionChange={handleAkademikSelectionChange}
+              >
+                {akademikOptions.map((option) => (
+                  <DropdownItem key={String(option.value)}>{option.label}</DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+          )}
         </div>
       </NavbarItem>
 
@@ -281,9 +377,10 @@ const DaftarPesertaTopbar: React.FC<DaftarPesertaTopbarProps> = ({
                   cocard={peserta.nomor_cocard}
                   kelompok={peserta.kelompok}
                   nama={
-                    peserta.nama_panggilan
+                    (peserta.nama_panggilan
                       ? peserta.nama_panggilan
-                      : getFirstValidWord(peserta.nama_lengkap)
+                      : getFirstValidWord(peserta.nama_lengkap)) +
+                    (peserta.riwayat_tes > 0 ? "*".repeat(peserta.riwayat_tes) : "")
                   }
                   src={peserta.foto_smartcard}
                   onClose={() => {

@@ -152,6 +152,58 @@ export function useOptions() {
     }
   };
 
+  const getAkademikKediriCountOptions = async (): Promise<SelectOption[]> => {
+    try {
+      const response = await api.get("options/akademik-kediri-count");
+      const data = response.data ?? [];
+
+      // If API returns an array like [0,1,2] or [{count: 0, label: '0'}]
+      if (Array.isArray(data)) {
+        return data.map((item: any) => ({ value: item, label: String(item) }));
+      }
+
+      // If API returns an object mapping label -> value
+      if (data && typeof data === "object") {
+        const formattedData: SelectOption[] = Object.entries(data).map(([label, value]) => ({
+          value: value as (string | number),
+          label: String(label),
+        }));
+        formattedData.sort((a, b) => a.label.localeCompare(b.label));
+        return formattedData;
+      }
+
+      return [];
+    } catch (err) {
+      handleApiError(err);
+      return [];
+    }
+  };
+
+  const getAkademikKertosonoCountOptions = async (): Promise<SelectOption[]> => {
+    try {
+      const response = await api.get("options/akademik-kertosono-count");
+      const data = response.data ?? [];
+
+      if (Array.isArray(data)) {
+        return data.map((item: any) => ({ value: item, label: String(item) }));
+      }
+
+      if (data && typeof data === "object") {
+        const formattedData: SelectOption[] = Object.entries(data).map(([label, value]) => ({
+          value: value as (string | number),
+          label: String(label),
+        }));
+        formattedData.sort((a, b) => a.label.localeCompare(b.label));
+        return formattedData;
+      }
+
+      return [];
+    } catch (err) {
+      handleApiError(err);
+      return [];
+    }
+  };
+
   // --- Return Value ---
   // Returns only the functions to fetch the options
   return {
@@ -161,5 +213,7 @@ export function useOptions() {
     getKelurahanOptions,
     getDaerahSambungOptions,
     getPonpesOptions,
+  getAkademikKediriCountOptions,
+  getAkademikKertosonoCountOptions,
   };
 }
