@@ -44,20 +44,6 @@ const RiwayatAkademikKediriCard: React.FC<RiwayatAkademikKediriCardProps> = ({
             </div>
             <Divider />
             <div className="flex flex-col flex-wrap gap-2 text-small">
-              <div className="flex flex-row flex-wrap gap-2 text-small">
-                <Chip color="default" variant="flat">
-                  Makna: {akademik.nilai_makna}
-                </Chip>
-                <Chip color="default" variant="flat">
-                  Keterangan: {akademik.nilai_keterangan}
-                </Chip>
-                <Chip color="default" variant="flat">
-                  Penjelasan: {akademik.nilai_penjelasan}
-                </Chip>
-                <Chip color="default" variant="flat">
-                  Pemahaman: {akademik.nilai_pemahaman}
-                </Chip>
-              </div>
               {akademik.catatan ? (
                 <p className="text-small text-default-600">
                   {akademik.catatan}

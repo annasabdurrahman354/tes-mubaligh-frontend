@@ -94,27 +94,6 @@ const PesertaProfileCard: React.FC<PesertaProfileCardProps> = ({ peserta }) => {
             >
               Hobi {ucwords(peserta.hobi)}
             </Chip>
-            {peserta.avg_nilai && (
-              <Chip
-                color={
-                  peserta.hasil_sistem === "Lulus"
-                    ? "success"
-                    : peserta.hasil_sistem === "Tidak Lulus"
-                      ? "danger"
-                      : "primary"
-                }
-                startContent={
-                  peserta.hasil_sistem === "Lulus" ? (
-                    <CheckCircle size={18} />
-                  ) : peserta.hasil_sistem === "Tidak Lulus" ? (
-                    <CircleX size={18} />
-                  ) : null
-                }
-                variant="flat"
-              >
-                Nilai Sementara {Number(peserta.avg_nilai).toFixed(2)}
-              </Chip>
-            )}
             {peserta.akhlak.length != 0 ? (
               peserta.total_poin_akhlak ? (
                 <Chip
