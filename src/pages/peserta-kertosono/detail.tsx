@@ -57,16 +57,16 @@ export default function DetailPesertaKertosonoPage() {
                 <Chip
                   color={
                     selectedPeserta[activePesertaIndex].penilaian_anda ===
-                    "Lulus"
+                      "Lulus"
                       ? "success"
                       : selectedPeserta[activePesertaIndex].penilaian_anda ===
-                          "Tidak Lulus"
+                        "Tidak Lulus"
                         ? "danger"
                         : "default"
                   }
                   startContent={
                     selectedPeserta[activePesertaIndex].penilaian_anda ===
-                    "Lulus" ? (
+                      "Lulus" ? (
                       <CheckCircle size={18} />
                     ) : selectedPeserta[activePesertaIndex].penilaian_anda ===
                       "Tidak Lulus" ? (
@@ -82,7 +82,7 @@ export default function DetailPesertaKertosonoPage() {
                 {selectedPeserta[activePesertaIndex].penilaian_anda ===
                   "Lulus" &&
                   selectedPeserta[activePesertaIndex].rekomendasi_anda ===
-                    true && (
+                  true && (
                     <Chip
                       color="success"
                       startContent={<CheckCircle size={18} />}
@@ -93,44 +93,6 @@ export default function DetailPesertaKertosonoPage() {
                   )}
               </div>
             </CardBody>
-            <Divider />
-            <CardFooter>
-              <div className="flex flex-row flex-wrap gap-2 text-small">
-                <Chip color="primary" variant="flat">
-                  Jumlah Meluluskan:{" "}
-                  {selectedPeserta[activePesertaIndex].count_akademik_lulus}
-                </Chip>
-                <Chip color="primary" variant="flat">
-                  Jumlah Tidak Meluluskan:{" "}
-                  {
-                    selectedPeserta[activePesertaIndex]
-                      .count_akademik_tidak_lulus
-                  }
-                </Chip>
-                <Chip
-                  color={
-                    selectedPeserta[activePesertaIndex].hasil_sistem === "Lulus"
-                      ? "success"
-                      : selectedPeserta[activePesertaIndex].hasil_sistem ===
-                          "Tidak Lulus Akademik"
-                        ? "danger"
-                        : "default"
-                  }
-                  startContent={
-                    selectedPeserta[activePesertaIndex].hasil_sistem ===
-                    "Lulus" ? (
-                      <CheckCircle size={18} />
-                    ) : selectedPeserta[activePesertaIndex].penilaian_anda ===
-                      "Tidak Lulus" ? (
-                      <CircleX size={18} />
-                    ) : null
-                  }
-                  variant="flat"
-                >
-                  {selectedPeserta[activePesertaIndex].hasil_sistem}
-                </Chip>
-              </div>
-            </CardFooter>
           </Card>
           <Tabs
             fullWidth
