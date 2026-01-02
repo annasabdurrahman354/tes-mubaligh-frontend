@@ -40,7 +40,7 @@ export function useKediri() {
 
   const getPesertaKediri = useCallback(async (
     params: Record<string, string | number>,
-  ): Promise<PaginatedPesertaResponse | null > => {
+  ): Promise<PaginatedPesertaResponse | null> => {
     try {
       // The actual response type from axios might differ slightly, but casting helps usage
       const response = await api.get<PaginatedPesertaResponse>("peserta-kediri", { params });
@@ -72,6 +72,10 @@ export function useKediri() {
     nilai_keterangan: string,
     nilai_penjelasan: string,
     nilai_pemahaman: string,
+    kekurangan_makna: string[] | null,
+    kekurangan_keterangan: string[] | null,
+    kekurangan_penjelasan: string[] | null,
+    kekurangan_pemahaman: string[] | null,
     guru_pengganti: string | null,
     catatan: string,
     durasi_penilaian: number,
@@ -83,6 +87,10 @@ export function useKediri() {
         nilai_keterangan,
         nilai_penjelasan,
         nilai_pemahaman,
+        kekurangan_makna,
+        kekurangan_keterangan,
+        kekurangan_penjelasan,
+        kekurangan_pemahaman,
         guru_pengganti,
         catatan,
         durasi_penilaian,
