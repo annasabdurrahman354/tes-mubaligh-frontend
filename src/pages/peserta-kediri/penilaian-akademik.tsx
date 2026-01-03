@@ -55,8 +55,8 @@ const KEKURANGAN_PENJELASAN_OPTIONS: SelectOption[] = [
 ];
 
 const KEKURANGAN_KETERANGAN_OPTIONS: SelectOption[] = [
-  { label: 'Kesesuaian Makna', value: 'Kesesuaian Makna' },
-  { label: 'Struktur Kalimat', value: 'Struktur Kalimat' },
+  { label: 'Kesesuaian Keterangan', value: 'Kesesuaian Keterangan' },
+  { label: 'Penyusunan Kalimat', value: 'Penyusunan Kalimat' },
 ];
 // ----------------------------------------
 
