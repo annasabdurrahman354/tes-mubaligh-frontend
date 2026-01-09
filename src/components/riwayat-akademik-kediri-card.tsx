@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Card, CardBody, Divider, cn, Avatar, Chip } from "@heroui/react";
 
-import {} from "@/types/kertosono";
+import { } from "@/types/kertosono";
 import { AkademikKediri } from "@/types/kediri";
 
 type RiwayatAkademikKediriCardProps = {
@@ -44,15 +44,6 @@ const RiwayatAkademikKediriCard: React.FC<RiwayatAkademikKediriCardProps> = ({
             </div>
             <Divider />
             <div className="flex flex-col flex-wrap gap-2 text-small">
-              {akademik.catatan ? (
-                <p className="text-small text-default-600">
-                  {akademik.catatan}
-                </p>
-              ) : (
-                <p className="text-small text-default-600">
-                  Tidak ada catatan penilaian.
-                </p>
-              )}
               <p className="text-small text-default-500">
                 {`Durasi ${akademik.durasi_penilaian} menit`}
               </p>

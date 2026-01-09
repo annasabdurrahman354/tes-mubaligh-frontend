@@ -19,6 +19,7 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Input,
   // -----------------------
 } from "@heroui/react";
 import { Formik } from "formik";
@@ -112,6 +113,10 @@ const validationSchema = Yup.object().shape({
     }
   ),
 
+  catatan_makna: Yup.string().nullable(),
+  catatan_keterangan: Yup.string().nullable(),
+  catatan_penjelasan: Yup.string().nullable(),
+  catatan_pemahaman: Yup.string().nullable(),
   catatan: Yup.string(),
 });
 
@@ -224,6 +229,10 @@ export default function PenilaianAkademikKediriPage() {
         kekurangan_keterangan: akademikEntry ? akademikEntry.kekurangan_keterangan || [] : [],
         kekurangan_penjelasan: akademikEntry ? akademikEntry.kekurangan_penjelasan || [] : [],
         kekurangan_pemahaman: akademikEntry ? akademikEntry.kekurangan_pemahaman || [] : [],
+        catatan_makna: akademikEntry ? akademikEntry.catatan_makna || "" : "",
+        catatan_keterangan: akademikEntry ? akademikEntry.catatan_keterangan || "" : "",
+        catatan_penjelasan: akademikEntry ? akademikEntry.catatan_penjelasan || "" : "",
+        catatan_pemahaman: akademikEntry ? akademikEntry.catatan_pemahaman || "" : "",
         guru_pengganti: akademikEntry ? akademikEntry.guru_pengganti || null : null,
         catatan: akademikEntry ? akademikEntry.catatan || "" : "",
         awal_penilaian: calculated_awal_penilaian, // Use the calculated start time
@@ -247,6 +256,10 @@ export default function PenilaianAkademikKediriPage() {
           kekurangan_keterangan: existingForm.kekurangan_keterangan || initialData.kekurangan_keterangan,
           kekurangan_penjelasan: existingForm.kekurangan_penjelasan || initialData.kekurangan_penjelasan,
           kekurangan_pemahaman: existingForm.kekurangan_pemahaman || initialData.kekurangan_pemahaman,
+          catatan_makna: existingForm.catatan_makna || initialData.catatan_makna,
+          catatan_keterangan: existingForm.catatan_keterangan || initialData.catatan_keterangan,
+          catatan_penjelasan: existingForm.catatan_penjelasan || initialData.catatan_penjelasan,
+          catatan_pemahaman: existingForm.catatan_pemahaman || initialData.catatan_pemahaman,
           guru_pengganti: existingForm.guru_pengganti || initialData.guru_pengganti,
           catatan: existingForm.catatan || initialData.catatan,
         };
@@ -342,7 +355,7 @@ export default function PenilaianAkademikKediriPage() {
                         return newValues;
                       });
 
-                      // Call the API with the final accumulated duration - updated to include guru_pengganti
+                      // Call the API with the final accumulated duration - updated to include guru_pengganti and catatan fields
                       const storedForm = await storeAkademikKediri(
                         updatedFormValuesPayload.tes_santri_id,
                         updatedFormValuesPayload.nilai_makna,
@@ -353,6 +366,10 @@ export default function PenilaianAkademikKediriPage() {
                         updatedFormValuesPayload.nilai_keterangan === "60" ? updatedFormValuesPayload.kekurangan_keterangan : null,
                         updatedFormValuesPayload.nilai_penjelasan === "60" ? updatedFormValuesPayload.kekurangan_penjelasan : null,
                         updatedFormValuesPayload.nilai_pemahaman === "60" ? updatedFormValuesPayload.kekurangan_pemahaman : null,
+                        updatedFormValuesPayload.nilai_makna === "60" ? updatedFormValuesPayload.catatan_makna : null,
+                        updatedFormValuesPayload.nilai_keterangan === "60" ? updatedFormValuesPayload.catatan_keterangan : null,
+                        updatedFormValuesPayload.nilai_penjelasan === "60" ? updatedFormValuesPayload.catatan_penjelasan : null,
+                        updatedFormValuesPayload.nilai_pemahaman === "60" ? updatedFormValuesPayload.catatan_pemahaman : null,
                         updatedFormValuesPayload.guru_pengganti,
                         updatedFormValuesPayload.catatan,
                         updatedFormValuesPayload.durasi_penilaian, // Send the final total
@@ -407,23 +424,35 @@ export default function PenilaianAkademikKediriPage() {
                           </RadioGroup>
 
                           {values.nilai_makna === "60" && (
-                            <CheckboxGroup
-                              color="danger" isDisabled={loading} label="Kekurangan Makna (Wajib)"
-                              value={values.kekurangan_makna}
-                              className="px-4"
-                              isInvalid={!!errors.kekurangan_makna && !!touched.kekurangan_makna}
-                              errorMessage={errors.kekurangan_makna ? String(errors.kekurangan_makna) : undefined}
-                              onValueChange={(value) => {
-                                setFieldValue("kekurangan_makna", value);
-                                setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_makna: value }; } return newValues; });
-                              }}
-                            >
-                              {KEKURANGAN_MAKNA_OPTIONS.map((option) => (
-                                <Checkbox key={String(option.value)} value={String(option.value)}>
-                                  {option.label}
-                                </Checkbox>
-                              ))}
-                            </CheckboxGroup>
+                            <>
+                              <CheckboxGroup
+                                color="danger" isDisabled={loading} label="Kekurangan Makna (Wajib)"
+                                value={values.kekurangan_makna}
+                                className="px-4"
+                                isInvalid={!!errors.kekurangan_makna && !!touched.kekurangan_makna}
+                                errorMessage={errors.kekurangan_makna ? String(errors.kekurangan_makna) : undefined}
+                                onValueChange={(value) => {
+                                  setFieldValue("kekurangan_makna", value);
+                                  setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_makna: value }; } return newValues; });
+                                }}
+                              >
+                                {KEKURANGAN_MAKNA_OPTIONS.map((option) => (
+                                  <Checkbox key={String(option.value)} value={String(option.value)}>
+                                    {option.label}
+                                  </Checkbox>
+                                ))}
+                              </CheckboxGroup>
+                              <Input
+                                isDisabled={loading} label="Catatan Makna"
+                                placeholder="Tuliskan catatan untuk nilai makna"
+                                description="Tuliskan dalam kalimat yang formal!"
+                                value={values.catatan_makna || ""}
+                                onValueChange={(text) => {
+                                  setFieldValue("catatan_makna", text);
+                                  setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan_makna: text }; } return newValues; });
+                                }}
+                              />
+                            </>
                           )}
 
                           <RadioGroup /* Nilai Keterangan */
@@ -439,23 +468,35 @@ export default function PenilaianAkademikKediriPage() {
                           </RadioGroup>
 
                           {values.nilai_keterangan === "60" && (
-                            <CheckboxGroup
-                              color="danger" isDisabled={loading} label="Kekurangan Keterangan (Wajib)"
-                              value={values.kekurangan_keterangan}
-                              className="px-4"
-                              isInvalid={!!errors.kekurangan_keterangan && !!touched.kekurangan_keterangan}
-                              errorMessage={errors.kekurangan_keterangan ? String(errors.kekurangan_keterangan) : undefined}
-                              onValueChange={(value) => {
-                                setFieldValue("kekurangan_keterangan", value);
-                                setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_keterangan: value }; } return newValues; });
-                              }}
-                            >
-                              {KEKURANGAN_KETERANGAN_OPTIONS.map((option) => (
-                                <Checkbox key={String(option.value)} value={String(option.value)}>
-                                  {option.label}
-                                </Checkbox>
-                              ))}
-                            </CheckboxGroup>
+                            <>
+                              <CheckboxGroup
+                                color="danger" isDisabled={loading} label="Kekurangan Keterangan (Wajib)"
+                                value={values.kekurangan_keterangan}
+                                className="px-4"
+                                isInvalid={!!errors.kekurangan_keterangan && !!touched.kekurangan_keterangan}
+                                errorMessage={errors.kekurangan_keterangan ? String(errors.kekurangan_keterangan) : undefined}
+                                onValueChange={(value) => {
+                                  setFieldValue("kekurangan_keterangan", value);
+                                  setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_keterangan: value }; } return newValues; });
+                                }}
+                              >
+                                {KEKURANGAN_KETERANGAN_OPTIONS.map((option) => (
+                                  <Checkbox key={String(option.value)} value={String(option.value)}>
+                                    {option.label}
+                                  </Checkbox>
+                                ))}
+                              </CheckboxGroup>
+                              <Input
+                                isDisabled={loading} label="Catatan Keterangan"
+                                placeholder="Tuliskan catatan untuk nilai keterangan"
+                                description="Tuliskan dalam kalimat yang formal!"
+                                value={values.catatan_keterangan || ""}
+                                onValueChange={(text) => {
+                                  setFieldValue("catatan_keterangan", text);
+                                  setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan_keterangan: text }; } return newValues; });
+                                }}
+                              />
+                            </>
                           )}
 
                           <RadioGroup /* Nilai Penjelasan */
@@ -471,23 +512,35 @@ export default function PenilaianAkademikKediriPage() {
                           </RadioGroup>
 
                           {values.nilai_penjelasan === "60" && (
-                            <CheckboxGroup
-                              color="danger" isDisabled={loading} label="Kekurangan Penjelasan (Wajib)"
-                              value={values.kekurangan_penjelasan}
-                              className="px-4"
-                              isInvalid={!!errors.kekurangan_penjelasan && !!touched.kekurangan_penjelasan}
-                              errorMessage={errors.kekurangan_penjelasan ? String(errors.kekurangan_penjelasan) : undefined}
-                              onValueChange={(value) => {
-                                setFieldValue("kekurangan_penjelasan", value);
-                                setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_penjelasan: value }; } return newValues; });
-                              }}
-                            >
-                              {KEKURANGAN_PENJELASAN_OPTIONS.map((option) => (
-                                <Checkbox key={String(option.value)} value={String(option.value)}>
-                                  {option.label}
-                                </Checkbox>
-                              ))}
-                            </CheckboxGroup>
+                            <>
+                              <CheckboxGroup
+                                color="danger" isDisabled={loading} label="Kekurangan Penjelasan (Wajib)"
+                                value={values.kekurangan_penjelasan}
+                                className="px-4"
+                                isInvalid={!!errors.kekurangan_penjelasan && !!touched.kekurangan_penjelasan}
+                                errorMessage={errors.kekurangan_penjelasan ? String(errors.kekurangan_penjelasan) : undefined}
+                                onValueChange={(value) => {
+                                  setFieldValue("kekurangan_penjelasan", value);
+                                  setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_penjelasan: value }; } return newValues; });
+                                }}
+                              >
+                                {KEKURANGAN_PENJELASAN_OPTIONS.map((option) => (
+                                  <Checkbox key={String(option.value)} value={String(option.value)}>
+                                    {option.label}
+                                  </Checkbox>
+                                ))}
+                              </CheckboxGroup>
+                              <Input
+                                isDisabled={loading} label="Catatan Penjelasan"
+                                placeholder="Tuliskan catatan untuk nilai penjelasan"
+                                description="Tuliskan dalam kalimat yang formal!"
+                                value={values.catatan_penjelasan || ""}
+                                onValueChange={(text) => {
+                                  setFieldValue("catatan_penjelasan", text);
+                                  setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan_penjelasan: text }; } return newValues; });
+                                }}
+                              />
+                            </>
                           )}
 
                           <RadioGroup /* Nilai Pemahaman */
@@ -503,23 +556,35 @@ export default function PenilaianAkademikKediriPage() {
                           </RadioGroup>
 
                           {values.nilai_pemahaman === "60" && (
-                            <CheckboxGroup
-                              color="danger" isDisabled={loading} label="Kekurangan Pemahaman (Wajib)"
-                              value={values.kekurangan_pemahaman}
-                              className="px-4"
-                              isInvalid={!!errors.kekurangan_pemahaman && !!touched.kekurangan_pemahaman}
-                              errorMessage={errors.kekurangan_pemahaman ? String(errors.kekurangan_pemahaman) : undefined}
-                              onValueChange={(value) => {
-                                setFieldValue("kekurangan_pemahaman", value);
-                                setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_pemahaman: value }; } return newValues; });
-                              }}
-                            >
-                              {KEKURANGAN_PEMAHAMAN_OPTIONS.map((option) => (
-                                <Checkbox key={String(option.value)} value={String(option.value)}>
-                                  {option.label}
-                                </Checkbox>
-                              ))}
-                            </CheckboxGroup>
+                            <>
+                              <CheckboxGroup
+                                color="danger" isDisabled={loading} label="Kekurangan Pemahaman (Wajib)"
+                                value={values.kekurangan_pemahaman}
+                                className="px-4"
+                                isInvalid={!!errors.kekurangan_pemahaman && !!touched.kekurangan_pemahaman}
+                                errorMessage={errors.kekurangan_pemahaman ? String(errors.kekurangan_pemahaman) : undefined}
+                                onValueChange={(value) => {
+                                  setFieldValue("kekurangan_pemahaman", value);
+                                  setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], kekurangan_pemahaman: value }; } return newValues; });
+                                }}
+                              >
+                                {KEKURANGAN_PEMAHAMAN_OPTIONS.map((option) => (
+                                  <Checkbox key={String(option.value)} value={String(option.value)}>
+                                    {option.label}
+                                  </Checkbox>
+                                ))}
+                              </CheckboxGroup>
+                              <Input
+                                isDisabled={loading} label="Catatan Pemahaman"
+                                placeholder="Tuliskan catatan untuk nilai pemahaman"
+                                description="Tuliskan dalam kalimat yang formal!"
+                                value={values.catatan_pemahaman || ""}
+                                onValueChange={(text) => {
+                                  setFieldValue("catatan_pemahaman", text);
+                                  setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan_pemahaman: text }; } return newValues; });
+                                }}
+                              />
+                            </>
                           )}
 
 

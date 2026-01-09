@@ -21,6 +21,10 @@ export type AkademikKediri = {
   kekurangan_keterangan: string[] | null;
   kekurangan_penjelasan: string[] | null;
   kekurangan_pemahaman: string[] | null;
+  catatan_makna: string | null;
+  catatan_keterangan: string | null;
+  catatan_penjelasan: string | null;
+  catatan_pemahaman: string | null;
   guru_pengganti: string | null;
   catatan: string;
   created_at: string;
@@ -42,6 +46,10 @@ export type AkademikKediriForm = {
   kekurangan_keterangan: string[] | null;
   kekurangan_penjelasan: string[] | null;
   kekurangan_pemahaman: string[] | null;
+  catatan_makna: string | null;
+  catatan_keterangan: string | null;
+  catatan_penjelasan: string | null;
+  catatan_pemahaman: string | null;
   guru_pengganti: string | null;
   catatan: string;
   durasi_penilaian: number;
