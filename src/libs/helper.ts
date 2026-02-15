@@ -1,5 +1,5 @@
 export function ucwords(str: string): string {
-  return str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+  return str ? str.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase()) : "";
 }
 
 export function ucwordsCustom(str: string): string {

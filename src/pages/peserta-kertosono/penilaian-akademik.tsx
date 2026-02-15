@@ -40,20 +40,20 @@ import api, { handleApiError } from "@/libs/axios";
 
 // Validation schema remains the same
 const validationSchema = Yup.object().shape({
-  penilaian: Yup.string().required("Penilaian harus dipilih."),
+  nilai: Yup.string().required("Nilai harus dipilih."),
   kekurangan: Yup.string().test(
     "kekurangan-not-empty",
-    "Setidaknya satu kekurangan harus dipilih jika penilaian Tidak Lulus.",
+    "Setidaknya satu kekurangan harus dipilih jika nilai Tidak Lulus.",
     function (_, context) {
       const {
-        penilaian,
+        nilai,
         kekurangan_tajwid,
         kekurangan_khusus,
         kekurangan_keserasian,
         kekurangan_kelancaran,
       } = context.parent;
 
-      if (penilaian === "Tidak Lulus") {
+      if (nilai === "tidak_lulus") {
         const allKekuranganEmpty =
           (!kekurangan_tajwid || kekurangan_tajwid.length === 0) &&
           (!kekurangan_khusus || kekurangan_khusus.length === 0) &&
@@ -101,7 +101,7 @@ export default function PenilaianAkademikKertosonoPage() {
   const getGuruPenggantiKertosonoOptions = useCallback(async (): Promise<SelectOption[]> => {
     console.log("Fetching guru pengganti options...");
     try {
-        const response = await api.get(`options/guru-pengganti-kertosono/${user?.id}`);
+        const response = await api.get(`tes/options/guru-pengganti-kertosono/${user?.id}`);
         // Assuming the API returns an object like { "Ponpes A (Daerah X)": 1, ... }
         const formattedData: SelectOption[] = Object.entries(response.data ?? {}).map(
             ([label, value]) => ({
@@ -146,7 +146,7 @@ export default function PenilaianAkademikKertosonoPage() {
 
     const updatedFormValues = selectedPeserta.map((peserta) => {
       const existingForm = formValues.find(
-        (form) => form.tes_santri_id === peserta.id,
+        (form) => form.peserta_id === peserta.id,
       );
 
       if (existingForm && existingForm.awal_penilaian) {
@@ -161,14 +161,14 @@ export default function PenilaianAkademikKertosonoPage() {
         : null;
 
       if (akademikEntry) {
-        const loadedDuration = getInitialDuration(akademikEntry.durasi_penilaian);
+        const loadedDuration = getInitialDuration(akademikEntry.durasi);
         current_total_duration = loadedDuration;
         calculated_awal_penilaian = new Date(Date.now() - loadedDuration * 60000);
       }
 
       const initialData = {
-        tes_santri_id: peserta.id,
-        penilaian: akademikEntry ? akademikEntry.penilaian || "" : "",
+        peserta_id: peserta.id,
+        nilai: akademikEntry ? akademikEntry.nilai || "" : "",
         kekurangan_tajwid: akademikEntry ? akademikEntry.kekurangan_tajwid || [] : [],
         kekurangan_khusus: akademikEntry ? akademikEntry.kekurangan_khusus || [] : [],
         kekurangan_keserasian: akademikEntry ? akademikEntry.kekurangan_keserasian || [] : [],
@@ -177,14 +177,14 @@ export default function PenilaianAkademikKertosonoPage() {
         catatan: akademikEntry ? akademikEntry.catatan || "" : "",
         rekomendasi_penarikan: akademikEntry ? akademikEntry.rekomendasi_penarikan || false : false,
         awal_penilaian: calculated_awal_penilaian,
-        durasi_penilaian: current_total_duration,
+        durasi: current_total_duration,
       };
 
       if (existingForm && !existingForm.awal_penilaian) {
           return {
               ...initialData,
-              tes_santri_id: existingForm.tes_santri_id || initialData.tes_santri_id,
-              penilaian: existingForm.penilaian || initialData.penilaian,
+              peserta_id: existingForm.peserta_id || initialData.peserta_id,
+              nilai: existingForm.nilai || initialData.nilai,
               kekurangan_tajwid: existingForm.kekurangan_tajwid || initialData.kekurangan_tajwid,
               kekurangan_khusus: existingForm.kekurangan_khusus || initialData.kekurangan_khusus,
               kekurangan_keserasian: existingForm.kekurangan_keserasian || initialData.kekurangan_keserasian,
@@ -260,12 +260,12 @@ export default function PenilaianAkademikKertosonoPage() {
                       }
 
                       const totalDurasiMenit = Math.round(
-                        (Date.now() - timerStartTime) / 60000,
+                        (Date.now() - timerStartTime) / 1000,
                       );
 
                       const updatedFormValuesPayload = {
                         ...currentFormState,
-                        durasi_penilaian: totalDurasiMenit,
+                        durasi: totalDurasiMenit,
                       };
 
                       setFormValues((prevValues) => {
@@ -273,23 +273,23 @@ export default function PenilaianAkademikKertosonoPage() {
                           if(newValues[activePesertaIndex]) {
                              newValues[activePesertaIndex] = {
                                ...newValues[activePesertaIndex],
-                               durasi_penilaian: totalDurasiMenit,
+                               durasi: totalDurasiMenit,
                              };
                            }
                          return newValues;
                       });
 
                       const storedForm = await storeAkademikKertosono(
-                        updatedFormValuesPayload.tes_santri_id,
-                        updatedFormValuesPayload.penilaian,
-                        updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_tajwid,
-                        updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_khusus,
-                        updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_keserasian,
-                        updatedFormValuesPayload.penilaian === "Lulus" ? null : updatedFormValuesPayload.kekurangan_kelancaran,
+                        updatedFormValuesPayload.peserta_id,
+                        updatedFormValuesPayload.nilai,
+                        updatedFormValuesPayload.nilai === "lulus" ? null : updatedFormValuesPayload.kekurangan_tajwid,
+                        updatedFormValuesPayload.nilai === "lulus" ? null : updatedFormValuesPayload.kekurangan_khusus,
+                        updatedFormValuesPayload.nilai === "lulus" ? null : updatedFormValuesPayload.kekurangan_keserasian,
+                        updatedFormValuesPayload.nilai === "lulus" ? null : updatedFormValuesPayload.kekurangan_kelancaran,
                         updatedFormValuesPayload.guru_pengganti,
                         updatedFormValuesPayload.catatan,
-                        updatedFormValuesPayload.penilaian === "Tidak Lulus" ? null : updatedFormValuesPayload.rekomendasi_penarikan,
-                        updatedFormValuesPayload.durasi_penilaian,
+                        updatedFormValuesPayload.nilai === "tidak_lulus" ? null : updatedFormValuesPayload.rekomendasi_penarikan,
+                        updatedFormValuesPayload.durasi,
                       );
 
                       addToast({
@@ -341,21 +341,21 @@ export default function PenilaianAkademikKertosonoPage() {
                                 wrapper: "w-full flex flex-row gap-6 my-2 px-4",
                                 label: "px-2",
                               }}
-                              errorMessage={errors.penilaian}
+                              errorMessage={errors.nilai}
                               isDisabled={loading}
-                              isInvalid={!!errors.penilaian && !!touched.penilaian}
+                              isInvalid={!!errors.nilai && !!touched.nilai}
                               label="Nilai Bacaan"
-                              value={values.penilaian}
+                              value={values.nilai}
                               onValueChange={(value) => {
-                                setFieldValue("penilaian", value);
-                                setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], penilaian: value }; } return newValues; });
+                                setFieldValue("nilai", value);
+                                setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], nilai: value }; } return newValues; });
                               }}
                             >
-                              <CustomRadio buttonColor="success" value="Lulus"> Lulus </CustomRadio>
-                              <CustomRadio buttonColor="danger" value="Tidak Lulus"> Tidak Lulus </CustomRadio>
+                              <CustomRadio buttonColor="success" value="lulus"> Lulus </CustomRadio>
+                              <CustomRadio buttonColor="danger" value="tidak_lulus"> Tidak Lulus </CustomRadio>
                             </RadioGroup>
 
-                            {values.penilaian === "Tidak Lulus" && (
+                            {values.nilai === "tidak_lulus" && (
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 px-2">
                                 <CheckboxGroup
                                   color="danger" isDisabled={loading} label="Kekurangan Tajwid"
@@ -408,13 +408,13 @@ export default function PenilaianAkademikKertosonoPage() {
                               </div>
                             )}
 
-                            {errors.kekurangan && touched.penilaian && values.penilaian === "Tidak Lulus" && (
+                            {errors.kekurangan && touched.nilai && values.nilai === "tidak_lulus" && (
                               <p className="text-danger-500 text-medium items-start">
                                 {errors.kekurangan}
                               </p>
                             )}
 
-                           {values.penilaian === "Lulus" && (
+                           {values.nilai === "lulus" && (
                                 <Checkbox
                                   className="mx-0.5"
                                   isDisabled={loading}

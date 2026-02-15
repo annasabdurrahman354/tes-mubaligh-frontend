@@ -149,7 +149,7 @@ export default function PenilaianAkademikKediriPage() {
   const getGuruPenggantiKediriOptions = useCallback(async (): Promise<SelectOption[]> => {
     console.log("Fetching guru pengganti options...");
     try {
-      const response = await api.get(`options/guru-pengganti-kediri/${user?.id}`);
+      const response = await api.get(`tes/options/guru-pengganti-kediri/${user?.id}`);
       // Assuming the API returns an object like { "Ponpes A (Daerah X)": 1, ... }
       const formattedData: SelectOption[] = Object.entries(response.data ?? {}).map(
         ([label, value]) => ({
@@ -192,7 +192,7 @@ export default function PenilaianAkademikKediriPage() {
 
     const updatedFormValues = selectedPeserta.map((peserta) => {
       const existingForm = formValues.find(
-        (form) => form.tes_santri_id === peserta.id,
+        (form) => form.peserta_id === peserta.id,
       );
 
       // If form state for this participant already exists *and* has an awal_penilaian,
@@ -211,16 +211,16 @@ export default function PenilaianAkademikKediriPage() {
         : null;
 
       if (akademikEntry) {
-        const loadedDuration = getInitialDuration(akademikEntry.durasi_penilaian);
+        const loadedDuration = getInitialDuration(akademikEntry.durasi);
         current_total_duration = loadedDuration; // Store the loaded duration
         // Calculate the fake start time in the past
-        calculated_awal_penilaian = new Date(Date.now() - loadedDuration * 60000);
+        calculated_awal_penilaian = new Date(Date.now() - loadedDuration * 1000);
       }
       // --- End Calculation Logic ---
 
       // --- Construct Initial Data ---
       const initialData = {
-        tes_santri_id: peserta.id,
+        peserta_id: peserta.id,
         nilai_makna: akademikEntry ? String(akademikEntry.nilai_makna || "") : "",
         nilai_keterangan: akademikEntry ? String(akademikEntry.nilai_keterangan || "") : "",
         nilai_penjelasan: akademikEntry ? String(akademikEntry.nilai_penjelasan || "") : "",
@@ -236,7 +236,7 @@ export default function PenilaianAkademikKediriPage() {
         guru_pengganti: akademikEntry ? akademikEntry.guru_pengganti || null : null,
         catatan: akademikEntry ? akademikEntry.catatan || "" : "",
         awal_penilaian: calculated_awal_penilaian, // Use the calculated start time
-        durasi_penilaian: current_total_duration, // Store latest known total duration
+        durasi: current_total_duration, // Store latest known total duration
         // No 'original_durasi_penilaian' needed in this approach
       };
       // --- End Construct Initial Data ---
@@ -247,7 +247,7 @@ export default function PenilaianAkademikKediriPage() {
         return {
           ...initialData, // Use fresh timer fields (awal_penilaian, durasi_penilaian)
           // Keep other fields from existingForm if they exist, otherwise use initialData's
-          tes_santri_id: existingForm.tes_santri_id || initialData.tes_santri_id,
+          peserta_id: existingForm.peserta_id || initialData.peserta_id,
           nilai_makna: existingForm.nilai_makna || initialData.nilai_makna,
           nilai_keterangan: existingForm.nilai_keterangan || initialData.nilai_keterangan,
           nilai_penjelasan: existingForm.nilai_penjelasan || initialData.nilai_penjelasan,
@@ -337,7 +337,7 @@ export default function PenilaianAkademikKediriPage() {
                       // Prepare the payload with the calculated total duration
                       const updatedFormValuesPayload = {
                         ...currentFormState,
-                        durasi_penilaian: totalDurasiMenit, // This IS the total accumulated time
+                        durasi: totalDurasiMenit, // This IS the total accumulated time
                       };
 
                       // Update the central formValues state (primarily useful if NOT removing participant immediately)
@@ -349,7 +349,7 @@ export default function PenilaianAkademikKediriPage() {
                           // because the participant is removed right after.
                           newValues[activePesertaIndex] = {
                             ...newValues[activePesertaIndex],
-                            durasi_penilaian: totalDurasiMenit,
+                            durasi: totalDurasiMenit,
                           };
                         }
                         return newValues;
@@ -357,7 +357,7 @@ export default function PenilaianAkademikKediriPage() {
 
                       // Call the API with the final accumulated duration - updated to include guru_pengganti and catatan fields
                       const storedForm = await storeAkademikKediri(
-                        updatedFormValuesPayload.tes_santri_id,
+                        updatedFormValuesPayload.peserta_id,
                         updatedFormValuesPayload.nilai_makna,
                         updatedFormValuesPayload.nilai_keterangan,
                         updatedFormValuesPayload.nilai_penjelasan,
@@ -372,7 +372,7 @@ export default function PenilaianAkademikKediriPage() {
                         updatedFormValuesPayload.nilai_pemahaman === "60" ? updatedFormValuesPayload.catatan_pemahaman : null,
                         updatedFormValuesPayload.guru_pengganti,
                         updatedFormValuesPayload.catatan,
-                        updatedFormValuesPayload.durasi_penilaian, // Send the final total
+                        updatedFormValuesPayload.durasi, // Send the final total (mapped to 'durasi' in hook)
                       );
 
                       addToast({

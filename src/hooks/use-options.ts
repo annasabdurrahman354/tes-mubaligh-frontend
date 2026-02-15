@@ -14,8 +14,8 @@ export function useOptions() {
       // Directly map response.data, assuming it's an array or defaulting to []
       // Use 'any' for item type if specific structure isn't strictly enforced
       const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
-        value: item.id_provinsi, // Adjust key based on actual API response
-        label: item.nama,       // Adjust key based on actual API response
+        value: item.id,
+        label: item.nama,
       }));
       return formattedData;
     } catch (err) {
@@ -30,8 +30,8 @@ export function useOptions() {
       const response = await api.get(`options/kota/${provinsiId}`);
       // Directly map response.data
       const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
-        value: item.id_kota_kab, // Adjust key based on actual API response
-        label: item.nama,        // Adjust key based on actual API response
+        value: item.id,
+        label: item.nama,
       }));
       return formattedData;
     } catch (err) {
@@ -46,8 +46,8 @@ export function useOptions() {
       const response = await api.get(`options/kecamatan/${kotaId}`);
        // Directly map response.data
       const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
-        value: item.id_kecamatan, // Adjust key based on actual API response
-        label: item.nama,         // Adjust key based on actual API response
+        value: item.id,
+        label: item.nama,
       }));
       return formattedData;
     } catch (err) {
@@ -62,8 +62,8 @@ export function useOptions() {
       const response = await api.get(`options/kelurahan/${kecamatanId}`);
       // Directly map response.data
       const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
-        value: item.id_desa_kel, // Adjust key based on actual API response
-        label: item.nama,        // Adjust key based on actual API response
+        value: item.id,
+        label: item.nama,
       }));
       return formattedData;
     } catch (err) {
@@ -77,8 +77,8 @@ export function useOptions() {
       const response = await api.get("options/daerah-sambung");
       // Directly map response.data
       const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
-        value: item.id_daerah, // Adjust key based on actual API response
-        label: item.n_daerah,  // Adjust key based on actual API response
+        value: item.id,
+        label: item.nama,
       }));
       return formattedData;
     } catch (err) {
@@ -90,18 +90,12 @@ export function useOptions() {
   const getPonpesOptions = async (): Promise<SelectOption[]> => {
     try {
       const response = await api.get("options/ponpes");
-      // --- IMPORTANT ---
-      // Directly transform the response object using Object.entries
-      // Default to empty object {} if response.data is null/undefined
-      const formattedData: SelectOption[] = Object.entries(response.data ?? {}).map(
-        ([label, value]) => ({
-          // Ensure value is treated appropriately (might be string or number)
-          value: value as (string | number),
-          label: label,
-        })
-      );
-      // Sort alphabetically by label if needed
-      formattedData.sort((a, b) => a.label.localeCompare(b.label));
+      // API returns array of objects [{id, nama}]
+      const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
+        value: item.id,
+        label: item.nama,
+      }));
+      // formattedData.sort((a, b) => a.label.localeCompare(b.label)); // Already sorted by backend
 
       return formattedData;
     } catch (err) {
@@ -112,7 +106,7 @@ export function useOptions() {
 
   const getGuruPenggantiKediriOptions = async (guru_id: string | number): Promise<SelectOption[]> => {
     try {
-      const response = await api.get(`options/guru-pengganti-kediri/${guru_id}`);
+      const response = await api.get(`tes/options/guru-pengganti-kediri/${guru_id}`);
       // Directly map response.data
       const formattedData: SelectOption[] = Object.entries(response.data ?? {}).map(
         ([label, value]) => ({
@@ -133,7 +127,7 @@ export function useOptions() {
 
   const getGuruPenggantiKertosonoOptions = async (guru_id: string | number): Promise<SelectOption[]> => {
     try {
-      const response = await api.get(`options/guru-pengganti-kertosono/${guru_id}`);
+      const response = await api.get(`tes/options/guru-pengganti-kertosono/${guru_id}`);
       // Directly map response.data
       const formattedData: SelectOption[] = Object.entries(response.data ?? {}).map(
         ([label, value]) => ({
@@ -154,7 +148,7 @@ export function useOptions() {
 
   const getAkademikKediriCountOptions = async (): Promise<SelectOption[]> => {
     try {
-      const response = await api.get("options/akademik-kediri-count");
+      const response = await api.get("tes/options/akademik-kediri-count");
       const data = response.data ?? [];
 
       // If API returns an array like [0,1,2] or [{count: 0, label: '0'}]
@@ -181,7 +175,7 @@ export function useOptions() {
 
   const getAkademikKertosonoCountOptions = async (): Promise<SelectOption[]> => {
     try {
-      const response = await api.get("options/akademik-kertosono-count");
+      const response = await api.get("tes/options/akademik-kertosono-count");
       const data = response.data ?? [];
 
       if (Array.isArray(data)) {
@@ -213,7 +207,7 @@ export function useOptions() {
     getKelurahanOptions,
     getDaerahSambungOptions,
     getPonpesOptions,
-  getAkademikKediriCountOptions,
-  getAkademikKertosonoCountOptions,
+    getAkademikKediriCountOptions,
+    getAkademikKertosonoCountOptions,
   };
 }

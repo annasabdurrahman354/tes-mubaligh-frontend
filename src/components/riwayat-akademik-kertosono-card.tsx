@@ -54,7 +54,7 @@ const RiwayatAkademikKertosonoCard: React.FC<
                 </p>
               )}
               <p className="mb-2 text-small text-default-500">
-                {`Durasi ${akademik.durasi_penilaian} menit`}
+                {`Durasi ${akademik.durasi / 60} menit`}
               </p>
               {akademik.rekomendasi_penarikan && (
                 <Chip

@@ -131,7 +131,7 @@ export default function ActionPesertaTopbar() {
           <div className="flex flex-col items-center gap-3 mt-1">
             <AnimatePresence mode="sync">
               {selectedPeserta.map((peserta, index) => {
-                const formValue = formValues.find(f => f.tes_santri_id === peserta.id);
+                const formValue = formValues.find(f => f.peserta_id === peserta.id);
                 return (
                   <BouncingAvatar
                     key={peserta.id}
@@ -207,7 +207,7 @@ export default function ActionPesertaTopbar() {
           >
             <AnimatePresence mode="sync">
               {selectedPeserta.map((peserta, index) => {
-                const formValue = formValues.find(f => f.tes_santri_id === peserta.id);
+                const formValue = formValues.find(f => f.peserta_id === peserta.id);
                 return (
                   <BouncingAvatar
                     key={peserta.id}

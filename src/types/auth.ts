@@ -1,16 +1,19 @@
 export type User = {
   id: string;
+  person_id: string;
   nama: string;
   nama_panggilan?: string | null;
   username: string;
   email: string;
   nomor_telepon?: string | null;
-  nik?: string | null;
-  rfid?: string | null;
-  pondok_id: number;
-  pondok: string;
+  nomor_identitas?: string | null;
+  smartcard?: string | null;
+  ponpes_aktif: {
+    id: string | number;
+    nama: string;
+  }[];
   roles: string[];
-  foto: string;
+  foto_identitas: string;
 };
 
 export type Session = {

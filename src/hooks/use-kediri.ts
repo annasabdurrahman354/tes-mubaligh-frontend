@@ -43,7 +43,7 @@ export function useKediri() {
   ): Promise<PaginatedPesertaResponse | null> => {
     try {
       // The actual response type from axios might differ slightly, but casting helps usage
-      const response = await api.get<PaginatedPesertaResponse>("peserta-kediri", { params });
+      const response = await api.get<PaginatedPesertaResponse>("tes/peserta-kediri", { params });
       // Assuming response.data directly contains the structure defined above
       return response.data;
     } catch (err) {
@@ -53,11 +53,11 @@ export function useKediri() {
   }, []);
 
   const getPesertaKediriByRFID = async (
-    rfid: string,
+    smartcard: string,
   ): Promise<PesertaKediri | null | any> => {
     try {
-      const response = await api.get("peserta-kediri/rfid", {
-        params: { rfid: rfid },
+      const response = await api.get("peserta-kediri/smartcard", {
+        params: { smartcard: smartcard },
       });
 
       return response.data.data;
@@ -67,7 +67,7 @@ export function useKediri() {
   };
 
   const storeAkademikKediri = async (
-    tes_santri_id: string,
+    peserta_id: string,
     nilai_makna: string,
     nilai_keterangan: string,
     nilai_penjelasan: string,
@@ -82,11 +82,11 @@ export function useKediri() {
     catatan_pemahaman: string | null,
     guru_pengganti: string | null,
     catatan: string,
-    durasi_penilaian: number,
+    durasi: number,
   ): Promise<AkademikKediriForm | any> => {
     try {
-      const response = await api.post<AkademikKediriForm>("akademik-kediri", {
-        tes_santri_id,
+      const response = await api.post<AkademikKediriForm>("tes/akademik-kediri", {
+        peserta_id,
         nilai_makna,
         nilai_keterangan,
         nilai_penjelasan,
@@ -101,7 +101,7 @@ export function useKediri() {
         catatan_pemahaman,
         guru_pengganti,
         catatan,
-        durasi_penilaian,
+        durasi,
       });
 
       console.log(response.data);
@@ -113,14 +113,12 @@ export function useKediri() {
   };
 
   const storeAkhlakKediri = async (
-    tes_santri_id: string,
-    poin: number,
+    peserta_id: string,
     catatan: string,
   ): Promise<AkhlakKediriForm | any> => {
     try {
-      const response = await api.post<AkhlakKediriForm>("akhlak-kediri", {
-        tes_santri_id,
-        poin,
+      const response = await api.post<AkhlakKediriForm>("tes/akhlak-kediri", {
+        peserta_id,
         catatan,
       });
 

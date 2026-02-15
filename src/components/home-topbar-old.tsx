@@ -50,7 +50,7 @@ export default function HomeTopbar() {
                 as="button"
                 className="cursor-pointer"
                 color="primary"
-                src={user?.foto}
+                src={user?.foto_identitas}
               />
             </PopoverTrigger>
             <PopoverContent className="w-56">

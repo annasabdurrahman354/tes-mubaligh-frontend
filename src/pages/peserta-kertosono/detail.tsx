@@ -56,19 +56,19 @@ export default function DetailPesertaKertosonoPage() {
               <div className="flex flex-row flex-wrap gap-2 text-small">
                 <Chip
                   color={
-                    selectedPeserta[activePesertaIndex].penilaian_anda ===
+                    selectedPeserta[activePesertaIndex].nilai_anda ===
                       "Lulus"
                       ? "success"
-                      : selectedPeserta[activePesertaIndex].penilaian_anda ===
+                      : selectedPeserta[activePesertaIndex].nilai_anda ===
                         "Tidak Lulus"
                         ? "danger"
                         : "default"
                   }
                   startContent={
-                    selectedPeserta[activePesertaIndex].penilaian_anda ===
+                    selectedPeserta[activePesertaIndex].nilai_anda ===
                       "Lulus" ? (
                       <CheckCircle size={18} />
-                    ) : selectedPeserta[activePesertaIndex].penilaian_anda ===
+                    ) : selectedPeserta[activePesertaIndex].nilai_anda ===
                       "Tidak Lulus" ? (
                       <CircleX size={18} />
                     ) : null
@@ -76,10 +76,10 @@ export default function DetailPesertaKertosonoPage() {
                   variant="flat"
                 >
                   Penilaian Anda:{" "}
-                  {selectedPeserta[activePesertaIndex].penilaian_anda ??
+                  {selectedPeserta[activePesertaIndex].nilai_anda ??
                     "Belum Anda Nilai"}
                 </Chip>
-                {selectedPeserta[activePesertaIndex].penilaian_anda ===
+                {selectedPeserta[activePesertaIndex].nilai_anda ===
                   "Lulus" &&
                   selectedPeserta[activePesertaIndex].rekomendasi_anda ===
                   true && (

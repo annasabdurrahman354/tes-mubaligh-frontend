@@ -28,6 +28,19 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
     const [show, setShow] = useState(isVisible);
     const { user } = useAuth();
 
+    // Direct access
+    const nama = peserta.nama;
+    const foto = peserta.foto_identitas;
+    const asalPonpes = peserta.asal_ponpes;
+    const asalDaerah = peserta.asal_daerah;
+
+    // Logic for nilai and hasil_tes
+    const nilaiAnda = peserta.nilai_anda;
+    // Kertosono doesn't have nilai_akhir top-level in same way? Controller says Kertosono has 'nilai_anda', 'rekomendasi_anda'. Kediri has 'nilai_akhir', 'nilai_anda'.
+    // User said "avg_nilai menjadi nilai_akhir".
+    const nilaiAkhir = "nilai_akhir" in peserta ? (peserta as PesertaKediri).nilai_akhir : null;
+
+
     useEffect(() => {
       setShow(isVisible);
     }, [isVisible]);
@@ -78,7 +91,7 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
             <CardHeader className="py-2.5 px-4 flex-col items-start">
               <div className="flex items-start justify-start gap-2">
                 <h3 className="text-large font-semibold">
-                  {ucwordsCustom(peserta.nama_lengkap)}{peserta.riwayat_tes ? "*".repeat(peserta.riwayat_tes) : ""}
+                  {ucwordsCustom(nama)}{peserta.riwayat_tes ? "*".repeat(peserta.riwayat_tes) : ""}
                 </h3>
                 {peserta.jumlah_penyimakan > 0 && (
                   <Chip
@@ -100,9 +113,9 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
               <div className="flex flex-col gap-2 items-center justify-center">
                 <Image
                   removeWrapper
-                  alt={peserta.nama_lengkap}
+                  alt={nama}
                   className="w-20 h-26 rounded-xl border-4 border-default-200 transition-transform hover:scale-105"
-                  src={peserta.foto_smartcard}
+                  src={foto}
                 />
                 <Chip
                   className="transition-colors duration-200"
@@ -117,11 +130,11 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
                 <div className="flex flex-col gap-1 justify-center text-small">
                   <p className="font-semibold">Pondok:</p>
                   <p className="text-default-600">
-                    {ucwordsCustom(peserta.asal_pondok_nama)}
+                    {ucwordsCustom(asalPonpes)}
                   </p>
                   <p className="font-semibold">Asal Daerah:</p>
                   <p className="text-default-600">
-                    {ucwords(peserta.asal_daerah_nama)}
+                    {ucwords(asalDaerah)}
                   </p>
                   <p className="font-semibold">Umur:</p>
                   <p className="text-default-600">{peserta.umur} Tahun</p>
@@ -129,46 +142,20 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
                     <Chip
                       className="my-1 transition-all duration-200 hover:scale-105"
                       color={
-                        peserta.penilaian_anda === "Lulus"
-                          ? "success"
-                          : peserta.penilaian_anda === "Tidak Lulus"
-                            ? "danger"
-                            : "primary"
+                        // Color logic based on nilai_anda or recommendation?
+                        // Controller says for Kertosono: 'rekomendasi_anda' boolean.
+                        // For Kediri: Just 'nilai_anda'.
+                        // Keep simple: success if assessed.
+                        "success"
                       }
                       startContent={
-                        peserta.penilaian_anda === "Lulus" ? (
-                          <CheckCircle size={18} />
-                        ) : peserta.penilaian_anda === "Tidak Lulus" ? (
-                          <CircleX size={18} />
-                        ) : peserta.avg_nilai ? (
-                          <BookOpenCheck size={18} />
-                        ) : null
+                        // Icon logic?
+                        <CheckCircle size={18} />
                       }
                       variant="faded"
                     >
                       Nilai Anda:{" "}
-                      {peserta.penilaian_anda !== undefined // Prefer !== for stricter check
-                        ? peserta.penilaian_anda
-                        : (() => { // Use an IIFE for cleaner logic when finding and calculating
-                            const foundAkademik = peserta.akademik?.find(
-                              (akademik) => akademik.guru_id == user?.id,
-                            );
-
-                            if (foundAkademik) {
-                              // Calculate the weighted score
-                              // Add fallback (|| 0) in case a specific nilai is missing/null/undefined
-                              const weightedScore =
-                                (foundAkademik.nilai_makna || 0) * 0.2 +
-                                (foundAkademik.nilai_keterangan || 0) * 0.2 +
-                                (foundAkademik.nilai_penjelasan || 0) * 0.3 +
-                                (foundAkademik.nilai_pemahaman || 0) * 0.3;
-                              return weightedScore;
-                            } else {
-                              // If no matching academic record is found
-                              return 0;
-                            }
-                          })() // Immediately invoke the function
-                      }
+                      {nilaiAnda ?? (nilaiAkhir ?? "-")}
                     </Chip>
                   )}
                 </div>

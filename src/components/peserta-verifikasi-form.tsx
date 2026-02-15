@@ -72,7 +72,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
         try {
             const response = await api.get("options/provinsi");
             const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
-                value: item.id_provinsi,
+                value: item.id,
                 label: item.nama,
             }));
             return formattedData;
@@ -89,7 +89,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
         try {
             const response = await api.get(`options/kota/${provinsiId}`);
             const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
-                value: item.id_kota_kab,
+                value: item.id,
                 label: item.nama,
             }));
             return formattedData;
@@ -108,7 +108,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
         try {
             const response = await api.get(`options/kecamatan/${kotaId}`);
             const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
-                value: item.id_kecamatan,
+                value: item.id,
                 label: item.nama,
             }));
             return formattedData;
@@ -127,7 +127,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
         try {
             const response = await api.get(`options/kelurahan/${kecamatanId}`);
             const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
-                value: item.id_desa_kel,
+                value: item.id,
                 label: item.nama,
             }));
             return formattedData;
@@ -144,8 +144,8 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
         try {
             const response = await api.get("options/daerah-sambung");
             const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
-                value: item.id_daerah,
-                label: item.n_daerah,
+                value: item.id,
+                label: item.nama,
             }));
             return formattedData;
         } catch (err) {
@@ -158,14 +158,12 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
         console.log("Fetching Ponpes options (local)...");
         try {
             const response = await api.get("options/ponpes");
-            // Assuming the API returns an object like { "Ponpes A (Daerah X)": 1, ... }
-            const formattedData: SelectOption[] = Object.entries(response.data ?? {}).map(
-                ([label, value]) => ({
-                    value: value as (string | number), // Keep original value type
-                    label: label,
-                })
-            );
-            formattedData.sort((a, b) => a.label.localeCompare(b.label)); // Sort by label
+            // API returns array of objects [{id, nama}]
+            const formattedData: SelectOption[] = (response.data ?? []).map((item: any) => ({
+                value: item.id,
+                label: item.nama,
+            }));
+            // formattedData.sort((a, b) => a.label.localeCompare(b.label)); // Already sorted by backend
             return formattedData;
         } catch (err) {
             handleApiError(err);
@@ -181,9 +179,9 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     console.log("Effect: Initializing formData from santri", santri);
     // Ensure IDs are numbers or null for Select components that expect numbers
     const initialFormData: Partial<PesertaKertosonoVerifikasi> = {
-        id_ponpes: Number(santri.id_ponpes) || null,
+        asal_ponpes_id: Number(santri.asal_ponpes_id) || null,
         jenis_kelamin: santri.jenis_kelamin,
-        nama_lengkap: santri.nama_lengkap,
+        nama: santri.nama,
         nama_panggilan: santri.nama_panggilan,
         nama_ayah: santri.nama_ayah,
         nama_ibu: santri.nama_ibu,
@@ -193,20 +191,23 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
         rt: santri.rt,
         rw: santri.rw,
         provinsi_id: Number(santri.provinsi_id) || null,
-        kota_kab_id: Number(santri.kota_kab_id) || null,
+        kota_id: Number(santri.kota_id) || null,
         kecamatan_id: Number(santri.kecamatan_id) || null,
-        desa_kel_id: Number(santri.desa_kel_id) || null,
+        kelurahan_id: Number(santri.kelurahan_id) || null,
         kode_pos: santri.kode_pos,
-        hp: santri.hp,
-        id_daerah_sambung: Number(santri.id_daerah_sambung) || null,
+        nomor_telepon: santri.nomor_telepon,
+        daerah_sambung_id: Number(santri.daerah_sambung_id) || null,
         kelompok_sambung: santri.kelompok_sambung,
-        pendidikan: santri.pendidikan,
-        jurusan: santri.jurusan,
+        jenjang_pendidikan: santri.jenjang_pendidikan,
+        jurusan_pendidikan: santri.jurusan_pendidikan,
         status_mondok: santri.status_mondok,
-        id_daerah_kiriman: Number(santri.id_daerah_kiriman) || null,
+        daerah_kiriman_id: Number(santri.daerah_kiriman_id) || null,
+        // Preserve read-only fields for reference if needed, although they are not sent
+        nomor_identitas: santri.nomor_identitas,
+        nispn: santri.nispn,
       };
     setFormData(initialFormData);
-    setPreviewUrl(santri.foto_smartcard || null); // Initialize preview
+    setPreviewUrl(santri.foto_identitas || null); // Initialize preview
     setIsInitialLoading(true); // Start initial loading sequence
     setSelectedFile(null); // Reset file/photo state when santri changes
     setCapturedPhoto(null);
@@ -268,8 +269,8 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
           setKotaOptions(initialKota);
           console.log("Effect: Initial Kota loaded", initialKota.length);
 
-          if (formData.kota_kab_id) {
-            const initialKecamatan = await getKecamatanOptions(formData.kota_kab_id);
+          if (formData.kota_id) {
+            const initialKecamatan = await getKecamatanOptions(formData.kota_id);
             setKecamatanOptions(initialKecamatan);
             console.log("Effect: Initial Kecamatan loaded", initialKecamatan.length);
 
@@ -289,7 +290,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     };
     loadInitialDependentOptions();
   }, [ // Re-run ONLY when the *initial* relevant IDs change in formData
-    formData.provinsi_id, formData.kota_kab_id, formData.kecamatan_id,
+    formData.provinsi_id, formData.kota_id, formData.kecamatan_id,
     getKotaOptions, getKecamatanOptions, getKelurahanOptions
   ]);
 
@@ -316,7 +317,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
         // only when a new selection/capture happens or component unmounts/santri changes.
       }
     };
-  }, [selectedFile, capturedPhoto, santri.foto_smartcard]); // Rerun when file, capture, or original changes
+  }, [selectedFile, capturedPhoto, santri.foto_identitas]); // Rerun when file, capture, or original changes
 
 
   // --- Event Handlers ---
@@ -331,7 +332,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     console.log("Handler: Provinsi changed to", provinsiId);
     setFormData((prev) => ({
       ...prev,
-      provinsi_id: provinsiId, kota_kab_id: null, kecamatan_id: null, desa_kel_id: null
+      provinsi_id: provinsiId, kota_id: null, kecamatan_id: null, kelurahan_id: null
     }));
     setKotaOptions([]); setKecamatanOptions([]); setKelurahanOptions([]);
     if (provinsiId) await getKotaOptions(provinsiId); // Fetch new options
@@ -341,7 +342,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     console.log("Handler: Kota changed to", kotaId);
     setFormData((prev) => ({
       ...prev,
-      kota_kab_id: kotaId, kecamatan_id: null, desa_kel_id: null
+      kota_id: kotaId, kecamatan_id: null, kelurahan_id: null
     }));
     setKecamatanOptions([]); setKelurahanOptions([]);
     if (kotaId) await getKecamatanOptions(kotaId); // Fetch new options
@@ -351,7 +352,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     console.log("Handler: Kecamatan changed to", kecamatanId);
     setFormData((prev) => ({
       ...prev,
-      kecamatan_id: kecamatanId, desa_kel_id: null
+      kecamatan_id: kecamatanId, kelurahan_id: null
     }));
     setKelurahanOptions([]);
     if (kecamatanId) await getKelurahanOptions(kecamatanId); // Fetch new options
@@ -362,8 +363,8 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     setFormData((prev) => ({
       ...prev,
       status_mondok: status,
-      // If status is not 'kiriman', reset id_daerah_kiriman
-      id_daerah_kiriman: status === 'kiriman' ? prev.id_daerah_kiriman : null
+      // If status is not 'kiriman', reset daerah_kiriman_id
+      daerah_kiriman_id: status === 'kiriman' ? prev.daerah_kiriman_id : null
     }));
   }, []);
 
@@ -373,7 +374,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     const processedValue = (typeof value === 'string' && !isNaN(Number(value))) ? Number(value) : value;
 
     if (name === "provinsi_id")       handleProvinsiChange(processedValue as number | null);
-    else if (name === "kota_kab_id")  handleKotaChange(processedValue as number | null);
+    else if (name === "kota_id")  handleKotaChange(processedValue as number | null);
     else if (name === "kecamatan_id") handleKecamatanChange(processedValue as number | null);
     else if (name === "status_mondok") handleStatusMondokChange(processedValue as string | null);
     else setFormData((prev) => ({ ...prev, [name]: processedValue })); // Update other selects
@@ -438,7 +439,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
          setCapturedPhoto(null);
          const fileInput = document.getElementById('file-upload') as HTMLInputElement;
          if(fileInput) fileInput.value = ''; // Reset file input visually
-         setPreviewUrl(santri.foto_smartcard || null); // Revert to original preview
+         setPreviewUrl(santri.foto_identitas || null); // Revert to original preview
     }
 
 
@@ -451,15 +452,15 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     // --- START: NEW CODE (Conditional Validation) ---
     // Basic frontend validation
     let requiredFields: (keyof PesertaKertosonoVerifikasi)[] = [
-      "nama_lengkap", "jenis_kelamin", "tempat_lahir", "tanggal_lahir",
-      "alamat", "rt", "rw", "id_ponpes", "provinsi_id", "kota_kab_id",
-      "kecamatan_id", "desa_kel_id", "id_daerah_sambung", "kelompok_sambung",
-      "pendidikan", "status_mondok",
+      "nama", "jenis_kelamin", "tempat_lahir", "tanggal_lahir",
+      "alamat", "rt", "rw", "asal_ponpes_id", "provinsi_id", "kota_id",
+      "kecamatan_id", "kelurahan_id", "daerah_sambung_id", "kelompok_sambung",
+      "jenjang_pendidikan", "status_mondok",
     ];
 
-    // Conditionally add id_daerah_kiriman to required fields
+    // Conditionally add daerah_kiriman_id to required fields
     if (formData.status_mondok === 'kiriman') {
-        requiredFields.push('id_daerah_kiriman');
+        requiredFields.push('daerah_kiriman_id');
     }
     // --- END: NEW CODE ---
 
@@ -524,8 +525,13 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
     // Create FormData
     const finalFormData = new FormData();
 
-    // Append all fields from the formData state
+    // Append all fields from the formData state, EXCLUDING read-only fields
     Object.entries(formData).forEach(([key, value]) => {
+      // Skip read-only fields that should not be sent
+      if (['status_mondok', 'daerah_kiriman_id', 'nomor_identitas'].includes(key)) {
+          return;
+      }
+
       if (value !== null && value !== undefined) {
           // Ensure dates are sent in YYYY-MM-DD format if they are strings
           if ((key === 'tanggal_lahir') && typeof value === 'string') {
@@ -645,11 +651,23 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
 
             {/* --- Informasi Pribadi --- */}
              <div>
+                 <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-4 flex gap-3 items-start">
+                    <div className="mt-1 min-w-min">
+                        <CheckCircle className="text-primary" size={20} />
+                    </div>
+                    <div>
+                        <p className="text-small font-medium text-primary-800">Catatan Penting</p>
+                        <p className="text-tiny text-primary-600">
+                            Kolom <b>Nomor Identitas</b>, <b>Status Mondok</b>, dan <b>Daerah Kiriman</b> tidak dapat diubah di sini. 
+                            Silakan hubungi <b>Admin Ponpes</b> melalui aplikasi Sisfo jika terdapat kesalahan data tersebut.
+                        </p>
+                    </div>
+                 </div>
                  <h2 className="text-xl font-semibold mb-4">Informasi Pribadi</h2>
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Input isReadOnly label="NISPN" value={santri.nispn ?? ''} variant="bordered"/>
-                      <Input isReadOnly label="NIK" value={santri.nik ?? ''} variant="bordered"/>
-                      <Input label="Nama Lengkap" name="nama_lengkap" value={formData.nama_lengkap || ""} onChange={handleInputChange} isRequired />
+                      <Input isReadOnly label="Nomor Identitas" value={santri.nomor_identitas ?? ''} variant="bordered"/>
+                      <Input label="Nama Lengkap" name="nama" value={formData.nama || ""} onChange={handleInputChange} isRequired />
                       <Input label="Nama Panggilan" name="nama_panggilan" value={formData.nama_panggilan || ""} onChange={handleInputChange} />
                       <Select
                           label="Jenis Kelamin"
@@ -661,7 +679,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                           <SelectItem key="L" value="L">Laki-laki</SelectItem>
                           <SelectItem key="P" value="P">Perempuan</SelectItem>
                       </Select>
-                     <Input label="HP" name="hp" type="tel" value={formData.hp || ""} onChange={handleInputChange} />
+                     <Input label="HP / Telepon" name="nomor_telepon" type="tel" value={formData.nomor_telepon || ""} onChange={handleInputChange} />
                      <Input label="Tempat Lahir" name="tempat_lahir" value={formData.tempat_lahir || ""} onChange={handleInputChange} isRequired />
                      <Input label="Tanggal Lahir" name="tanggal_lahir" type="date" value={formData.tanggal_lahir || ""} onChange={handleInputChange} isRequired />
                      <Input label="Nama Ayah" name="nama_ayah" value={formData.nama_ayah || ""} onChange={handleInputChange} />
@@ -669,8 +687,8 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                      <Select
                          label="Pendidikan"
                          placeholder="Pilih Pendidikan"
-                         selectedKeys={formData.pendidikan ? [formData.pendidikan.toString()] : []}
-                         onChange={(e) => handleSelectChange("pendidikan")(e.target.value || null)}
+                         selectedKeys={formData.jenjang_pendidikan ? [formData.jenjang_pendidikan.toString()] : []}
+                         onChange={(e) => handleSelectChange("jenjang_pendidikan")(e.target.value || null)}
                          isRequired
                      >
                         {/* Options matching backend */}
@@ -678,7 +696,7 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                         ))}
                      </Select>
-                      <Input label="Jurusan" name="jurusan" value={formData.jurusan || ""} onChange={handleInputChange} />
+                      <Input label="Jurusan" name="jurusan_pendidikan" value={formData.jurusan_pendidikan || ""} onChange={handleInputChange} />
                  </div>
              </div>
 
@@ -705,8 +723,8 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                         label="Kota/Kabupaten"
                         placeholder={isKotaLoading ? "Memuat..." : "Pilih Kota/Kabupaten"}
                         items={kotaOptions}
-                        selectedKeys={formData.kota_kab_id ? [String(formData.kota_kab_id)] : []}
-                        onChange={(e) => handleSelectChange("kota_kab_id")(e.target.value ? Number(e.target.value) : null)}
+                        selectedKeys={formData.kota_id ? [String(formData.kota_id)] : []}
+                        onChange={(e) => handleSelectChange("kota_id")(e.target.value ? Number(e.target.value) : null)}
                         isDisabled={!formData.provinsi_id || isKotaLoading}
                         isRequired
                     >
@@ -718,17 +736,17 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                          items={kecamatanOptions}
                          selectedKeys={formData.kecamatan_id ? [String(formData.kecamatan_id)] : []}
                          onChange={(e) => handleSelectChange("kecamatan_id")(e.target.value ? Number(e.target.value) : null)}
-                         isDisabled={!formData.kota_kab_id || isKecamatanLoading}
+                         isDisabled={!formData.kota_id || isKecamatanLoading}
                          isRequired
                      >
                         {(item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>}
                      </Select>
-                    <Select
+                     <Select
                         label="Desa/Kelurahan"
                          placeholder={isKelurahanLoading ? "Memuat..." : "Pilih Desa/Kelurahan"}
                         items={kelurahanOptions}
-                        selectedKeys={formData.desa_kel_id ? [String(formData.desa_kel_id)] : []}
-                        onChange={(e) => handleSelectChange("desa_kel_id")(e.target.value ? Number(e.target.value) : null)}
+                        selectedKeys={formData.kelurahan_id ? [String(formData.kelurahan_id)] : []}
+                        onChange={(e) => handleSelectChange("kelurahan_id")(e.target.value ? Number(e.target.value) : null)}
                         isDisabled={!formData.kecamatan_id || isKelurahanLoading}
                         isRequired
                     >
@@ -739,8 +757,8 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                         label="Daerah Sambung"
                         placeholder="Pilih Daerah"
                         items={daerahSambungOptions}
-                        selectedKeys={formData.id_daerah_sambung ? [String(formData.id_daerah_sambung)] : []}
-                        onChange={(e) => handleSelectChange("id_daerah_sambung")(e.target.value ? Number(e.target.value) : null)}
+                        selectedKeys={formData.daerah_sambung_id ? [String(formData.daerah_sambung_id)] : []}
+                        onChange={(e) => handleSelectChange("daerah_sambung_id")(e.target.value ? Number(e.target.value) : null)}
                         isRequired
                     >
                         {(item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>}
@@ -759,8 +777,8 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                          label="Asal Pondok"
                          placeholder="Pilih Pondok"
                          items={ponpesOptions}
-                         selectedKeys={formData.id_ponpes ? [String(formData.id_ponpes)] : []}
-                         onChange={(e) => handleSelectChange("id_ponpes")(e.target.value ? Number(e.target.value) : null)}
+                         selectedKeys={formData.asal_ponpes_id ? [String(formData.asal_ponpes_id)] : []}
+                         onChange={(e) => handleSelectChange("asal_ponpes_id")(e.target.value ? Number(e.target.value) : null)}
                          isRequired
                      >
                          {(item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>}
@@ -771,23 +789,27 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                          selectedKeys={formData.status_mondok ? [formData.status_mondok.toString()] : []}
                          onChange={(e) => handleSelectChange("status_mondok")(e.target.value || null)}
                          isRequired
+                         isDisabled={true}
+                         description="Diurus oleh Admin Ponpes"
                       >
                           <SelectItem key="reguler" value="reguler">Reguler</SelectItem>
                           <SelectItem key="kiriman" value="kiriman">Kiriman</SelectItem>
-                          <SelectItem key="pelajar/mahasiswa" value="pelajar/mahasiswa">Pelajar/Mahasiswa</SelectItem>
+                          <SelectItem key="pelajar" value="pelajar">Pelajar</SelectItem>
                       </Select>
-                     
+
                       {formData.status_mondok === 'kiriman' && (
                         <Select
                             label="Daerah Kiriman"
                             placeholder="Pilih Daerah Kiriman"
                             // We reuse the options from daerah sambung as requested
                             items={daerahSambungOptions}
-                            selectedKeys={formData.id_daerah_kiriman ? [String(formData.id_daerah_kiriman)] : []}
-                            onChange={(e) => handleSelectChange("id_daerah_kiriman")(e.target.value ? Number(e.target.value) : null)}
+                            selectedKeys={formData.daerah_kiriman_id ? [String(formData.daerah_kiriman_id)] : []}
+                            onChange={(e) => handleSelectChange("daerah_kiriman_id")(e.target.value ? Number(e.target.value) : null)}
                             // This field is required only if it is visible
                             isRequired={formData.status_mondok === 'kiriman'}
                             className="md:col-span-2" // Make it full width in this section
+                            isDisabled={true}
+                            description="Diurus oleh Admin Ponpes"
                         >
                             {(item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>}
                         </Select>

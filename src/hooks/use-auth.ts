@@ -17,7 +17,7 @@ export function useAuth() {
 
   const loginCredential = async (username: string, password: string) => {
     try {
-      const response = await api.post("login-credential", {
+      const response = await api.post("auth/login-credential", {
         username,
         password,
       });
@@ -38,10 +38,10 @@ export function useAuth() {
     }
   };
 
-  const loginRFID = async (rfid: string) => {
+  const loginRFID = async (smartcard: string) => {
     try {
-      const response = await api.post("login-rfid", {
-        rfid,
+      const response = await api.post("auth/login-rfid", {
+        smartcard,
       });
       const sessionData: Session = {
         token: response.data.token,
@@ -62,7 +62,7 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      const response = await api.post("logout");
+      const response = await api.post("auth/logout");
 
       setSession(RESET);
       removeAuthToken();
@@ -94,7 +94,7 @@ export function useAuth() {
     try {
       // Ensure the backend returns the *full updated user object* consistent with the User type
       const response = await api.post<{ message: string; user: User }>(
-        "update-username",
+        "auth/update-username",
         {
           current_username, // Only send if backend requires it for verification
           new_username,
@@ -137,7 +137,7 @@ export function useAuth() {
   ) => {
     try {
       // Password updates usually only return a success message, not user data.
-      const response = await api.post<{ message: string }>("update-password", {
+      const response = await api.post<{ message: string }>("auth/update-password", {
         current_password,
         new_password,
         new_password_confirmation, // Ensure backend field name matches
@@ -158,15 +158,15 @@ export function useAuth() {
    * @param photo - The File object representing the new photo.
    * @returns The API response data containing message and new photo url, or undefined on error.
    */
-  const updatePhoto = async (photo: File) => {
+  const updateFotoIdentitas = async (photo: File) => {
     const formData = new FormData();
-    formData.append("photo", photo); // Key must match backend API requirement
+    formData.append("foto_identitas", photo); // Key must match backend API requirement
 
     try {
       // Expecting the backend to return the *new URL* for the photo
       // Adjust the expected response type based on your actual API structure
-      const response = await api.post<{ message: string; avatar_url: string }>( // Assuming backend returns 'foto_url'
-        "update-photo",
+      const response = await api.post<{ message: string; foto_identitas: string }>( // Assuming backend returns 'foto_url'
+        "auth/update-foto-identitas",
         formData,
         {
           headers: {
@@ -184,7 +184,7 @@ export function useAuth() {
           ...prevSession,
           user: {
             ...prevSession.user,
-            foto: response.data.avatar_url, // Update the 'foto' field in the user object
+            foto_identitas: response.data.foto_identitas, // Update the 'foto' field in the user object
           },
         };
       });
@@ -202,15 +202,15 @@ export function useAuth() {
    * @param new_rfid - The desired new RFID value.
    * @returns The API response data containing message and potentially the updated user/RFID, or undefined on error.
    */
-  const updateRfid = async (new_rfid: string | null) => { // Allow null if applicable
+  const updateSmartcard = async (new_smartcard: string | null) => { // Allow null if applicable
     try {
-      // Assuming the backend requires 'new_rfid' and returns the updated RFID value,
+      // Assuming the backend requires 'new_smartcard' and returns the updated RFID/Smartcard value,
       // potentially within the full user object or partially. Adjust response type as needed.
-      // Here we assume it returns the *new rfid value* directly or within a partial user object.
-      const response = await api.post<{ message: string; user: { rfid: string | null } }>(
-        "update-rfid",
+      // Here we assume it returns the *new smartcard value* directly or within a partial user object.
+      const response = await api.post<{ message: string; user: { smartcard: string | null } }>(
+        "auth/update-smartcard",
         {
-          new_rfid,
+          new_smartcard,
         },
       );
 
@@ -224,13 +224,13 @@ export function useAuth() {
           user: {
             ...prevSession.user,
             // Update RFID using the value from the response
-            rfid: response.data.user.rfid,
+            smartcard: response.data.user.smartcard,
           },
         };
       });
       // *** End Updated Section ***
 
-      return response.data; // Return { message, user: { rfid } } or similar
+      return response.data; // Return { message, user: { smartcard } } or similar
     } catch (err) {
       handleApiError(err);
       return undefined;
@@ -247,8 +247,8 @@ export function useAuth() {
     // Profile update methods
     updateUsername,
     updatePassword,
-    updatePhoto,
-    updateRfid,
+    updateFotoIdentitas,
+    updateSmartcard,
 
     user,
     token,

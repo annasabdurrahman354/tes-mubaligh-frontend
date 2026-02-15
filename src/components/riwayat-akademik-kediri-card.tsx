@@ -45,7 +45,7 @@ const RiwayatAkademikKediriCard: React.FC<RiwayatAkademikKediriCardProps> = ({
             <Divider />
             <div className="flex flex-col flex-wrap gap-2 text-small">
               <p className="text-small text-default-500">
-                {`Durasi ${akademik.durasi_penilaian} menit`}
+                {`Durasi ${akademik.durasi / 60} menit`}
               </p>
             </div>
           </div>

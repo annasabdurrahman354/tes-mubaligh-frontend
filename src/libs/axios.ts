@@ -7,7 +7,7 @@ import { sessionAtom } from "@/atoms/authAtom";
 const store = getDefaultStore();
 
 const api = axios.create({
-  baseURL: "https://tes.ppwb.my.id/api/",
+  baseURL: "https://coba.walibarokah.id/api/",
   headers: {
     Accept: "application/json",
   },

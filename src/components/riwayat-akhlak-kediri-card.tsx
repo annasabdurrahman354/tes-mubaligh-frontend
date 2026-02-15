@@ -42,7 +42,7 @@ const RiwayatAkhlakKediriCard: React.FC<RiwayatAkhlakKediriCardProps> = ({
               </div>
             </div>
             <Divider />
-            <div className="flex flex-col flex-wrap gap-2 text-small">
+              <div className="flex flex-col flex-wrap gap-2 text-small">
               {akhlak.catatan ? (
                 <p className="text-small text-default-600">{akhlak.catatan}</p>
               ) : (
@@ -50,9 +50,6 @@ const RiwayatAkhlakKediriCard: React.FC<RiwayatAkhlakKediriCardProps> = ({
                   Tidak ada catatan penilaian.
                 </p>
               )}
-              <Chip color="danger" variant="flat">
-                Poin: {akhlak.poin}
-              </Chip>
             </div>
           </div>
         </CardBody>

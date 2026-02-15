@@ -49,13 +49,12 @@ export default function PenilaianAkhlakKertosonoPage() {
   useEffect(() => {
     const updatedFormValues = selectedPeserta.map((peserta) => {
       const existingForm = formValues.find(
-        (form) => form.tes_santri_id === peserta.id,
+        (form) => form.peserta_id === peserta.id,
       );
 
       return (
         existingForm || {
-          tes_santri_id: peserta.id,
-          poin: "",
+          peserta_id: peserta.id,
           catatan: "",
         }
       );
@@ -119,7 +118,7 @@ export default function PenilaianAkhlakKertosonoPage() {
 
                     const formValueToStore = formValues[activePesertaIndex];
                     const storedForm = await storeAkhlakKertosono(
-                      formValueToStore.tes_santri_id,
+                      formValueToStore.peserta_id,
                       formValueToStore.catatan,
                     );
 

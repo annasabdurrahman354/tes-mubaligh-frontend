@@ -40,7 +40,7 @@ export default function HomeTopbar() {
             isBordered
             className="cursor-pointer"
             color="primary"
-            src={user?.foto}
+            src={user?.foto_identitas}
           />
         </NavbarItem>
       </NavbarContent>

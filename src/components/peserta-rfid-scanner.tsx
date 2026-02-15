@@ -110,72 +110,85 @@ const PesertaRFIDScanner = () => {
                     initial={{ scale: 0.5, opacity: 0 }}
                     transition={{ duration: 0.5, ease: "easeInOut" }}
                   >
-                    <Avatar
-                      isBordered
-                      color="success"
-                      size="lg"
-                      src={newPeserta.foto_smartcard}
-                    />
-                    <Chip color="success" size="md" variant="faded">
-                      {newPeserta.nama_lengkap}{" "}
-                      {newPeserta.kelompok
-                        ? `- ${newPeserta.kelompok + newPeserta.nomor_cocard}`
-                        : `- ${newPeserta.nomor_cocard}`}
-                    </Chip>
-                    <Divider />
-                    <div className="flex flex-row flex-wrap justify-center items-center gap-2 text-small">
-                      <Chip
+                        <Avatar
+                        isBordered
                         color="success"
-                        startContent={<School size={18} />}
-                        variant="flat"
-                      >
-                        {ucwordsCustom(newPeserta.asal_pondok_nama)}
-                      </Chip>
-                      <Chip
-                        color="success"
-                        startContent={<MapPinned size={18} />}
-                        variant="flat"
-                      >
-                        {ucwords(newPeserta.asal_daerah_nama)}
-                      </Chip>
-                      <Chip
-                        color="success"
-                        startContent={<GraduationCap size={18} />}
-                        variant="flat"
-                      >
-                        {ucwordsCustom(newPeserta.pendidikan)}
-                      </Chip>
-                      <Chip
-                        color="success"
-                        startContent={<Clock size={18} />}
-                        variant="flat"
-                      >
-                        {newPeserta.umur} Tahun
-                      </Chip>
-                      <Chip
-                        color="success"
-                        startContent={<Handshake size={18} />}
-                        variant="flat"
-                      >
-                        {ucwords(newPeserta.status_mondok)}
-                      </Chip>
-                      <Chip
-                        color="success"
-                        startContent={<Smile size={18} />}
-                        variant="flat"
-                      >
-                        Hobi {ucwords(newPeserta.hobi)}
-                      </Chip>
-                      {newPeserta.telah_disimak && (
-                        <Chip
-                          color="success"
-                          startContent={<CheckCircle size={18} />}
-                          variant="flat"
-                        >
-                          Telah Anda Simak
+                        size="lg"
+                        src={newPeserta.foto_identitas}
+                        />
+                        <Chip color="success" size="md" variant="faded">
+                        {newPeserta.nama}{" "}
+                        {newPeserta.kelompok
+                            ? `- ${newPeserta.kelompok + newPeserta.nomor_cocard}`
+                            : `- ${newPeserta.nomor_cocard}`}
                         </Chip>
-                      )}
-                    </div>
+                        <Divider />
+                        <div className="flex flex-row flex-wrap justify-center items-center gap-2 text-small">
+                        <Chip
+                            color="success"
+                            variant="flat"
+                        >
+                            NISPN: {newPeserta.nispn}
+                        </Chip>
+                        <Chip
+                            color="default"
+                            variant="flat"
+                        >
+                            ID: {newPeserta.nomor_identitas}
+                        </Chip>
+                        <Chip
+                            color="success"
+                            startContent={<School size={18} />}
+                            variant="flat"
+                        >
+                            {ucwordsCustom(newPeserta.asal_ponpes)}
+                        </Chip>
+                        <Chip
+                            color="success"
+                            startContent={<MapPinned size={18} />}
+                            variant="flat"
+                        >
+                            {ucwords(newPeserta.asal_daerah)}
+                        </Chip>
+                                <Chip
+                                    color="success"
+                                    startContent={<GraduationCap size={18} />}
+                                    variant="flat"
+                                >
+                                    {ucwordsCustom(newPeserta.pendidikan)}
+                                </Chip>
+                                <Chip
+                                    color="success"
+                                    startContent={<Clock size={18} />}
+                                    variant="flat"
+                                >
+                                    {newPeserta.umur} Tahun
+                                </Chip>
+                                <Chip
+                                    color="success"
+                                    startContent={<Handshake size={18} />}
+                                    variant="flat"
+                                >
+                                    {ucwords(newPeserta.status_mondok)}
+                                </Chip>
+                                <Chip
+                                    color="success"
+                                    startContent={<Smile size={18} />}
+                                    variant="flat"
+                                >
+                                    Hobi {ucwords(newPeserta.hobi)}
+                                </Chip>
+                                {newPeserta.telah_disimak && (
+                                    <Chip
+                                    color="success"
+                                    startContent={<CheckCircle size={18} />}
+                                    variant="flat"
+                                    >
+                                    Telah Anda Simak
+                                    </Chip>
+                                )}
+                                </div>
+
                   </motion.div>
                 </div>
               )}

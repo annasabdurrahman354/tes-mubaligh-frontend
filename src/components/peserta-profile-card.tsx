@@ -20,6 +20,15 @@ type PesertaProfileCardProps = {
 };
 
 const PesertaProfileCard: React.FC<PesertaProfileCardProps> = ({ peserta }) => {
+  // Use direct access as we standardized the types
+  const nama = peserta.nama;
+  const foto = peserta.foto_identitas;
+  const asalPonpes = peserta.asal_ponpes; 
+  const asalDaerah = peserta.asal_daerah;
+  const kota = peserta.kota;
+
+
+
   return (
     <Card
       fullWidth
@@ -30,20 +39,24 @@ const PesertaProfileCard: React.FC<PesertaProfileCardProps> = ({ peserta }) => {
           <div className="flex flex-row items-center mb-4">
             <Image
               removeWrapper
-              alt={peserta.nama_lengkap}
+              alt={nama}
               className="w-20 h-26 mr-4 rounded-xl border-4 border-default-200 transition-transform hover:scale-105"
-              src={peserta.foto_smartcard}
+              src={foto}
             />
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-large font-semibold">
-                  {peserta.nama_lengkap}{peserta.riwayat_tes ? "*".repeat(peserta.riwayat_tes) : ""}
+                  {nama}{peserta.riwayat_tes ? "*".repeat(peserta.riwayat_tes) : ""}
                 </h3>
               </div>
               <p className="mb-2 text-small font-medium text-default-600">
                 {peserta.jenis_kelamin === "L" ? "bin" : "binti"}{" "}
                 {peserta.nama_ayah}
               </p>
+              <div className="flex gap-2 mb-2">
+                 <Chip size="sm" variant="flat" color="primary">NISPN: {peserta.nispn}</Chip>
+                 <Chip size="sm" variant="flat" color="default">ID: {peserta.nomor_identitas}</Chip>
+              </div>
               <Chip color="primary" variant="faded">
                 {peserta.kelompok}
                 {peserta.nomor_cocard}
@@ -57,14 +70,14 @@ const PesertaProfileCard: React.FC<PesertaProfileCardProps> = ({ peserta }) => {
               startContent={<School size={18} />}
               variant="flat"
             >
-              {ucwordsCustom(peserta.asal_pondok_nama)}
+              {ucwordsCustom(asalPonpes)}
             </Chip>
             <Chip
               color="primary"
               startContent={<MapPinned size={18} />}
               variant="flat"
             >
-              {ucwords(peserta.asal_daerah_nama)}
+              {ucwords(asalDaerah)}
             </Chip>
             <Chip
               color="primary"
@@ -95,23 +108,13 @@ const PesertaProfileCard: React.FC<PesertaProfileCardProps> = ({ peserta }) => {
               Hobi {ucwords(peserta.hobi)}
             </Chip>
             {peserta.akhlak.length != 0 ? (
-              peserta.total_poin_akhlak ? (
                 <Chip
                   color="danger"
                   startContent={<HeartHandshake size={18} />}
                   variant="flat"
                 >
-                  Poin Akhlak {peserta.total_poin_akhlak}
+                  Catatan Akhlak {peserta.akhlak.length}
                 </Chip>
-              ) : (
-                <Chip
-                  color="danger"
-                  startContent={<HeartHandshake size={18} />}
-                  variant="flat"
-                >
-                  Catatan Ketertiban {" " + peserta.akhlak.length}
-                </Chip>
-              )
             ) : null}
           </div>
         </div>

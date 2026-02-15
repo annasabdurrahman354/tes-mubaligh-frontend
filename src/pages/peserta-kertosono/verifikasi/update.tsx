@@ -167,20 +167,24 @@ const PesertaKertosonoVerifikasiDetail: React.FC = () => {
                   isBordered
                   className="mr-4"
                   size="lg"
-                  src={santri.foto_smartcard || undefined}
+                  src={santri.foto_identitas || undefined}
                   fallback={<User className="w-10 h-10 text-default-400"/>}
                   imgProps={{ className:"object-cover w-full h-full"}}
                 />
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-large font-semibold">
-                      {santri.nama_lengkap}
+                      {santri.nama}
                     </h3>
                   </div>
-                  <p className="mb-2 text-small font-medium text-default-600">
+                  <p className="mb-1 text-small font-medium text-default-600">
                     {santri.jenis_kelamin === "L" ? "bin" : "binti"}{" "}
                     {santri.nama_ayah}
                   </p>
+                  <div className="flex gap-2">
+                      <Chip size="sm" variant="flat" color="primary">NISPN: {santri.nispn}</Chip>
+                      <Chip size="sm" variant="flat" color="default">ID: {santri.nomor_identitas}</Chip>
+                  </div>
                 </div>
               </div>
               <Divider />
@@ -190,14 +194,14 @@ const PesertaKertosonoVerifikasiDetail: React.FC = () => {
                   startContent={<School size={18} />}
                   variant="flat"
                 >
-                  {ucwordsCustom(santri.asal_pondok_nama)}
+                  {ucwordsCustom(santri.asal_ponpes)}
                 </Chip>
                 <Chip
                   color="primary"
                   startContent={<MapPinned size={18} />}
                   variant="flat"
                 >
-                  {ucwords(santri.asal_daerah_nama)}
+                  {ucwords(santri.asal_daerah)}
                 </Chip>
                 <Chip
                   color="primary"

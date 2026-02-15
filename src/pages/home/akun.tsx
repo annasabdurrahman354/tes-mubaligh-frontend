@@ -40,7 +40,7 @@ registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview, F
 
 export default function AkunPage() {
   const { theme, setDarkTheme, setLightTheme } = useTheme();
-  const { user, logout, updateUsername, updateRfid, updatePassword, updatePhoto } = useAuth();
+  const { user, logout, updateUsername, updateSmartcard, updatePassword, updateFotoIdentitas } = useAuth();
 
   // State dan fungsi untuk modal update username
   const { isOpen: isUsernameModalOpen, onOpen: onOpenUsernameModal, onClose: onCloseUsernameModal } = useDisclosure();
@@ -83,27 +83,27 @@ export default function AkunPage() {
     }
   };
 
-  // State dan fungsi untuk modal update RFID
-  const { isOpen: isRfidModalOpen, onOpen: onOpenRfidModal, onClose: onCloseRfidModal } = useDisclosure();
-  const [newRfid, setNewRfid] = useState("");
-  const [rfidUpdateError, setRfidUpdateError] = useState("");
-  const [isUpdatingRfid, setIsUpdatingRfid] = useState(false);
+  // State dan fungsi untuk modal update Smartcard
+  const { isOpen: isSmartcardModalOpen, onOpen: onOpenSmartcardModal, onClose: onCloseSmartcardModal } = useDisclosure();
+  const [newSmartcard, setNewSmartcard] = useState("");
+  const [smartcardUpdateError, setSmartcardUpdateError] = useState("");
+  const [isUpdatingSmartcard, setIsUpdatingSmartcard] = useState(false);
 
-  const handleOpenRfidModal = () => {
-    setNewRfid("");
-    setRfidUpdateError("");
-    setIsUpdatingRfid(false);
-    onOpenRfidModal();
+  const handleOpenSmartcardModal = () => {
+    setNewSmartcard("");
+    setSmartcardUpdateError("");
+    setIsUpdatingSmartcard(false);
+    onOpenSmartcardModal();
   };
 
-  const handleUpdateRfid = async () => {
-    setIsUpdatingRfid(true);
-    setRfidUpdateError("");
+  const handleUpdateSmartcard = async () => {
+    setIsUpdatingSmartcard(true);
+    setSmartcardUpdateError("");
 
     try {
-      const result = await updateRfid(newRfid);
+      const result = await updateSmartcard(newSmartcard);
       if (result?.message) {
-        onCloseRfidModal();
+        onCloseSmartcardModal();
         addToast({
           title: "Berhasil!",
           description: result.message,
@@ -115,10 +115,10 @@ export default function AkunPage() {
       }
     } catch (error) {
       if (error instanceof Error) {
-        setRfidUpdateError(error.message);
+        setSmartcardUpdateError(error.message);
       }
     } finally {
-      setIsUpdatingRfid(false);
+      setIsUpdatingSmartcard(false);
     }
   };
 
@@ -186,7 +186,7 @@ export default function AkunPage() {
     if (files && files.length > 0) {
       const file = files[0].file;
       try {
-        const result = await updatePhoto(file);
+        const result = await updateFotoIdentitas(file);
         if (result?.message) {
           onClosePhotoModal();
           addToast({
@@ -259,7 +259,7 @@ export default function AkunPage() {
               <Avatar
                 alt={user?.nama}
                 className="w-16 h-16 text-medium"
-                src={user?.foto}
+                src={user?.foto_identitas}
               />
               <Button
                 isIconOnly
@@ -314,11 +314,11 @@ export default function AkunPage() {
                   <IdCard className="w-5 h-5 text-primary-600" />
                 </div>
                 <div>
-                  <p className="text-small text-default-500">RFID</p>
-                  <p className="text-md text-gray-800 dark:text-white">{user?.rfid ?? "Belum terkoneksi RFID"}</p>
+                  <p className="text-small text-default-500">Smartcard</p>
+                  <p className="text-md text-gray-800 dark:text-white">{user?.smartcard ?? "Belum terkoneksi Smartcard"}</p>
                 </div>
               </div>
-              <Button isIconOnly size="sm" onPress={handleOpenRfidModal}>
+              <Button isIconOnly size="sm" onPress={handleOpenSmartcardModal}>
                 <Pencil className="w-4 h-4" />
               </Button>
             </div>
@@ -328,7 +328,7 @@ export default function AkunPage() {
               </div>
               <div>
                 <p className="text-small text-default-500">Pondok Pesantren</p>
-                <p className="text-md text-gray-800 dark:text-white">{user?.pondok ?? "Tidak ada data"}</p>
+                <p className="text-md text-gray-800 dark:text-white">{user?.ponpes_aktif?.[0]?.nama || "Tidak ada pondok aktif"}</p>
               </div>
             </div>
             <Divider className="mt-2" />
@@ -398,27 +398,27 @@ export default function AkunPage() {
         </ModalContent>
       </Modal>
 
-      {/* Modal untuk update RFID */}
-      <Modal isOpen={isRfidModalOpen} onOpenChange={onCloseRfidModal}>
+      {/* Modal untuk update Smartcard */}
+      <Modal isOpen={isSmartcardModalOpen} onOpenChange={onCloseSmartcardModal}>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Perbarui RFID</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">Perbarui Smartcard</ModalHeader>
               <ModalBody>
-                {rfidUpdateError && <p className="text-red-500 text-sm mb-2">{rfidUpdateError}</p>}
+                {smartcardUpdateError && <p className="text-red-500 text-sm mb-2">{smartcardUpdateError}</p>}
                 <Input
                   type="number"
-                  label="RFID Baru"
-                  placeholder="Masukkan nomor RFID baru"
-                  value={newRfid}
-                  onChange={(e) => setNewRfid(e.target.value)}
+                  label="Smartcard Baru"
+                  placeholder="Masukkan nomor Smartcard baru"
+                  value={newSmartcard}
+                  onChange={(e) => setNewSmartcard(e.target.value)}
                 />
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="flat" onPress={onClose} isDisabled={isUpdatingRfid}>
+                <Button color="danger" variant="flat" onPress={onClose} isDisabled={isUpdatingSmartcard}>
                   Batal
                 </Button>
-                <Button color="primary" onPress={handleUpdateRfid} isLoading={isUpdatingRfid} isDisabled={isUpdatingRfid}>
+                <Button color="primary" onPress={handleUpdateSmartcard} isLoading={isUpdatingSmartcard} isDisabled={isUpdatingSmartcard}>
                   Simpan
                 </Button>
               </ModalFooter>

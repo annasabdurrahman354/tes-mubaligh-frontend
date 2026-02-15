@@ -23,10 +23,6 @@ import { useKediri } from "@/hooks/use-kediri";
 import { usePeserta } from "@/hooks/use-peserta";
 
 const validationSchema = Yup.object().shape({
-  poin: Yup.string()
-    .required("Poin akhlak harus diisi.")
-    .max(100, "Poin tidak boleh lebih dari 100.")
-    .min(0, "Poin tidak boleh kurang dari 0."),
   catatan: Yup.string().required("Catatan akhlak harus diisi."),
 });
 
@@ -54,13 +50,12 @@ export default function PenilaianAkhlakKediriPage() {
   useEffect(() => {
     const updatedFormValues = selectedPeserta.map((peserta) => {
       const existingForm = formValues.find(
-        (form) => form.tes_santri_id === peserta.id,
+        (form) => form.peserta_id === peserta.id,
       );
 
       return (
         existingForm || {
-          tes_santri_id: peserta.id,
-          poin: "",
+          peserta_id: peserta.id,
           catatan: "",
         }
       );
@@ -124,8 +119,7 @@ export default function PenilaianAkhlakKediriPage() {
 
                     const formValueToStore = formValues[activePesertaIndex];
                     const storedForm = await storeAkhlakKediri(
-                      formValueToStore.tes_santri_id,
-                      formValueToStore.poin,
+                      formValueToStore.peserta_id,
                       formValueToStore.catatan,
                     );
 
@@ -165,29 +159,6 @@ export default function PenilaianAkhlakKediriPage() {
                   >
                     <CardBody className="overflow-hidden">
                       <div className="flex flex-col gap-6 p-2">
-                        <Input
-                          isRequired
-                          className="w-full"
-                          errorMessage={errors.poin}
-                          isDisabled={loading}
-                          isInvalid={!!errors.poin && !!touched.poin}
-                          label="Poin"
-                          type="number"
-                          value={values.poin}
-                          onValueChange={(text) => {
-                            setFieldValue("poin", text);
-                            setFormValues((prevValues) => {
-                              const updatedValues = [...prevValues];
-
-                              updatedValues[activePesertaIndex] = {
-                                ...updatedValues[activePesertaIndex],
-                                poin: text,
-                              };
-
-                              return updatedValues;
-                            });
-                          }}
-                        />
                         <Textarea
                           isClearable
                           isMultiline

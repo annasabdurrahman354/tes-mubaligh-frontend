@@ -43,8 +43,24 @@ export function useKertosono() {
   ): Promise<PaginatedPesertaResponse | null > => {
     try {
       // The actual response type from axios might differ slightly, but casting helps usage
-      const response = await api.get<PaginatedPesertaResponse>("peserta-kertosono", { params });
-      // Assuming response.data directly contains the structure defined above
+      const response = await api.get<PaginatedPesertaResponse>("tes/peserta-kertosono", { params });
+      
+      // Transform keys to match new standard if needed
+      if (response && response.data && Array.isArray(response.data.data)) {
+         const transformedData = response.data.data.map((item: any) => ({
+             ...item,
+             nama: item.nama ?? item.nama_lengkap,
+             foto_identitas: item.foto_identitas ?? item.foto_smartcard,
+             smartcard: item.smartcard ?? item.rfid,
+             kota: item.kota ?? item.kota_nama,
+             asal_ponpes: item.asal_ponpes ?? item.asal_pondok_nama,
+             asal_daerah: item.asal_daerah ?? item.asal_daerah_nama,
+             nomor_identitas: item.nomor_identitas ?? item.nik,
+             nispn: item.nispn ?? item.nis,
+         }));
+         return { ...response.data, data: transformedData };
+      }
+
       return response.data;
     } catch (err) {
       handleApiError(err);
@@ -53,22 +69,37 @@ export function useKertosono() {
   }, []);
 
   const getPesertaKertosonoByRFID = async (
-    rfid: string,
+    smartcard: string,
   ): Promise<PesertaKertosono | null | any> => {
     try {
-      const response = await api.get("peserta-kertosono/rfid", {
-        params: { rfid: rfid },
+      const response = await api.get("peserta-kertosono/smartcard", {
+        params: { smartcard: smartcard },
       });
 
-      return response.data.data;
+      const item = response.data.data;
+      if (item) {
+          return {
+             ...item,
+             nama: item.nama ?? item.nama_lengkap,
+             foto_identitas: item.foto_identitas ?? item.foto_smartcard,
+             smartcard: item.smartcard ?? item.rfid,
+             kota: item.kota ?? item.kota_nama,
+             asal_ponpes: item.asal_ponpes ?? item.asal_pondok_nama,
+             asal_daerah: item.asal_daerah ?? item.asal_daerah_nama,
+             nomor_identitas: item.nomor_identitas ?? item.nik,
+             nispn: item.nispn ?? item.nis,
+          };
+      }
+
+      return item;
     } catch (err) {
       handleApiError(err);
     }
   };
 
   const storeAkademikKertosono = async (
-    tes_santri_id: string,
-    penilaian: string,
+    peserta_id: string,
+    nilai: string,
     kekurangan_tajwid: string[],
     kekurangan_khusus: string[],
     kekurangan_keserasian: string[],
@@ -76,14 +107,14 @@ export function useKertosono() {
     guru_pengganti: string | null,
     catatan: string | null,
     rekomendasi_penarikan: boolean,
-    durasi_penilaian: number,
+    durasi: number,
   ): Promise<AkademikKertosonoForm | null | any> => {
     try {
       const response = await api.post<AkademikKertosonoForm>(
-        "akademik-kertosono",
+        "tes/akademik-kertosono",
         {
-          tes_santri_id,
-          penilaian,
+          peserta_id,
+          nilai,
           kekurangan_tajwid,
           kekurangan_khusus,
           kekurangan_keserasian,
@@ -91,7 +122,7 @@ export function useKertosono() {
           guru_pengganti,
           catatan,
           rekomendasi_penarikan,
-          durasi_penilaian,
+          durasi,
         },
       );
 
@@ -102,12 +133,12 @@ export function useKertosono() {
   };
 
   const storeAkhlakKertosono = async (
-    tes_santri_id: string,
+    peserta_id: string,
     catatan: string,
   ): Promise<AkhlakKertosonoForm | null | any> => {
     try {
-      const response = await api.post<AkhlakKertosonoForm>("akhlak-kertosono", {
-        tes_santri_id,
+      const response = await api.post<AkhlakKertosonoForm>("tes/akhlak-kertosono", {
+        peserta_id,
         catatan,
       });
 
@@ -126,7 +157,7 @@ export function useKertosono() {
   ): Promise<PaginatedPesertaResponse | null > => {
     try {
       // Note: The data array within the response should contain PesertaKertosonoVerifikasi objects
-      const response = await api.get<PaginatedPesertaResponse>("peserta-kertosono/verifikasi", { params });
+      const response = await api.get<PaginatedPesertaResponse>("tes/peserta-kertosono/verifikasi", { params });
       return response.data;
     } catch (err) {
       handleApiError(err);
@@ -140,11 +171,24 @@ export function useKertosono() {
    */
   const getSinglePesertaKertosonoVerifikasi = async (
       id_tes_santri: string | number // Can be string or number depending on usage
-  ): Promise<PesertaKertosonoVerifikasi | null> => {
+  ): Promise<PesertaKertosonoVerifikasi | null | any> => {
       try {
-          const response = await api.get<PesertaKertosonoVerifikasi>(`peserta-kertosono/verifikasi/${id_tes_santri}`);
-          // The backend 'show' method directly returns the transformed object
-          return response.data;
+          const response = await api.get<PesertaKertosonoVerifikasi>(`tes/peserta-kertosono/verifikasi/${id_tes_santri}`);
+          const item = response.data;
+          
+          if (item) {
+             return {
+                 ...item,
+                 nama: (item as any).nama ?? (item as any).nama_lengkap,
+                 foto_identitas: (item as any).foto_identitas ?? (item as any).foto_smartcard,
+                 smartcard: (item as any).smartcard ?? (item as any).rfid,
+                 nomor_identitas: (item as any).nomor_identitas ?? (item as any).nik, // data migration or fallback
+                 nama_panggilan: item.nama_panggilan, 
+                 // Map other verification specific fields if needed
+             };
+          }
+
+          return item;
       } catch (err) {
           handleApiError(err);
           return null;
