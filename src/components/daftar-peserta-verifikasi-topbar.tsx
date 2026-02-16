@@ -84,9 +84,9 @@ const DaftarPesertaVerifikasiTopbar: React.FC<DaftarPesertaVerifikasiTopbarProps
     setQuery((prevQuery: any) => {
       const newQuery = { ...prevQuery };
       if (selectedValue === "") {
-        delete newQuery["filter[siswa.jenis_kelamin]"];
+        delete newQuery["filter[santri.jenis_kelamin]"];
       } else {
-        newQuery["filter[siswa.jenis_kelamin]"] = selectedValue;
+        newQuery["filter[santri.jenis_kelamin]"] = selectedValue;
       }
       return newQuery;
     });
@@ -124,9 +124,9 @@ const DaftarPesertaVerifikasiTopbar: React.FC<DaftarPesertaVerifikasiTopbarProps
 
       // If the query is empty, remove the filter
       if (queryNama.trim() === "") { // Use trim() to handle whitespace
-        delete newQuery["filter[namaOrCocard]"];
+        delete newQuery["filter[namaAtauCocard]"];
       } else {
-        newQuery["filter[namaOrCocard]"] = queryNama.trim(); // Use trimmed value
+        newQuery["filter[namaAtauCocard]"] = queryNama.trim(); // Use trimmed value
       }
       return newQuery;
     });
