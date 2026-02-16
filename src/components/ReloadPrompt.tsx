@@ -1,5 +1,14 @@
-import { useEffect, useState } from 'react';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Divider,
+} from "@heroui/react";
 import { useRegisterSW } from 'virtual:pwa-register/react';
+import { RefreshCw, Wifi } from "lucide-react";
 
 export function ReloadPrompt() {
   const {
@@ -30,69 +39,72 @@ export function ReloadPrompt() {
     updateServiceWorker(true);
   };
 
-  if (!offlineReady && !needRefresh) {
-    return null;
-  }
+  const isOpen = offlineReady || needRefresh;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        zIndex: 9999,
-        backgroundColor: '#7eab82',
-        color: 'white',
-        padding: '16px 20px',
-        borderRadius: '8px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-        maxWidth: '400px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-      }}
+    <Modal
+      backdrop="blur"
+      isOpen={isOpen}
+      placement="center"
+      size="md"
+      isDismissable={false}
+      hideCloseButton={true}
     >
-      <div style={{ fontSize: '14px', lineHeight: '1.5' }}>
-        {offlineReady ? (
-          <span>Aplikasi siap digunakan secara offline</span>
-        ) : (
-          <span>Versi baru aplikasi tersedia!</span>
+      <ModalContent>
+        {() => (
+          <>
+            <ModalHeader className="flex flex-col gap-1">
+              {offlineReady ? (
+                <div className="flex items-center gap-2">
+                  <Wifi className="text-success" />
+                  Aplikasi Siap Offline
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <RefreshCw className="text-primary" />
+                  Pembaruan Tersedia
+                </div>
+              )}
+            </ModalHeader>
+            <Divider />
+            <ModalBody>
+              <div className="flex flex-col items-center justify-center py-4 px-2">
+                {offlineReady ? (
+                  <p className="text-center text-foreground-600">
+                    Aplikasi siap digunakan secara offline. Anda dapat menutup pesan ini.
+                  </p>
+                ) : (
+                  <p className="text-center text-foreground-600">
+                    Versi baru aplikasi tersedia! Silakan perbarui untuk mendapatkan fitur terbaru.
+                  </p>
+                )}
+              </div>
+            </ModalBody>
+            <Divider />
+            <ModalFooter>
+              {offlineReady && (
+                <Button
+                  color="default"
+                  variant="faded"
+                  onPress={close}
+                >
+                  Tutup
+                </Button>
+              )}
+              {needRefresh && (
+                <Button
+                  color="primary"
+                  variant="shadow"
+                  onPress={handleUpdate}
+                  startContent={<RefreshCw size={18} />}
+                >
+                  Perbarui Sekarang
+                </Button>
+              )}
+            </ModalFooter>
+          </>
         )}
-      </div>
-      <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-        {needRefresh && (
-          <button
-            onClick={handleUpdate}
-            style={{
-              backgroundColor: 'white',
-              color: '#7eab82',
-              border: 'none',
-              padding: '8px 16px',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              fontSize: '13px',
-            }}
-          >
-            Perbarui Sekarang
-          </button>
-        )}
-        <button
-          onClick={close}
-          style={{
-            backgroundColor: 'transparent',
-            color: 'white',
-            border: '1px solid white',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontWeight: '600',
-            fontSize: '13px',
-          }}
-        >
-          Tutup
-        </button>
-      </div>
-    </div>
+      </ModalContent>
+    </Modal>
   );
 }

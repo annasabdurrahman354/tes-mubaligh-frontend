@@ -21,8 +21,6 @@ import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
 import { ROLE } from "@/types/enum";
 import { useStatistik } from "@/hooks/use-statistik";
-import { AppVersion } from "@/components/AppVersion";
-
 
 export default function IndexPage() {
   const [tab, setTab] = useState("kediri");
@@ -112,7 +110,6 @@ export default function IndexPage() {
                   Keluar
                 </Button>
               </div>
-              <AppVersion />
             </div>
           </CardBody>
         </Card>
