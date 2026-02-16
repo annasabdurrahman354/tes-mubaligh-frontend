@@ -364,29 +364,6 @@ export default function LoginPage() {
                         )}
                       </Formik>
                       <AppVersion />
-                      <Button
-                        className="mt-2"
-                        color="default"
-                        size="sm"
-                        variant="light"
-                        onPress={() => {
-                          if ('serviceWorker' in navigator) {
-                            navigator.serviceWorker.getRegistration().then((registration) => {
-                              if (registration) {
-                                registration.update().then(() => {
-                                  window.location.reload();
-                                });
-                              } else {
-                                window.location.reload();
-                              }
-                            });
-                          } else {
-                            window.location.reload();
-                          }
-                        }}
-                      >
-                        Perbarui Aplikasi
-                      </Button>
                     </CardBody>
                   </Card>
                 </motion.div>
