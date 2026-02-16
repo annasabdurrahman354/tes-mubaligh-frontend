@@ -23,8 +23,8 @@ import { useOptions } from "@/hooks/use-options";
 
 const genderOptions = [
   { label: "Gender", value: "" },
-  { label: "Laki-laki", value: "L" },
-  { label: "Perempuan", value: "P" },
+  { label: "Laki-laki", value: "laki-laki" },
+  { label: "Perempuan", value: "perempuan" },
 ];
 
 const campOptions = [

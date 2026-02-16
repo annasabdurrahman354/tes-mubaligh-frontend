@@ -15,8 +15,8 @@ import { useLocation } from "react-router-dom";
 
 const genderOptions = [
   { label: "Semua Gender", value: "-" },
-  { label: "Laki-laki", value: "L" },
-  { label: "Perempuan", value: "P" },
+  { label: "Laki-laki", value: "laki-laki" },
+  { label: "Perempuan", value: "perempuan" },
 ];
 
 const campOptions = [
