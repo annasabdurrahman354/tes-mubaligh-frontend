@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/hooks/use-auth";
 import { useRFIDScanner } from "@/libs/rfid-scanner";
+import { AppVersion } from "@/components/AppVersion";
+
 
 function ElegantShape({
   className,
@@ -361,6 +363,7 @@ export default function LoginPage() {
                           </Form>
                         )}
                       </Formik>
+                      <AppVersion />
                     </CardBody>
                   </Card>
                 </motion.div>

@@ -21,6 +21,8 @@ import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
 import { ROLE } from "@/types/enum";
 import { useStatistik } from "@/hooks/use-statistik";
+import { AppVersion } from "@/components/AppVersion";
+
 
 export default function IndexPage() {
   const [tab, setTab] = useState("kediri");
@@ -86,28 +88,31 @@ export default function IndexPage() {
                   "Loading..."}
               </p>
             </div>
-            <div className="flex flex-row gap-2 items-center justify-center align-middle flex-wrap sm:flex-nowrap">
-              <Button
-                color={theme !== "light" ? "primary" : "default"}
-                startContent={
-                  theme !== "light" ? <Sun size={16} /> : <Moon size={16} />
-                }
-                variant={theme !== "light" ? "solid" : "solid"}
-                onPress={() =>
-                  theme === "light" ? setDarkTheme() : setLightTheme()
-                }
-              >
-                {theme !== "light" ? "Terang" : "Gelap"}
-              </Button>
+            <div className="flex flex-col gap-2 items-center justify-center">
+              <div className="flex flex-row gap-2 items-center justify-center align-middle flex-wrap sm:flex-nowrap">
+                <Button
+                  color={theme !== "light" ? "primary" : "default"}
+                  startContent={
+                    theme !== "light" ? <Sun size={16} /> : <Moon size={16} />
+                  }
+                  variant={theme !== "light" ? "solid" : "solid"}
+                  onPress={() =>
+                    theme === "light" ? setDarkTheme() : setLightTheme()
+                  }
+                >
+                  {theme !== "light" ? "Terang" : "Gelap"}
+                </Button>
 
-              <Button
-                color="danger"
-                startContent={<LogOut size={16} />}
-                variant="flat"
-                onPress={logout}
-              >
-                Keluar
-              </Button>
+                <Button
+                  color="danger"
+                  startContent={<LogOut size={16} />}
+                  variant="flat"
+                  onPress={logout}
+                >
+                  Keluar
+                </Button>
+              </div>
+              <AppVersion />
             </div>
           </CardBody>
         </Card>
