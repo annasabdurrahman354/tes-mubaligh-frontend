@@ -17,11 +17,11 @@ export function ReloadPrompt() {
     updateServiceWorker,
   } = useRegisterSW({
     onRegistered(registration) {
-      // Check for updates every hour
+      // Check for updates every 20 minutes
       if (registration) {
         setInterval(() => {
           registration.update();
-        }, 60 * 60 * 1000);
+        }, 20 * 60 * 1000);
       }
     },
     onRegisterError(error) {
