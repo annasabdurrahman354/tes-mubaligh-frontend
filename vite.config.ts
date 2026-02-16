@@ -9,7 +9,7 @@ export default defineConfig({
     react(), 
     tsconfigPaths(),
     VitePWA({ 
-      registerType: 'autoUpdate',
+      registerType: 'prompt', // Changed to 'prompt' so users are notified of updates
       devOptions: {
         enabled: true
       },
@@ -45,9 +45,30 @@ export default defineConfig({
         ],
       }, 
       workbox: {
-        globPatterns: ['**/*.{js, ts, tsx,css,html,ico,png, jpg,svg}'],
+        globPatterns: ['**/*.{js,ts,tsx,css,html,ico,png,jpg,svg}'], // Fixed: removed spaces in pattern
         navigateFallbackAllowlist: [/^(?!\/api\/)/],
+        // Force service worker to activate immediately
+        skipWaiting: true,
+        clientsClaim: true,
+        // Clean old caches
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
+          // API calls should use NetworkFirst to always get fresh data
+          {
+            urlPattern: /^https?:\/\/.*\/api\/.*/i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'api-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 5 // 5 minutes
+              },
+              networkTimeoutSeconds: 10,
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
