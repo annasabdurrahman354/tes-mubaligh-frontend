@@ -35,7 +35,7 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
     const asalDaerah = peserta.asal_daerah;
 
     // Logic for nilai and hasil_tes
-    const nilaiAnda = peserta.nilai_anda;
+    const nilaiAnda = peserta.nilai_anda == 'lulus' ? 'Lulus' : 'Tidak Lulus';
     // Kertosono doesn't have nilai_akhir top-level in same way? Controller says Kertosono has 'nilai_anda', 'rekomendasi_anda'. Kediri has 'nilai_akhir', 'nilai_anda'.
     // User said "avg_nilai menjadi nilai_akhir".
     const nilaiAkhir = "nilai_akhir" in peserta ? (peserta as PesertaKediri).nilai_akhir : null;
@@ -47,7 +47,8 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
 
     const getCardColor = () => {
       if (isSelected) return "primary";
-      if (peserta.telah_disimak) return "success";
+      if (peserta.telah_disimak && nilaiAnda == 'Lulus') return "success";
+      else if (peserta.telah_disimak && nilaiAnda == 'Tidak Lulus') return "danger";
 
       return "default";
     };
@@ -104,7 +105,7 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
                 )}
               </div>
               <p className="text-small font-medium text-default-600">
-                {peserta.jenis_kelamin === "L" ? "bin" : "binti"}{" "}
+                {peserta.jenis_kelamin === "laki-laki" ? "bin" : "binti"}{" "}
                 {peserta.nama_ayah}
               </p>
             </CardHeader>
@@ -141,13 +142,7 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
                   {peserta.telah_disimak && (
                     <Chip
                       className="my-1 transition-all duration-200 hover:scale-105"
-                      color={
-                        // Color logic based on nilai_anda or recommendation?
-                        // Controller says for Kertosono: 'rekomendasi_anda' boolean.
-                        // For Kediri: Just 'nilai_anda'.
-                        // Keep simple: success if assessed.
-                        "success"
-                      }
+                      color={nilaiAnda == 'Lulus' ? "success" : 'danger'}
                       startContent={
                         // Icon logic?
                         <CheckCircle size={18} />

@@ -79,7 +79,7 @@ export type PesertaKertosonoVerifikasi = {
   nispn: string;
   nama: string | null; 
   nama_panggilan: string | null;
-  jenis_kelamin: "L" | "P" | null;
+  jenis_kelamin: "laki-laki" | "perempuan" | null;
   nomor_cocard: number | null;
   nisn: string | null;
   nomor_identitas: string | null; // Renamed from nik

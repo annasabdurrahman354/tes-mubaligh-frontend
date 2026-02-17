@@ -131,12 +131,6 @@ const PesertaRFIDScanner = () => {
                             NISPN: {newPeserta.nispn}
                         </Chip>
                         <Chip
-                            color="default"
-                            variant="flat"
-                        >
-                            ID: {newPeserta.nomor_identitas}
-                        </Chip>
-                        <Chip
                             color="success"
                             startContent={<School size={18} />}
                             variant="flat"

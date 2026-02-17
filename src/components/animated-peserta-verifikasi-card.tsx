@@ -68,7 +68,7 @@ const AnimatedPesertaVerifikasiCard = forwardRef<HTMLDivElement, ParticipantCard
                 </h3>
               </div>
               <p className="text-small font-medium text-default-600">
-                {peserta.jenis_kelamin === "L" ? "bin" : "binti"}{" "}
+                {peserta.jenis_kelamin === "laki-laki" ? "bin" : "binti"}{" "}
                 {peserta.nama_ayah}
               </p>
             </CardHeader>

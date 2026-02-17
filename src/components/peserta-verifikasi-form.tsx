@@ -676,8 +676,8 @@ const PesertaVerifikasiForm: React.FC<PesertaVerifikasiFormProps> = ({
                           onChange={(e) => handleSelectChange("jenis_kelamin")(e.target.value || null)}
                           isRequired
                       >
-                          <SelectItem key="L" value="L">Laki-laki</SelectItem>
-                          <SelectItem key="P" value="P">Perempuan</SelectItem>
+                          <SelectItem key="L" value="laki-laki">Laki-laki</SelectItem>
+                          <SelectItem key="P" value="perempuan">Perempuan</SelectItem>
                       </Select>
                      <Input label="HP / Telepon" name="nomor_telepon" type="tel" value={formData.nomor_telepon || ""} onChange={handleInputChange} />
                      <Input label="Tempat Lahir" name="tempat_lahir" value={formData.tempat_lahir || ""} onChange={handleInputChange} isRequired />

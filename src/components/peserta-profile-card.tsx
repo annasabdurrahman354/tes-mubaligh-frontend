@@ -50,12 +50,11 @@ const PesertaProfileCard: React.FC<PesertaProfileCardProps> = ({ peserta }) => {
                 </h3>
               </div>
               <p className="mb-2 text-small font-medium text-default-600">
-                {peserta.jenis_kelamin === "L" ? "bin" : "binti"}{" "}
+                {peserta.jenis_kelamin === "laki-laki" ? "bin" : "binti"}{" "}
                 {peserta.nama_ayah}
               </p>
               <div className="flex gap-2 mb-2">
                  <Chip size="sm" variant="flat" color="primary">NISPN: {peserta.nispn}</Chip>
-                 <Chip size="sm" variant="flat" color="default">ID: {peserta.nomor_identitas}</Chip>
               </div>
               <Chip color="primary" variant="faded">
                 {peserta.kelompok}

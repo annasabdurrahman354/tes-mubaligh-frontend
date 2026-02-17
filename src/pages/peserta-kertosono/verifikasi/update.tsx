@@ -178,7 +178,7 @@ const PesertaKertosonoVerifikasiDetail: React.FC = () => {
                     </h3>
                   </div>
                   <p className="mb-1 text-small font-medium text-default-600">
-                    {santri.jenis_kelamin === "L" ? "bin" : "binti"}{" "}
+                    {santri.jenis_kelamin === "laki-laki" ? "bin" : "binti"}{" "}
                     {santri.nama_ayah}
                   </p>
                   <div className="flex gap-2">
