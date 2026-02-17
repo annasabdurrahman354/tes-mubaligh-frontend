@@ -156,14 +156,15 @@ export default function PenilaianAkademikKertosonoPage() {
       let calculated_awal_penilaian = new Date(Date.now());
       let current_total_duration = null;
 
-      const akademikEntry = peserta.telah_disimak
-        ? peserta.akademik?.find((akademik) => akademik.guru_id == user?.id)
-        : null;
+      // Always check if the current logged-in teacher has already assessed this participant
+      // This enables the update operation instead of always creating new entries
+      const akademikEntry = peserta.akademik?.find((akademik) => akademik.guru_id == user?.person_id);
 
       if (akademikEntry) {
         const loadedDuration = getInitialDuration(akademikEntry.durasi);
         current_total_duration = loadedDuration;
-        calculated_awal_penilaian = new Date(Date.now() - loadedDuration * 60000);
+        // Calculate the fake start time in the past (durasi is in seconds, convert to milliseconds)
+        calculated_awal_penilaian = new Date(Date.now() - loadedDuration * 1000);
       }
 
       const initialData = {

@@ -206,14 +206,14 @@ export default function PenilaianAkademikKediriPage() {
       let calculated_awal_penilaian = new Date(Date.now()); // Default to now (for new assessments)
       let current_total_duration = null; // Stays null for new, holds loaded duration for existing
 
-      const akademikEntry = peserta.telah_disimak
-        ? peserta.akademik?.find((akademik) => akademik.guru_id == user?.id)
-        : null;
+      // Always check if the current logged-in teacher has already assessed this participant
+      // This enables the update operation instead of always creating new entries
+      const akademikEntry = peserta.akademik?.find((akademik) => akademik.guru_id == user?.person_id);
 
       if (akademikEntry) {
         const loadedDuration = getInitialDuration(akademikEntry.durasi);
         current_total_duration = loadedDuration; // Store the loaded duration
-        // Calculate the fake start time in the past
+        // Calculate the fake start time in the past (durasi is in seconds, convert to milliseconds)
         calculated_awal_penilaian = new Date(Date.now() - loadedDuration * 1000);
       }
       // --- End Calculation Logic ---
@@ -329,9 +329,9 @@ export default function PenilaianAkademikKediriPage() {
                         throw new Error("Assessment start time is missing.");
                       }
 
-                      // Calculate the TOTAL duration based on the timer's start time and now
+                      // Calculate the TOTAL duration based on the timer's start time and now (in seconds)
                       const totalDurasiMenit = Math.round(
-                        (Date.now() - timerStartTime) / 60000,
+                        (Date.now() - timerStartTime) / 1000,
                       );
 
                       // Prepare the payload with the calculated total duration
