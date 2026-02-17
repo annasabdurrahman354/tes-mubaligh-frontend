@@ -19,6 +19,7 @@ export const statistikKediriAtom = atomWithStorage<StatistikTes>(
         perlu_musyawarah: null,
         belum_pengetesan: null,
       },
+      count_by_jumlah_penyimakan: {},
     },
     by_gender: {
       "Laki-laki": {
@@ -34,6 +35,7 @@ export const statistikKediriAtom = atomWithStorage<StatistikTes>(
           perlu_musyawarah: null,
           belum_pengetesan: null,
         },
+        count_by_jumlah_penyimakan: {},
       },
       Perempuan: {
         total_active_peserta: null,
@@ -48,6 +50,7 @@ export const statistikKediriAtom = atomWithStorage<StatistikTes>(
           perlu_musyawarah: null,
           belum_pengetesan: null,
         },
+        count_by_jumlah_penyimakan: {},
       },
     },
   },
@@ -70,6 +73,7 @@ export const statistikKertosonoAtom = atomWithStorage<StatistikTes>(
         perlu_musyawarah: null,
         belum_pengetesan: null,
       },
+      count_by_jumlah_penyimakan: {},
     },
     by_gender: {
       "Laki-laki": {
@@ -85,6 +89,7 @@ export const statistikKertosonoAtom = atomWithStorage<StatistikTes>(
           perlu_musyawarah: null,
           belum_pengetesan: null,
         },
+        count_by_jumlah_penyimakan: {},
       },
       Perempuan: {
         total_active_peserta: null,
@@ -99,6 +104,7 @@ export const statistikKertosonoAtom = atomWithStorage<StatistikTes>(
           perlu_musyawarah: null,
           belum_pengetesan: null,
         },
+        count_by_jumlah_penyimakan: {},
       },
     },
   },

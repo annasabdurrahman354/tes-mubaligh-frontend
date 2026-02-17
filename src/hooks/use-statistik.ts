@@ -14,7 +14,7 @@ export function useStatistik() {
 
   const getStatistikKediri = async (): Promise<any> => {
     try {
-      const response = await api.get("statistik-kediri");
+      const response = await api.get("tes/statistik-kediri");
 
       setStatistikKediri(response.data.data);
 
@@ -26,7 +26,7 @@ export function useStatistik() {
 
   const getStatistikKertosono = async (): Promise<any> => {
     try {
-      const response = await api.get("statistik-kertosono");
+      const response = await api.get("tes/statistik-kertosono");
 
       setStatistikKertosono(response.data.data);
 

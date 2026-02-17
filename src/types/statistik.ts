@@ -13,6 +13,7 @@ export interface GenderStatistics {
   count_peserta_with_max_akademik: number;
   user_akademik_count: number;
   hasil_sistem: HasilSistem;
+  count_by_jumlah_penyimakan?: Record<string, number>;
 }
 
 export interface ByGender {

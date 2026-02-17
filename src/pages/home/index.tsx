@@ -1,4 +1,4 @@
-import { Card, CardBody, Divider, Tabs, Tab, cn, Button } from "@heroui/react";
+import { Card, CardBody, Divider, Tabs, Tab, cn, Button, Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/react";
 import {
   Users,
   BookCheckIcon,
@@ -159,7 +159,7 @@ export default function IndexPage() {
                                   statistikKediri.overall
                                     ?.total_active_peserta) *
                                   100,
-                              ).toFixed(0) + "%"
+                                ).toFixed(0) + "%"
                             : null
                         }
                         value={statistikKediri.overall?.user_akademik_count}
@@ -209,6 +209,55 @@ export default function IndexPage() {
                               )
                         }
                       />
+                      <div className="col-span-2 lg:col-span-4">
+                        <Table aria-label="Statistik Penyimakan Kediri">
+                          <TableHeader>
+                            <TableColumn className="uppercase text-default-500" align="center">Simakan</TableColumn>
+                            <TableColumn className="uppercase text-primary" align="center">
+                              L <span className="hidden md:inline">(LAKI-LAKI)</span>
+                            </TableColumn>
+                            <TableColumn className="uppercase text-danger" align="center">
+                              P <span className="hidden md:inline">(PEREMPUAN)</span>
+                            </TableColumn>
+                          </TableHeader>
+                          <TableBody>
+                            {[...[0, 1, 2, 3].map((count) => (
+                              <TableRow key={count}>
+                                <TableCell>
+                                  <div className="bg-default-100 rounded-lg px-2 py-1 w-fit font-semibold text-default-700 mx-auto">
+                                    {count}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="font-semibold text-lg text-center">
+                                  {statistikKediri.by_gender[
+                                    "Laki-laki"
+                                  ].count_by_jumlah_penyimakan?.[String(count)] ??
+                                    0}
+                                </TableCell>
+                                <TableCell className="font-semibold text-lg text-center">
+                                  {statistikKediri.by_gender[
+                                    "Perempuan"
+                                  ].count_by_jumlah_penyimakan?.[String(count)] ??
+                                    0}
+                                </TableCell>
+                              </TableRow>
+                            )),
+                            <TableRow key="total" className="font-extrabold border-t-3 border-default-600 bg-default-300">
+                              <TableCell className="text-large text-default-900 bg-default-300 rounded-l-lg">
+                                <span className="md:hidden">TOTAL</span>
+                                <span className="hidden md:inline">TOTAL KESELURUHAN</span>
+                              </TableCell>
+                              <TableCell className="text-large text-primary text-center bg-default-300">
+                                {[0, 1, 2, 3].reduce((acc, count) => acc + (statistikKediri.by_gender["Laki-laki"].count_by_jumlah_penyimakan?.[String(count)] ?? 0), 0)}
+                              </TableCell>
+                              <TableCell className="text-large text-danger text-center bg-default-300 rounded-r-lg">
+                                {[0, 1, 2, 3].reduce((acc, count) => acc + (statistikKediri.by_gender["Perempuan"].count_by_jumlah_penyimakan?.[String(count)] ?? 0), 0)}
+                              </TableCell>
+                            </TableRow>
+                            ]}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </dl>
                   </div>
                 </CardBody>
@@ -288,7 +337,7 @@ export default function IndexPage() {
                                   statistikKertosono.overall
                                     ?.total_active_peserta) *
                                   100,
-                              ).toFixed(0) + "%"
+                                ).toFixed(0) + "%"
                             : null
                         }
                         desc={statistikKertosono.by_gender["Laki-laki"].user_akademik_count + " L / " + statistikKertosono.by_gender.Perempuan.user_akademik_count + "  P"}
@@ -337,6 +386,55 @@ export default function IndexPage() {
                               )
                         }
                       />
+                      <div className="col-span-2 lg:col-span-4">
+                        <Table aria-label="Statistik Penyimakan Kertosono">
+                          <TableHeader>
+                            <TableColumn className="uppercase text-default-500" align="center">Simakan</TableColumn>
+                            <TableColumn className="uppercase text-primary" align="center">
+                              L <span className="hidden md:inline">(LAKI-LAKI)</span>
+                            </TableColumn>
+                            <TableColumn className="uppercase text-danger" align="center">
+                              P <span className="hidden md:inline">(PEREMPUAN)</span>
+                            </TableColumn>
+                          </TableHeader>
+                          <TableBody>
+                            {[...[0, 1, 2, 3].map((count) => (
+                              <TableRow key={count}>
+                                <TableCell>
+                                  <div className="bg-default-100 rounded-lg px-2 py-1 w-fit font-semibold text-default-700 mx-auto">
+                                    {count}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="font-semibold text-lg text-center">
+                                  {statistikKertosono.by_gender[
+                                    "Laki-laki"
+                                  ].count_by_jumlah_penyimakan?.[String(count)] ??
+                                    0}
+                                </TableCell>
+                                <TableCell className="font-semibold text-lg text-center">
+                                  {statistikKertosono.by_gender[
+                                    "Perempuan"
+                                  ].count_by_jumlah_penyimakan?.[String(count)] ??
+                                    0}
+                                </TableCell>
+                              </TableRow>
+                            )),
+                            <TableRow key="total" className="font-extrabold border-t-3 border-default-600 bg-default-300">
+                              <TableCell className="text-large text-default-900 bg-default-300 rounded-l-lg">
+                                <span className="md:hidden">TOTAL</span>
+                                <span className="hidden md:inline">TOTAL KESELURUHAN</span>
+                              </TableCell>
+                              <TableCell className="text-large text-primary text-center bg-default-300">
+                                {[0, 1, 2, 3].reduce((acc, count) => acc + (statistikKertosono.by_gender["Laki-laki"].count_by_jumlah_penyimakan?.[String(count)] ?? 0), 0)}
+                              </TableCell>
+                              <TableCell className="text-large text-danger text-center bg-default-300 rounded-r-lg">
+                                {[0, 1, 2, 3].reduce((acc, count) => acc + (statistikKertosono.by_gender["Perempuan"].count_by_jumlah_penyimakan?.[String(count)] ?? 0), 0)}
+                              </TableCell>
+                            </TableRow>
+                            ]}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </dl>
                   </div>
                 </CardBody>
