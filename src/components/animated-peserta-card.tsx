@@ -35,7 +35,19 @@ const AnimatedPesertaCard = forwardRef<HTMLDivElement, ParticipantCardProps>(
     const asalDaerah = peserta.asal_daerah;
 
     // Logic for nilai and hasil_tes
-    const nilaiAnda = peserta.nilai_anda == 'lulus' ? 'Lulus' : 'Tidak Lulus';
+    // nilai_anda can be: "lulus", "tidak_lulus", or a decimal string
+    const getNilaiAnda = () => {
+      const nilai = peserta.nilai_anda;
+      if (nilai === 'lulus') return 'Lulus';
+      if (nilai === 'tidak_lulus') return 'Tidak Lulus';
+      // Check if it's a number (decimal string)
+      const numValue = parseFloat(nilai);
+      if (!isNaN(numValue)) {
+        return numValue >= 70 ? 'Lulus' : 'Tidak Lulus';
+      }
+      return 'Tidak Lulus'; // Default fallback
+    };
+    const nilaiAnda = getNilaiAnda();
     // Kertosono doesn't have nilai_akhir top-level in same way? Controller says Kertosono has 'nilai_anda', 'rekomendasi_anda'. Kediri has 'nilai_akhir', 'nilai_anda'.
     // User said "avg_nilai menjadi nilai_akhir".
     const nilaiAkhir = "nilai_akhir" in peserta ? (peserta as PesertaKediri).nilai_akhir : null;

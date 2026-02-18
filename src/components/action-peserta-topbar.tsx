@@ -144,7 +144,7 @@ export default function ActionPesertaTopbar() {
                           : getFirstValidWord(peserta.nama_lengkap)) +
                         (peserta.riwayat_tes > 0 ? "*".repeat(peserta.riwayat_tes) : "")
                       }
-                    src={peserta.foto_smartcard}
+                    src={peserta.foto_identitas}
                     onClick={() => setActivePesertaIndex(index)}
                     awal_penilaian={formValue?.awal_penilaian}
                   />
@@ -220,7 +220,7 @@ export default function ActionPesertaTopbar() {
                         : getFirstValidWord(peserta.nama_lengkap)) +
                       (peserta.riwayat_tes > 0 ? "*".repeat(peserta.riwayat_tes) : "")
                     }
-                    src={peserta.foto_smartcard}
+                    src={peserta.foto_identitas}
                     onClick={() => setActivePesertaIndex(index)}
                     awal_penilaian={formValue?.awal_penilaian}
                   />
