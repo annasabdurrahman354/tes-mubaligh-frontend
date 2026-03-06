@@ -7,7 +7,7 @@ import { sessionAtom } from "@/atoms/authAtom";
 const store = getDefaultStore();
 
 const api = axios.create({
-  baseURL: "https://sejagad.walibarokah.id/api/",
+  baseURL: "https://generus.app/api/",
   headers: {
     Accept: "application/json",
   },
