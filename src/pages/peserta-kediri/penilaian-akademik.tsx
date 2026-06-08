@@ -113,10 +113,50 @@ const validationSchema = Yup.object().shape({
     }
   ),
 
-  catatan_makna: Yup.string().nullable(),
-  catatan_keterangan: Yup.string().nullable(),
-  catatan_penjelasan: Yup.string().nullable(),
-  catatan_pemahaman: Yup.string().nullable(),
+  catatan_makna: Yup.string().test(
+    "required-if-60-catatan-makna",
+    "Catatan makna wajib diisi jika nilai 60.",
+    function (value) {
+      const { nilai_makna } = this.parent;
+      if (nilai_makna === "60") {
+        return value !== undefined && value !== null && value.trim() !== "";
+      }
+      return true;
+    }
+  ).nullable(),
+  catatan_keterangan: Yup.string().test(
+    "required-if-60-catatan-keterangan",
+    "Catatan keterangan wajib diisi jika nilai 60.",
+    function (value) {
+      const { nilai_keterangan } = this.parent;
+      if (nilai_keterangan === "60") {
+        return value !== undefined && value !== null && value.trim() !== "";
+      }
+      return true;
+    }
+  ).nullable(),
+  catatan_penjelasan: Yup.string().test(
+    "required-if-60-catatan-penjelasan",
+    "Catatan penjelasan wajib diisi jika nilai 60.",
+    function (value) {
+      const { nilai_penjelasan } = this.parent;
+      if (nilai_penjelasan === "60") {
+        return value !== undefined && value !== null && value.trim() !== "";
+      }
+      return true;
+    }
+  ).nullable(),
+  catatan_pemahaman: Yup.string().test(
+    "required-if-60-catatan-pemahaman",
+    "Catatan pemahaman wajib diisi jika nilai 60.",
+    function (value) {
+      const { nilai_pemahaman } = this.parent;
+      if (nilai_pemahaman === "60") {
+        return value !== undefined && value !== null && value.trim() !== "";
+      }
+      return true;
+    }
+  ).nullable(),
   catatan: Yup.string(),
 });
 
@@ -443,10 +483,12 @@ export default function PenilaianAkademikKediriPage() {
                                 ))}
                               </CheckboxGroup>
                               <Input
-                                isDisabled={loading} label="Catatan Makna"
+                                isDisabled={loading} label="Catatan Makna" isRequired
                                 placeholder="Tuliskan catatan untuk nilai makna"
                                 description="Tuliskan dalam kalimat yang formal!"
                                 value={values.catatan_makna || ""}
+                                isInvalid={!!errors.catatan_makna && !!touched.catatan_makna}
+                                errorMessage={errors.catatan_makna ? String(errors.catatan_makna) : undefined}
                                 onValueChange={(text) => {
                                   setFieldValue("catatan_makna", text);
                                   setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan_makna: text }; } return newValues; });
@@ -487,10 +529,12 @@ export default function PenilaianAkademikKediriPage() {
                                 ))}
                               </CheckboxGroup>
                               <Input
-                                isDisabled={loading} label="Catatan Keterangan"
+                                isDisabled={loading} label="Catatan Keterangan" isRequired
                                 placeholder="Tuliskan catatan untuk nilai keterangan"
                                 description="Tuliskan dalam kalimat yang formal!"
                                 value={values.catatan_keterangan || ""}
+                                isInvalid={!!errors.catatan_keterangan && !!touched.catatan_keterangan}
+                                errorMessage={errors.catatan_keterangan ? String(errors.catatan_keterangan) : undefined}
                                 onValueChange={(text) => {
                                   setFieldValue("catatan_keterangan", text);
                                   setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan_keterangan: text }; } return newValues; });
@@ -531,10 +575,12 @@ export default function PenilaianAkademikKediriPage() {
                                 ))}
                               </CheckboxGroup>
                               <Input
-                                isDisabled={loading} label="Catatan Penjelasan"
+                                isDisabled={loading} label="Catatan Penjelasan" isRequired
                                 placeholder="Tuliskan catatan untuk nilai penjelasan"
                                 description="Tuliskan dalam kalimat yang formal!"
                                 value={values.catatan_penjelasan || ""}
+                                isInvalid={!!errors.catatan_penjelasan && !!touched.catatan_penjelasan}
+                                errorMessage={errors.catatan_penjelasan ? String(errors.catatan_penjelasan) : undefined}
                                 onValueChange={(text) => {
                                   setFieldValue("catatan_penjelasan", text);
                                   setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan_penjelasan: text }; } return newValues; });
@@ -575,10 +621,12 @@ export default function PenilaianAkademikKediriPage() {
                                 ))}
                               </CheckboxGroup>
                               <Input
-                                isDisabled={loading} label="Catatan Pemahaman"
+                                isDisabled={loading} label="Catatan Pemahaman" isRequired
                                 placeholder="Tuliskan catatan untuk nilai pemahaman"
                                 description="Tuliskan dalam kalimat yang formal!"
                                 value={values.catatan_pemahaman || ""}
+                                isInvalid={!!errors.catatan_pemahaman && !!touched.catatan_pemahaman}
+                                errorMessage={errors.catatan_pemahaman ? String(errors.catatan_pemahaman) : undefined}
                                 onValueChange={(text) => {
                                   setFieldValue("catatan_pemahaman", text);
                                   setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan_pemahaman: text }; } return newValues; });
@@ -589,8 +637,8 @@ export default function PenilaianAkademikKediriPage() {
 
 
                           <Textarea /* Catatan */
-                            isDisabled={loading} label="Catatan Penguji" minRows={4}
-                            placeholder="Tuliskan catatan penilaian" value={values.catatan}
+                            isDisabled={loading} label="Materi" minRows={4}
+                            placeholder="Tuliskan materi" value={values.catatan}
                             onValueChange={(text) => {
                               setFieldValue("catatan", text);
                               setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan: text, }; } return newValues; });
