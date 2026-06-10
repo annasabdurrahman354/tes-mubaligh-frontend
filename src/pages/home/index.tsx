@@ -138,6 +138,7 @@ export default function IndexPage() {
                         isPressable={true}
                         title="Santri Aktif"
                         value={statistikKediri.overall?.total_active_peserta}
+                        desc={statistikKediri.by_gender["Laki-laki"].total_active_peserta + " L / " + statistikKediri.by_gender.Perempuan.total_active_peserta + "  P"}
                         onClick={() =>
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
@@ -315,6 +316,7 @@ export default function IndexPage() {
                         isPressable={true}
                         title="Santri Aktif"
                         value={statistikKertosono.overall?.total_active_peserta}
+                        desc={statistikKertosono.by_gender["Laki-laki"].total_active_peserta + " L / " + statistikKertosono.by_gender.Perempuan.total_active_peserta + "  P"}
                         onClick={() =>
                           hasRole(ROLE.GURU_KERTOSONO) ||
                           hasRole(ROLE.SUPERADMIN)
