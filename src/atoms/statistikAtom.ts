@@ -13,7 +13,7 @@ export const statistikKediriAtom = atomWithStorage<StatistikTes>(
       count_peserta_with_min_akademik: null,
       count_peserta_with_max_akademik: null,
       user_akademik_count: null,
-      hasil_sistem: {
+      hasil_tes: {
         lulus: null,
         tidak_lulus: null,
         perlu_musyawarah: null,
@@ -29,7 +29,7 @@ export const statistikKediriAtom = atomWithStorage<StatistikTes>(
         count_peserta_with_min_akademik: null,
         count_peserta_with_max_akademik: null,
         user_akademik_count: null,
-        hasil_sistem: {
+        hasil_tes: {
           lulus: null,
           tidak_lulus: null,
           perlu_musyawarah: null,
@@ -44,7 +44,7 @@ export const statistikKediriAtom = atomWithStorage<StatistikTes>(
         count_peserta_with_min_akademik: null,
         count_peserta_with_max_akademik: null,
         user_akademik_count: null,
-        hasil_sistem: {
+        hasil_tes: {
           lulus: null,
           tidak_lulus: null,
           perlu_musyawarah: null,
@@ -67,7 +67,7 @@ export const statistikKertosonoAtom = atomWithStorage<StatistikTes>(
       count_peserta_with_min_akademik: null,
       count_peserta_with_max_akademik: null,
       user_akademik_count: null,
-      hasil_sistem: {
+      hasil_tes: {
         lulus: null,
         tidak_lulus: null,
         perlu_musyawarah: null,
@@ -83,7 +83,7 @@ export const statistikKertosonoAtom = atomWithStorage<StatistikTes>(
         count_peserta_with_min_akademik: null,
         count_peserta_with_max_akademik: null,
         user_akademik_count: null,
-        hasil_sistem: {
+        hasil_tes: {
           lulus: null,
           tidak_lulus: null,
           perlu_musyawarah: null,
@@ -98,7 +98,7 @@ export const statistikKertosonoAtom = atomWithStorage<StatistikTes>(
         count_peserta_with_min_akademik: null,
         count_peserta_with_max_akademik: null,
         user_akademik_count: null,
-        hasil_sistem: {
+        hasil_tes: {
           lulus: null,
           tidak_lulus: null,
           perlu_musyawarah: null,

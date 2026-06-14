@@ -14,15 +14,15 @@ export function LocationStats({ data }: LocationStatsProps) {
   
   // Calculate summary metrics
   const totalPeserta = data.overall.total_active_peserta;
-  const sudahTes = totalPeserta - data.overall.hasil_sistem.belum_pengetesan;
-  const belumTes = data.overall.hasil_sistem.belum_pengetesan;
+  const sudahTes = totalPeserta - data.overall.hasil_tes.belum_pengetesan;
+  const belumTes = data.overall.hasil_tes.belum_pengetesan;
   
   // Prepare data for hasil sistem donut chart
   const hasilSistemData = [
-    { name: "Lulus", value: data.overall.hasil_sistem.lulus, color: "#17C964" },
-    { name: "Tidak Lulus", value: data.overall.hasil_sistem.tidak_lulus, color: "#F31260" },
-    { name: "Perlu Musyawarah", value: data.overall.hasil_sistem.perlu_musyawarah, color: "#F5A524" },
-    { name: "Belum Pengetesan", value: data.overall.hasil_sistem.belum_pengetesan, color: "#889096" }
+    { name: "Lulus", value: data.overall.hasil_tes.lulus, color: "#17C964" },
+    { name: "Tidak Lulus", value: data.overall.hasil_tes.tidak_lulus, color: "#F31260" },
+    { name: "Perlu Musyawarah", value: data.overall.hasil_tes.perlu_musyawarah, color: "#F5A524" },
+    { name: "Belum Pengetesan", value: data.overall.hasil_tes.belum_pengetesan, color: "#889096" }
   ];
   
   // Prepare data for gender distribution donut chart
@@ -51,17 +51,17 @@ export function LocationStats({ data }: LocationStatsProps) {
   const hasilByGenderData = [
     { 
       name: "Laki-laki", 
-      lulus: data.by_gender["Laki-laki"].hasil_sistem.lulus,
-      tidak_lulus: data.by_gender["Laki-laki"].hasil_sistem.tidak_lulus,
-      perlu_musyawarah: data.by_gender["Laki-laki"].hasil_sistem.perlu_musyawarah,
-      belum_pengetesan: data.by_gender["Laki-laki"].hasil_sistem.belum_pengetesan
+      lulus: data.by_gender["Laki-laki"].hasil_tes.lulus,
+      tidak_lulus: data.by_gender["Laki-laki"].hasil_tes.tidak_lulus,
+      perlu_musyawarah: data.by_gender["Laki-laki"].hasil_tes.perlu_musyawarah,
+      belum_pengetesan: data.by_gender["Laki-laki"].hasil_tes.belum_pengetesan
     },
     { 
       name: "Perempuan", 
-      lulus: data.by_gender["Perempuan"].hasil_sistem.lulus,
-      tidak_lulus: data.by_gender["Perempuan"].hasil_sistem.tidak_lulus,
-      perlu_musyawarah: data.by_gender["Perempuan"].hasil_sistem.perlu_musyawarah,
-      belum_pengetesan: data.by_gender["Perempuan"].hasil_sistem.belum_pengetesan
+      lulus: data.by_gender["Perempuan"].hasil_tes.lulus,
+      tidak_lulus: data.by_gender["Perempuan"].hasil_tes.tidak_lulus,
+      perlu_musyawarah: data.by_gender["Perempuan"].hasil_tes.perlu_musyawarah,
+      belum_pengetesan: data.by_gender["Perempuan"].hasil_tes.belum_pengetesan
     }
   ];
 

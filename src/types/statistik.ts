@@ -1,7 +1,7 @@
-export interface HasilSistem {
+export interface HasilTes {
   lulus: number;
   tidak_lulus: number;
-  perlu_musyawarah: number;
+  perlu_musyawarah?: number;
   belum_pengetesan: number;
 }
 
@@ -12,7 +12,7 @@ export interface GenderStatistics {
   count_peserta_with_min_akademik: number;
   count_peserta_with_max_akademik: number;
   user_akademik_count: number;
-  hasil_sistem: HasilSistem;
+  hasil_tes: HasilTes;
   count_by_jumlah_penyimakan?: Record<string, number>;
 }
 
