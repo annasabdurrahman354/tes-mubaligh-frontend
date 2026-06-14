@@ -3,8 +3,11 @@ import react from '@vitejs/plugin-react'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const isLaravel = process.env.LARAVEL === '1'
+
 // https://vitejs.dev/config/
 export default defineConfig({
+  ...(isLaravel ? { base: '/build/tes/' } : {}),
   plugins: [
     react(), 
     tsconfigPaths(),
@@ -103,5 +106,12 @@ export default defineConfig({
   ],
   server: {
     allowedHosts: true,
-  }
+  },
+  ...(isLaravel ? {
+    build: {
+      outDir: '../../../public/build/tes',
+      emptyOutDir: true,
+      manifest: true,
+    },
+  } : {}),
 })

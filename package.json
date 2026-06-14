@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:laravel": "LARAVEL=1 vite",
     "build": "tsc && vite build",
+    "build:laravel": "LARAVEL=1 tsc && vite build",
     "lint": "eslint -c .eslintrc.json ./src/**/**/*.{ts,tsx} --fix",
     "preview": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator --preset minimal public/logo.png"
