@@ -33,7 +33,6 @@ export default function DetailPesertaKediriPage() {
     }
   }, [selectedPeserta, navigate]);
 
-  // Don't render anything if redirecting
   if (!selectedPeserta || selectedPeserta.length === 0) {
     return null;
   }
@@ -44,6 +43,52 @@ export default function DetailPesertaKediriPage() {
       <main className="container flex flex-col flex-grow mx-auto max-w-7xl px-4 py-4 md:px-6 md:py-6 gap-4">
         <PesertaProfileCard peserta={selectedPeserta[activePesertaIndex]} />
         <div className="flex flex-col">
+          <Card
+            fullWidth
+            className={cn(`border-small dark:border-small border-default-100`)}
+          >
+            <CardHeader className="flex flex-col items-start">
+              <p className="text-lg">Hasil Pengetesan</p>
+            </CardHeader>
+            <Divider />
+            <CardBody>
+              <div className="flex flex-row flex-wrap gap-2 text-small">
+                <Chip
+                  color={
+                    selectedPeserta[activePesertaIndex].nilai_anda !== null
+                      ? (selectedPeserta[activePesertaIndex].nilai_anda >= 70 ? "success" : "danger")
+                      : "default"
+                  }
+                  startContent={
+                    selectedPeserta[activePesertaIndex].nilai_anda !== null ? (
+                      selectedPeserta[activePesertaIndex].nilai_anda >= 70 ? (
+                        <CheckCircle size={18} />
+                      ) : (
+                        <CircleX size={18} />
+                      )
+                    ) : null
+                  }
+                  variant="flat"
+                >
+                  Penilaian Anda:{" "}
+                  {selectedPeserta[activePesertaIndex].nilai_anda !== null
+                    ? selectedPeserta[activePesertaIndex].nilai_anda
+                    : "Belum Anda Nilai"}
+                </Chip>
+                {selectedPeserta[activePesertaIndex].nilai_anda !== null &&
+                  selectedPeserta[activePesertaIndex].rekomendasi_anda ===
+                  true && (
+                    <Chip
+                      color="success"
+                      startContent={<CheckCircle size={18} />}
+                      variant="flat"
+                    >
+                      Anda Merekomendasikan
+                    </Chip>
+                  )}
+              </div>
+            </CardBody>
+          </Card>
           <Tabs
             fullWidth
             aria-label="Tabs form"

@@ -26,6 +26,7 @@ export type AkademikKediri = {
   catatan_pemahaman: string | null;
   guru_pengganti: string | null;
   catatan: string;
+  rekomendasi: boolean;
   durasi: number;
   created_at: string;
 };
@@ -51,6 +52,7 @@ export type AkademikKediriForm = {
   catatan_pemahaman: string | null;
   guru_pengganti: string | null;
   catatan: string;
+  rekomendasi: boolean;
   durasi: number;
 };
 
@@ -58,16 +60,16 @@ export type PesertaKediri = {
   id: string;
   periode_id: string;
   nispn: string;
-  nama: string; // Updated from nama_lengkap
+  nama: string;
   nama_panggilan: string;
   jenis_kelamin: string;
   kelompok: string;
   nomor_cocard: number;
-  nomor_identitas: string | null; // Added
-  smartcard: string | null; // Replaces rfid
-  kota: string | null; // Updated from kota_nama
-  asal_ponpes: string; // Updated from asal_pondok_nama
-  asal_daerah: string; // Updated from asal_daerah_nama
+  nomor_identitas: string | null;
+  smartcard: string | null;
+  kota: string | null;
+  asal_ponpes: string;
+  asal_daerah: string;
   pendidikan: string;
   status_mondok: string;
   keahlian: string;
@@ -82,8 +84,10 @@ export type PesertaKediri = {
   avg_nilai_penjelasan: number | null;
   avg_nilai_pemahaman: number | null;
   nilai_akhir: number | null; 
-  nilai_anda: number | null; // Added
-  hasil_tes: string | null; // Nullable in controller ($peserta->hasil_tes?->getLabel())
+  nilai_anda: number | null;
+  rekomendasi: string | null;
+  rekomendasi_anda: boolean | null;
+  hasil_tes: string | null;
   telah_disimak: boolean;
   foto_identitas: string; 
   akhlak: AkhlakKediri[];

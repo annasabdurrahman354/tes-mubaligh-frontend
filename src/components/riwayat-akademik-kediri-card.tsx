@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Card, CardBody, Divider, cn, Avatar, Chip } from "@heroui/react";
+import { CheckCircle } from "lucide-react";
 
-import { } from "@/types/kertosono";
 import { AkademikKediri } from "@/types/kediri";
 
 type RiwayatAkademikKediriCardProps = {
@@ -16,7 +16,7 @@ const RiwayatAkademikKediriCard: React.FC<RiwayatAkademikKediriCardProps> = ({
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 0.7, opacity: 0 }}
       initial={{ scale: 0.7, opacity: 0 }}
-      transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }} // Custom cubic bezier for smooth motion
+      transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
     >
       <Card
         fullWidth
@@ -47,6 +47,15 @@ const RiwayatAkademikKediriCard: React.FC<RiwayatAkademikKediriCardProps> = ({
               <p className="text-small text-default-500">
                 {`Durasi ${akademik.durasi / 60} menit`}
               </p>
+              {akademik.rekomendasi && (
+                <Chip
+                  color="success"
+                  startContent={<CheckCircle size={18} />}
+                  variant="faded"
+                >
+                  Direkomendasikan
+                </Chip>
+              )}
             </div>
           </div>
         </CardBody>

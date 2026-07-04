@@ -158,6 +158,7 @@ const validationSchema = Yup.object().shape({
     }
   ).nullable(),
   catatan: Yup.string(),
+  rekomendasi: Yup.boolean(),
 });
 
 // Helper function to safely get initial duration number
@@ -275,6 +276,7 @@ export default function PenilaianAkademikKediriPage() {
         catatan_pemahaman: akademikEntry ? akademikEntry.catatan_pemahaman || "" : "",
         guru_pengganti: akademikEntry ? akademikEntry.guru_pengganti || null : null,
         catatan: akademikEntry ? akademikEntry.catatan || "" : "",
+        rekomendasi: akademikEntry ? akademikEntry.rekomendasi || false : false,
         awal_penilaian: calculated_awal_penilaian, // Use the calculated start time
         durasi: current_total_duration, // Store latest known total duration
         // No 'original_durasi_penilaian' needed in this approach
@@ -302,6 +304,7 @@ export default function PenilaianAkademikKediriPage() {
           catatan_pemahaman: existingForm.catatan_pemahaman || initialData.catatan_pemahaman,
           guru_pengganti: existingForm.guru_pengganti || initialData.guru_pengganti,
           catatan: existingForm.catatan || initialData.catatan,
+          rekomendasi: existingForm.rekomendasi || initialData.rekomendasi,
         };
       }
 
@@ -412,6 +415,7 @@ export default function PenilaianAkademikKediriPage() {
                         updatedFormValuesPayload.nilai_pemahaman === "60" ? updatedFormValuesPayload.catatan_pemahaman : null,
                         updatedFormValuesPayload.guru_pengganti,
                         updatedFormValuesPayload.catatan,
+                        updatedFormValuesPayload.rekomendasi,
                         updatedFormValuesPayload.durasi, // Send the final total (mapped to 'durasi' in hook)
                       );
 
@@ -644,6 +648,27 @@ export default function PenilaianAkademikKediriPage() {
                               setFormValues((prevValues) => { const newValues = [...prevValues]; if (newValues[activePesertaIndex]) { newValues[activePesertaIndex] = { ...newValues[activePesertaIndex], catatan: text, }; } return newValues; });
                             }}
                           />
+
+                          <Checkbox /* Rekomendasi */
+                            className="mx-0.5"
+                            isDisabled={loading}
+                            isSelected={values.rekomendasi}
+                            onValueChange={(value) => {
+                              setFieldValue("rekomendasi", value);
+                              setFormValues((prevValues) => {
+                                const newValues = [...prevValues];
+                                if (newValues[activePesertaIndex]) {
+                                  newValues[activePesertaIndex] = {
+                                    ...newValues[activePesertaIndex],
+                                    rekomendasi: value,
+                                  };
+                                }
+                                return newValues;
+                              });
+                            }}
+                          >
+                            Rekomendasi Penarikan
+                          </Checkbox>
 
                           {/* --- Guru Pengganti Select Field --- */}
                           <Select
