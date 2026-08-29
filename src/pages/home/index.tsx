@@ -221,8 +221,8 @@ export default function IndexPage() {
                               P <span className="hidden md:inline">(PEREMPUAN)</span>
                             </TableColumn>
                           </TableHeader>
-                          <TableBody>
-                            {[...[0, 1, 2, 3].map((count) => (
+                          <TableBody emptyContent="Tidak ada data">
+                            {[...Object.keys(statistikKediri.overall?.count_by_jumlah_penyimakan ?? {}).map((count) => (
                               <TableRow key={count}>
                                 <TableCell>
                                   <div className="bg-default-100 rounded-lg px-2 py-1 w-fit font-semibold text-default-700 mx-auto">
@@ -232,13 +232,13 @@ export default function IndexPage() {
                                 <TableCell className="font-semibold text-lg text-center">
                                   {statistikKediri.by_gender[
                                     "Laki-laki"
-                                  ].count_by_jumlah_penyimakan?.[String(count)] ??
+                                  ]?.count_by_jumlah_penyimakan?.[count] ??
                                     0}
                                 </TableCell>
                                 <TableCell className="font-semibold text-lg text-center">
                                   {statistikKediri.by_gender[
                                     "Perempuan"
-                                  ].count_by_jumlah_penyimakan?.[String(count)] ??
+                                  ]?.count_by_jumlah_penyimakan?.[count] ??
                                     0}
                                 </TableCell>
                               </TableRow>
@@ -249,10 +249,10 @@ export default function IndexPage() {
                                 <span className="hidden md:inline">TOTAL KESELURUHAN</span>
                               </TableCell>
                               <TableCell className="text-large text-primary text-center bg-default-300">
-                                {[0, 1, 2, 3].reduce((acc, count) => acc + (statistikKediri.by_gender["Laki-laki"].count_by_jumlah_penyimakan?.[String(count)] ?? 0), 0)}
+                                {Object.keys(statistikKediri.overall?.count_by_jumlah_penyimakan ?? {}).reduce((acc, count) => acc + (statistikKediri.by_gender["Laki-laki"]?.count_by_jumlah_penyimakan?.[count] ?? 0), 0)}
                               </TableCell>
                               <TableCell className="text-large text-danger text-center bg-default-300 rounded-r-lg">
-                                {[0, 1, 2, 3].reduce((acc, count) => acc + (statistikKediri.by_gender["Perempuan"].count_by_jumlah_penyimakan?.[String(count)] ?? 0), 0)}
+                                {Object.keys(statistikKediri.overall?.count_by_jumlah_penyimakan ?? {}).reduce((acc, count) => acc + (statistikKediri.by_gender["Perempuan"]?.count_by_jumlah_penyimakan?.[count] ?? 0), 0)}
                               </TableCell>
                             </TableRow>
                             ]}
@@ -399,8 +399,8 @@ export default function IndexPage() {
                               P <span className="hidden md:inline">(PEREMPUAN)</span>
                             </TableColumn>
                           </TableHeader>
-                          <TableBody>
-                            {[...[0, 1, 2, 3].map((count) => (
+                          <TableBody emptyContent="Tidak ada data">
+                            {[...Object.keys(statistikKertosono.overall?.count_by_jumlah_penyimakan ?? {}).map((count) => (
                               <TableRow key={count}>
                                 <TableCell>
                                   <div className="bg-default-100 rounded-lg px-2 py-1 w-fit font-semibold text-default-700 mx-auto">
@@ -410,13 +410,13 @@ export default function IndexPage() {
                                 <TableCell className="font-semibold text-lg text-center">
                                   {statistikKertosono.by_gender[
                                     "Laki-laki"
-                                  ].count_by_jumlah_penyimakan?.[String(count)] ??
+                                  ]?.count_by_jumlah_penyimakan?.[count] ??
                                     0}
                                 </TableCell>
                                 <TableCell className="font-semibold text-lg text-center">
                                   {statistikKertosono.by_gender[
                                     "Perempuan"
-                                  ].count_by_jumlah_penyimakan?.[String(count)] ??
+                                  ]?.count_by_jumlah_penyimakan?.[count] ??
                                     0}
                                 </TableCell>
                               </TableRow>
@@ -427,10 +427,10 @@ export default function IndexPage() {
                                 <span className="hidden md:inline">TOTAL KESELURUHAN</span>
                               </TableCell>
                               <TableCell className="text-large text-primary text-center bg-default-300">
-                                {[0, 1, 2, 3].reduce((acc, count) => acc + (statistikKertosono.by_gender["Laki-laki"].count_by_jumlah_penyimakan?.[String(count)] ?? 0), 0)}
+                                {Object.keys(statistikKertosono.overall?.count_by_jumlah_penyimakan ?? {}).reduce((acc, count) => acc + (statistikKertosono.by_gender["Laki-laki"]?.count_by_jumlah_penyimakan?.[count] ?? 0), 0)}
                               </TableCell>
                               <TableCell className="text-large text-danger text-center bg-default-300 rounded-r-lg">
-                                {[0, 1, 2, 3].reduce((acc, count) => acc + (statistikKertosono.by_gender["Perempuan"].count_by_jumlah_penyimakan?.[String(count)] ?? 0), 0)}
+                                {Object.keys(statistikKertosono.overall?.count_by_jumlah_penyimakan ?? {}).reduce((acc, count) => acc + (statistikKertosono.by_gender["Perempuan"]?.count_by_jumlah_penyimakan?.[count] ?? 0), 0)}
                               </TableCell>
                             </TableRow>
                             ]}
